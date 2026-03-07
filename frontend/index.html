@@ -280,16 +280,16 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 .brand-name { font-family: var(--font-head); font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
 
 /* Hero Modules */
-.hero-mods { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
+.hero-mods { padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
 .hero-mod {
-  display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 16px;
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px;
   background: var(--card-bg); border: 1px solid var(--border); cursor: pointer;
   transition: all 0.3s ease; position: relative; overflow: hidden;
 }
 .hero-mod:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.06); border-color: rgba(108, 99, 255, 0.3); }
 .hero-mod.on { border-left: 3px solid var(--accent); background: rgba(108, 99, 255, 0.1); border-color: rgba(108, 99, 255, 0.4); }
-.hero-mod-ico { font-size: 24px; filter: drop-shadow(0 0 10px rgba(108, 99, 255, 0.3)); }
-.hero-mod-title { font-family: var(--font-head); font-size: 15px; font-weight: 600; color: var(--text); }
+.hero-mod-ico { font-size: 22px; filter: drop-shadow(0 0 10px rgba(108, 99, 255, 0.3)); }
+.hero-mod-title { font-family: var(--font-head); font-size: 13px; font-weight: 600; color: var(--text); }
 .hero-mod-sub { font-size: 11px; color: var(--text-muted); }
 
 .adv-row { cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: space-between; }
@@ -437,8 +437,8 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 
 /* Floating Bottom Bar */
 .bottom-bar {
-  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
-  display: flex; align-items: center; gap: 12px; padding: 8px 16px;
+  position: relative; margin: 16px auto; width: max-content;
+  display: flex; align-items: center; justify-content: center; gap: 12px; padding: 8px 16px;
   background: rgba(15, 15, 25, 0.7); backdrop-filter: blur(20px);
   border: 1px solid var(--border); border-radius: 24px; z-index: 1000;
   box-shadow: 0 16px 48px rgba(0,0,0,0.5);
@@ -537,7 +537,7 @@ tr:last-child td{border-bottom:none}
 tr:hover td{background:rgba(255,255,255,.015)}
 /* Module Cards Grid */
 .chat {
-  flex: 1; overflow-y: auto; padding: 24px 60px;
+  flex: 1; overflow-y: auto; padding: 24px 60px 100px;
   scrollbar-width: thin; scrollbar-color: var(--border) transparent;
 }
 .chat::-webkit-scrollbar { width: 4px; }
@@ -692,7 +692,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
     <div class="user-pill" id="userPill" onclick="goDash()">
       <div class="u-av" id="uAv">U</div>
       <span class="u-name" id="uName">User</span>
-      <span class="u-credits" id="uCredits">5 credits</span>
+      <span class="u-credits" id="uCredits">10 credits</span>
     </div>
     <button class="nsignin" id="navSignin" onclick="openAuth()">Sign In</button>
     <button class="ncta" onclick="openAuth()">Start Free →</button>
@@ -701,7 +701,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 </nav>
 
 <section class="hero">
-  <div class="heye"><div class="hdot"></div>AI-POWERED · FREE 5 CREDITS · INSTANT ANALYSIS</div>
+  <div class="heye"><div class="hdot"></div>AI-POWERED · FREE 10 CREDITS · INSTANT ANALYSIS</div>
   <h1>Business data,<br/><span class="hgr">analyzed in seconds.</span></h1>
   <p class="hsub">McKinsey-level financial, sales, and operations analysis. Upload your data — professional charts, KPIs, and action plans instantly.</p>
   <div class="hero-searchbox">
@@ -722,7 +722,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <span class="hsb-chip" onclick="chipSearch('Financial ratios and risk assessment')">Financial Risk</span>
     </div>
     <div class="hero-btns-fallback" id="heroFallback">
-      <button class="bpri" onclick="openAuth()">Get 5 Free Credits →</button>
+      <button class="bpri" onclick="openAuth()">Get 10 Free Credits →</button>
       <a class="bsec" href="#features">See Features</a>
     </div>
   </div>
@@ -737,8 +737,8 @@ tr:hover td{background:rgba(255,255,255,.015)}
 <div class="free-strip">
   <div class="fstrip-box">
     <div class="fstrip-left">
-      <div class="fstrip-badge">FREE · 5 CREDITS</div>
-      <div class="fstrip-text">Sign in with Google and get <strong>5 complete free analyses</strong> — full charts, KPIs, PDF export. No card required.</div>
+      <div class="fstrip-badge">FREE · 10 CREDITS</div>
+      <div class="fstrip-text">Sign in with Google and get <strong>10 complete free analyses</strong> — full charts, KPIs, PDF export. No card required.</div>
     </div>
     <button class="fstrip-btn" onclick="openAuth()">Get Started Free</button>
   </div>
@@ -783,7 +783,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 </section>
 
 <section class="sec" style="padding-top:0;padding-bottom:72px">
-  <div class="ctabox"><h2>Start analyzing today</h2><p>Sign in with Google and get 5 free analyses instantly. No card. No setup. Just results.</p><button class="bpri" onclick="openAuth()">Get 5 Free Credits →</button></div>
+  <div class="ctabox"><h2>Start analyzing today</h2><p>Sign in with Google and get 10 free analyses instantly. No card. No setup. Just results.</p><button class="bpri" onclick="openAuth()">Get 10 Free Credits →</button></div>
 </section>
 
 <footer>
@@ -860,7 +860,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
     
     <div class="credits-hero">
       <div class="cr-lbl">Available Credits</div>
-      <div class="cr-val" id="sideCredits">9</div>
+      <div class="cr-val" id="sideCredits">10</div>
       <div style="font-size:10px; color:var(--text-muted); margin: 4px 0 12px;">Free Tier Plan</div>
       <button class="cr-up" onclick="openPay('starter')">Upgrade Plan</button>
     </div>
@@ -913,7 +913,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="search-hub">
     <div class="search-container">
       <button class="search-action-btn btn-upload" onclick="document.getElementById('fileinput').click()" title="Upload CSV, Excel, JSON, TXT">📎</button>
-      <input class="search-input-main" id="userinput" placeholder="Ask anything about your data... or upload a file to begin" onkeydown="if(event.key==='Enter'&&!event.shiftKey){e.preventDefault();sendMsg();}"/>
+      <textarea class="search-input-main" id="userinput" rows="1" style="resize:none; padding-top:14px; overflow:hidden;" placeholder="Ask anything about your data... or upload a file to begin" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg();}"></textarea>
       <div style="display:flex; align-items:center; gap:8px;">
         <button class="search-action-btn" onclick="toggleVoice()" style="background:transparent; color:var(--text-muted);">🎤</button>
         <button class="search-action-btn btn-send-main" id="sendbtn" onclick="sendMsg()" disabled>➔</button>
@@ -944,10 +944,6 @@ tr:hover td{background:rgba(255,255,255,.015)}
   </div>
 
   <div class="chat" id="chat"></div>
- <div class="inp-zone">
-  <div class="inp-wrap"><textarea id="userinput" rows="1" placeholder="Paste data, ask any question, or connect a source…"></textarea><div class="inp-acts"><div class="ic-btn" onclick="document.getElementById('fileinput').click()">📁</div><div class="ic-btn" onclick="toggleVoice()">🎤</div><div class="ic-btn" onclick="openCalc()">🔢</div><button id="sendbtn" onclick="sendMsg()" disabled><svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg></button></div></div>
-  <div class="inp-hint">ENTER = send · SHIFT+ENTER = new line · CSV/Excel/JSON/TXT upload supported</div>
- </div>
 </div>
 </div><!-- /view-dash -->
 
@@ -956,10 +952,10 @@ tr:hover td{background:rgba(255,255,255,.015)}
   <div class="mbox">
     <button class="mx" onclick="closeOv('authOv')">✕</button>
     <h3>Sign in to NEXUS-DATA ANALYST</h3>
-    <p id="authModalDesc">Sign in with Google to unlock 5 free analyses instantly.</p>
+    <p id="authModalDesc">Sign in with Google to unlock 10 free analyses instantly.</p>
     <div class="credits-info">
       <div class="cit">WHAT YOU GET FREE</div>
-      <div class="cib">✓ <strong>5 complete analyses</strong> — full charts, KPIs, anomaly detection<br/>✓ All 13 analysis modules available<br/>✓ PDF, Excel, WhatsApp export<br/>✓ No card · No spam · No commitment</div>
+      <div class="cib">✓ <strong>10 complete analyses</strong> — full charts, KPIs, anomaly detection<br/>✓ All 13 analysis modules available<br/>✓ PDF, Excel, WhatsApp export<br/>✓ No card · No spam · No commitment</div>
     </div>
     <div id="googleBtnWrap" style="display:flex;justify-content:center;min-height:44px;margin-bottom:9px"></div>
     <button class="mbtn" id="gFallback" onclick="doGoogleSignIn()" style="display:none">
@@ -1017,7 +1013,7 @@ const BACKEND          = (localStorage.getItem('nx_cp_backend')  || _BACKEND_DEF
 const GOOGLE_CLIENT_ID =  localStorage.getItem('nx_cp_google_id')|| _GOOGLE_ID_DEFAULT;
 const UPI_ID           =  localStorage.getItem('nx_cp_upi')      || _UPI_DEFAULT;
 const GEMINI_KEY       =  localStorage.getItem('nx_cp_anthropic')|| '';
-const FREE_CREDITS     =  parseInt(localStorage.getItem('nx_cp_free_cr') || '5', 10);
+const FREE_CREDITS     =  parseInt(localStorage.getItem('nx_cp_free_cr') || '10', 10);
 const GEMINI_MODEL     = "gemini-1.5-flash";
 
 const BACKEND_LIVE = BACKEND.startsWith('http') && !BACKEND.includes('YOUR');
@@ -1101,7 +1097,7 @@ async function onGoogleCred(resp) {
     } else {
       const [,raw]=resp.credential.split(".");
       const pl=JSON.parse(atob(raw.replace(/-/g,"+").replace(/_/g,"/")));
-      saveSession("demo_token",{name:pl.name,email:pl.email,credits:5,plan:null});
+      saveSession("demo_token",{name:pl.name,email:pl.email,credits:10,plan:null});
     }
     closeOv('authOv'); updateNavUI();
     toast("Welcome "+S.user.name+"! You have "+S.credits+" free credits.");
@@ -1109,7 +1105,7 @@ async function onGoogleCred(resp) {
   } catch(err) { document.getElementById('gFallback').disabled=false; setAuthErr("Sign-in failed: "+err.message); }
 }
 function simulateLogin() {
-  saveSession("demo_"+Date.now(),{name:"Demo User",email:"demo@example.com",credits:5,plan:null});
+  saveSession("demo_"+Date.now(),{name:"Demo User",email:"demo@example.com",credits:10,plan:null});
   closeOv('authOv'); updateNavUI();
   toast("Demo mode — set GOOGLE_CLIENT_ID for real sign-in");
   setTimeout(goDash, 600);
@@ -1670,5 +1666,6 @@ loadSession();
 if(typeof google!=='undefined')initGoogleBtn();
 else document.querySelector("script[src*='accounts.google.com']")?.addEventListener('load', initGoogleBtn);
 </script>
+<input type="file" id="fileinput" style="display:none" onchange="loadFile(event)" accept=".csv,.xlsx,.xls,.json,.txt"/>
 </body>
 </html>
