@@ -369,16 +369,16 @@ function refreshAll(){
 
   // Fill inputs
   if(gk) document.getElementById('gemKey').value=gk;
-  document.getElementById('backUrl').value=bu||'https://nexus-production-feda.up.railway.app';
+  document.getElementById('backUrl').value=bu||'https://nexus-backend-clean.onliraxter.workers.dev';
   document.getElementById('googleId').value=gi||'152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.googleusercontent.com';
   if(ui) document.getElementById('upiId').value=ui;
   document.getElementById('freeCr').value=fc;
 
   // Auto-save defaults
-  if(!bu) localStorage.setItem('nx_cp_backend','https://nexus-production-feda.up.railway.app');
+  if(!bu) localStorage.setItem('nx_cp_backend','https://nexus-backend-clean.onliraxter.workers.dev');
   if(!gi) localStorage.setItem('nx_cp_google_id','152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.googleusercontent.com');
 
-  const backVal=bu||'https://nexus-production-feda.up.railway.app';
+  const backVal=bu||'https://nexus-backend-clean.onliraxter.workers.dev';
   const gidVal=gi||'152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.googleusercontent.com';
 
   const gemOk=gk.startsWith('AIzaSy');
