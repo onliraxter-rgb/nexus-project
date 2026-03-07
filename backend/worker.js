@@ -7,27 +7,101 @@
 //          /api/admin/activate
 // ═══════════════════════════════════════════════════════
 
-const CORS = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-  "Access-Control-Allow-Headers": "Content-Type, x-nexus-token, x-admin-secret",
+const ORIGIN_WHITELIST = [
+  "https://nexus.onliraxter.workers.dev",
+  "https://nexus-data-analyst-web.pages.dev",
+  "https://*.nexus-data-analyst-web.pages.dev", // Support branch previews
+  "https://nexus-backend-clean.onliraxter.workers.dev",
+  "http://localhost:*",
+  "http://127.0.0.1:*",
+  "null"
+];
+
+const SECURITY_HEADERS = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+  "X-XSS-Protection": "1; mode=block",
+  "Referrer-Policy": "no-referrer",
+  "X-NEXUS-Origin": "onliraxter"
 };
 
-function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: { "Content-Type": "application/json", ...CORS },
-  });
+const CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, x-nexus-token, x-admin-secret, authorization",
+  "Access-Control-Expose-Headers": "X-NEXUS-Origin, Content-Type",
+  "Access-Control-Max-Age": "86400",
+};
+
+function json(data, status = 200, origin = null) {
+  const headers = { "Content-Type": "application/json", ...SECURITY_HEADERS };
+  Object.entries(CORS).forEach(([k, v]) => headers[k] = v);
+  if (origin) headers["Access-Control-Allow-Origin"] = origin;
+  return new Response(JSON.stringify(data), { status, headers });
 }
 
-function err(msg, status = 400) {
-  return json({ error: msg }, status);
+function err(msg, status = 400, origin = null) {
+  return json({ error: msg }, status, origin);
+}
+
+// ── SECURITY HELPERS ─────────────────────────────────────
+function sanitize(str) {
+  if (typeof str !== 'string') return str;
+  return str.replace(/<[^>]*>/g, '').replace(/script/gi, '');
+}
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+async function logActivity(env, ip, type, details = {}) {
+  const ts = Date.now();
+  const entry = { ts, ip, type, ...details };
+  await env.NEXUS_KV.put(`log:${ts}:${ip}`, JSON.stringify(entry), { expirationTtl: 86400 * 7 });
+  
+  // Cleanup old logs (keep last 100) - simple rotation
+  const list = await env.NEXUS_KV.list({ prefix: "log:" });
+  if (list.keys.length > 100) {
+    const sorted = list.keys.sort((a,b) => a.name.localeCompare(b.name));
+    for (const k of sorted.slice(0, list.keys.length - 100)) {
+      await env.NEXUS_KV.delete(k.name);
+    }
+  }
+}
+
+async function checkRateLimit(env, ip, type, max) {
+  const key = `ratelimit:${type}:${ip}`;
+  const count = parseInt(await env.NEXUS_KV.get(key) || "0") + 1;
+  if (count > max) return false;
+  await env.NEXUS_KV.put(key, count.toString(), { expirationTtl: 60 });
+  return true;
+}
+
+async function isBlacklisted(env, ip) {
+  const reason = await env.NEXUS_KV.get(`blacklist:${ip}`);
+  if (reason) return true;
+  
+  // Auto-blacklist check
+  const hourKey = `hourly:${ip}`;
+  const count = parseInt(await env.NEXUS_KV.get(hourKey) || "0") + 1;
+  await env.NEXUS_KV.put(hourKey, count.toString(), { expirationTtl: 3600 });
+  if (count > 200) {
+    await env.NEXUS_KV.put(`blacklist:${ip}`, "High frequency abuse", { expirationTtl: 86400 });
+    await logActivity(env, ip, "AUTO_BLACKLIST", { count });
+    return true;
+  }
+  return false;
 }
 
 // ── JWT (simple, no library needed) ──────────────────────
 async function signJWT(payload, secret) {
+  const iat = Math.floor(Date.now() / 1000);
+  const exp = iat + (24 * 60 * 60); // 24 hours
+  const fullPayload = { ...payload, iat, exp };
+  
   const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const body   = btoa(JSON.stringify(payload));
+  const body   = btoa(unescape(encodeURIComponent(JSON.stringify(fullPayload))));
   const msg    = `${header}.${body}`;
   const key    = await crypto.subtle.importKey(
     "raw", new TextEncoder().encode(secret),
@@ -50,7 +124,11 @@ async function verifyJWT(token, secret) {
     const sigBuf = Uint8Array.from(atob(sig.replace(/-/g, "+").replace(/_/g, "/")), c => c.charCodeAt(0));
     const valid  = await crypto.subtle.verify("HMAC", key, sigBuf, new TextEncoder().encode(msg));
     if (!valid) return null;
-    return JSON.parse(atob(body));
+    
+    const payload = JSON.parse(decodeURIComponent(escape(atob(body))));
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp && now > payload.exp) return { expired: true };
+    return payload;
   } catch {
     return null;
   }
@@ -71,6 +149,7 @@ async function getUser(request, env) {
   if (!token) return null;
   const payload = await verifyJWT(token, env.JWT_SECRET);
   if (!payload) return null;
+  if (payload.expired) return { expired: true };
   const raw = await env.NEXUS_KV.get(`user:${payload.email}`);
   if (!raw) return null;
   return JSON.parse(raw);
@@ -96,48 +175,115 @@ async function getAllUsers(env) {
 // ═══════════════════════════════════════════════════════
 export default {
   async fetch(request, env) {
-    const url    = new URL(request.url);
-    const path   = url.pathname;
-    const method = request.method;
+    const origin = request.headers.get("Origin");
+    const normalizedOrigin = origin ? origin.replace(/\/$/, "") : null;
+    
+    try {
+      const url    = new URL(request.url);
+      const path   = url.pathname;
+      const method = request.method;
+      const ip     = request.headers.get("cf-connecting-ip") || "0.0.0.0";
+    const isWhitelisted = !normalizedOrigin || ORIGIN_WHITELIST.some(o => {
+      const wo = o.replace(/\/$/, "");
+      if (wo === normalizedOrigin) return true;
+      if (o.includes("*")) {
+        const parts = o.replace(/\/$/, "").split("*");
+        return normalizedOrigin.startsWith(parts[0]) && normalizedOrigin.endsWith(parts[1]);
+      }
+      return false;
+    });
 
-    // CORS preflight
+    // CORS preflight - handle immediately
     if (method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: CORS });
+      const h = { ...CORS };
+      if (normalizedOrigin) h["Access-Control-Allow-Origin"] = normalizedOrigin;
+      return new Response(null, { status: 204, headers: h });
     }
+
+    // ── ORIGIN WHITELIST (Except /health) ────────────────
+    if (path !== "/health" && origin && !isWhitelisted) {
+      await logActivity(env, ip, "FORBIDDEN_ORIGIN", { origin });
+      return err(`Forbidden origin: ${origin}`, 403, normalizedOrigin);
+    }
+
+    // ── IP BLACKLIST ─────────────────────────────────────
+    if (await isBlacklisted(env, ip)) return err("Access denied.", 403, normalizedOrigin);
+
+    // ── REQUEST SIZE LIMIT (10MB) ────────────────────────
+    const cl = parseInt(request.headers.get("content-length") || "0");
+    if (cl > 10 * 1024 * 1024) return err("Request body too large", 413, normalizedOrigin);
 
     // ── /health ───────────────────────────────────────────
     if (path === "/health") {
-      return json({ status: "ok", platform: "cloudflare-workers" });
+      return json({ status: "ok", platform: "cloudflare-workers" }, 200, normalizedOrigin);
     }
+
+    // ── ROUTE RATE LIMITING ──────────────────────────────
+    let limit = 100;
+    if (path === "/api/auth/google") limit = 5;
+    else if (path === "/api/analyze") limit = 20;
+
+    if (!(await checkRateLimit(env, ip, path, limit))) {
+      await logActivity(env, ip, "RATE_LIMIT_HIT", { path });
+      return err("Rate limit exceeded. Try again in 60 seconds.", 429, normalizedOrigin);
+    }
+
+    // ── AUTH REQUIREMENT (Most routes) ───────────────────
+    const publicPaths = ["/health", "/api/auth/google", "/api/payment-request", "/api/notify"];
+    const needsAuth = !publicPaths.includes(path);
+    let user = null;
+    if (needsAuth) {
+      user = await getUser(request, env);
+      if (!user) {
+        await logActivity(env, ip, "UNAUTHORIZED_ATTEMPT", { path });
+        return err("Unauthorized", 401);
+      }
+      if (user.expired) {
+        return err("Session expired. Please login again.", 401);
+      }
+    }
+
+    // ── SAFE JSON PARSE HELPER ───────────────────────────
+    const getJson = async () => {
+      try { return await request.json(); }
+      catch { return null; }
+    };
 
     // ── /api/auth/google ──────────────────────────────────
     if (path === "/api/auth/google" && method === "POST") {
-      const body       = await request.json();
+      const body = await getJson();
+      if (!body) return err("Malformed JSON", 400);
       const credential = body.credential;
       if (!credential) return err("No credential");
 
       const profile = await verifyGoogleToken(credential, env.GOOGLE_CLIENT_ID);
-      if (!profile) return err("Invalid Google token", 401);
+      if (!profile) {
+        await logActivity(env, ip, "FAILED_LOGIN", { email: "unknown" });
+        return err("Invalid Google token", 401);
+      }
+
+      // Email Validation
+      if (!validateEmail(profile.email)) return err("Invalid email format");
 
       // Load or create user
       let raw  = await env.NEXUS_KV.get(`user:${profile.email}`);
-      let user = raw ? JSON.parse(raw) : null;
+      let userData = raw ? JSON.parse(raw) : null;
 
-      if (!user) {
-        user = {
+      if (!userData) {
+        userData = {
           email:     profile.email,
-          name:      profile.name,
+          name:      sanitize(profile.name),
           picture:   profile.picture,
           plan:      "free",
           credits:   parseInt(env.FREE_CREDITS || "10"),
           active:    true,
           createdAt: new Date().toISOString(),
         };
-        await saveUser(env, user);
+        await saveUser(env, userData);
       }
 
-      const token = await signJWT({ email: user.email }, env.JWT_SECRET);
-      return json({ token, user });
+      const token = await signJWT({ email: userData.email }, env.JWT_SECRET);
+      return json({ token, user: userData });
     }
 
     // ── /api/user/me ─────────────────────────────────────
@@ -174,7 +320,8 @@ export default {
       const user = await getUser(request, env);
       if (!user) return err("Unauthorized", 401);
 
-      const body = await request.json();
+      const body = await getJson();
+      if (!body) return err("Malformed JSON", 400);
       const { messages, fileData } = body;
 
       // Build Groq request
@@ -182,10 +329,12 @@ export default {
       if (fileData) {
         groqMessages.push({
           role: "user",
-          content: `[File attached: ${fileData.name}]\n${fileData.text || ""}`,
+          content: `[File attached: ${sanitize(fileData.name)}]\n${sanitize(fileData.text) || ""}`,
         });
       }
-      groqMessages.push(...(messages || []));
+      (messages || []).forEach(m => {
+        groqMessages.push({ role: m.role, content: sanitize(m.content) });
+      });
 
       const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -288,6 +437,25 @@ Format: ══ sections, ▶ sub-sections, | tables, **bold** numbers.`,
       return json({ ok: true, user });
     }
 
-    return err("Not found", 404);
+    // ── /api/admin/logs ───────────────────────────────────
+    if (path === "/api/admin/logs" && method === "GET") {
+      const secret = request.headers.get("x-admin-secret");
+      if (secret !== env.ADMIN_SECRET) return err("Forbidden", 403);
+      
+      const list = await env.NEXUS_KV.list({ prefix: "log:" });
+      const logs = [];
+      for (const k of list.keys) {
+        const raw = await env.NEXUS_KV.get(k.name);
+        if (raw) logs.push(JSON.parse(raw));
+      }
+      return json({ logs: logs.sort((a,b) => b.ts - a.ts) }, 200, normalizedOrigin);
+    }
+
+    return err("Not found", 404, normalizedOrigin);
+
+    } catch (e) {
+      console.error("Worker Error:", e);
+      return err(`Internal Server Error: ${e.message}`, 500, normalizedOrigin);
+    }
   },
 };

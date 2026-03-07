@@ -1,10 +1,10 @@
-# NEXUS v6 — AI Business Analyst
+# NEXUS-DATA ANALYST v6 — AI Business Analyst
 
 ## Project Structure
 ```
 nexus-project/
 ├── frontend/
-│   ├── index.html          ← Main app (deploy to Cloudflare Pages)
+│   ├── index.html          ← Main app (deployed to Cloudflare Pages)
 │   └── nexus-control.html  ← Admin panel
 ├── backend/
 │   ├── worker.js           ← Cloudflare Worker backend
@@ -14,16 +14,16 @@ nexus-project/
 ```
 
 ## Live URLs
-- Frontend: https://nexus.onliraxter.workers.dev
-- Backend:  https://nexus-backend-clean.onliraxter.workers.dev
+- **Main Website:** [https://nexus-data-analyst-web.pages.dev](https://nexus-data-analyst-web.pages.dev)
+- **Backend API:** [https://nexus-data-analyst-api.onliraxter.workers.dev](https://nexus-data-analyst-api.onliraxter.workers.dev)
 
-## Backend Environment Variables (already set in Cloudflare)
+## Backend Environment Variables (configured as Secrets)
 | Variable         | Value                          |
 |------------------|-------------------------------|
-| GROQ_API_KEY     | gsk_fieUUf...                 |
-| GOOGLE_CLIENT_ID | 152785926177-ani51o...         |
-| JWT_SECRET       | nexus_secret_2026_x9k         |
-| ADMIN_SECRET     | admin123nexus                 |
+| GROQ_API_KEY     | [Cloudflare Secret]            |
+| GOOGLE_CLIENT_ID | [Cloudflare Secret]            |
+| JWT_SECRET       | [Cloudflare Secret]            |
+| ADMIN_SECRET     | [Cloudflare Secret]            |
 | FREE_CREDITS     | 10                            |
 
 ## KV Namespace

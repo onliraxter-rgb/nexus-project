@@ -8,3 +8,6 @@ id = "6c1a280596a8453fa4893dd7de5f7700"
 
 [vars]
 FREE_CREDITS = "10"
+GOOGLE_CLIENT_ID = "152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.googleusercontent.com"
+JWT_SECRET = "nexus_secret_771"
+ADMIN_SECRET = "admin123nexus"
