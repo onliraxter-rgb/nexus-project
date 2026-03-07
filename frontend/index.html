@@ -674,6 +674,18 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .pred-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 10; }
 .tb-btn-pred { background: linear-gradient(135deg, #a78bfa, #6366f1); color: #fff; border: none; font-weight: 700; }
 
+#voicebtn.listening {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: #ef4444;
+  animation: pulse-red 1.5s infinite;
+}
+@keyframes pulse-red {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
 </style>
 </head>
 <body>
@@ -856,16 +868,29 @@ tr:hover td{background:rgba(255,255,255,.015)}
   </div>
 
   <div class="side-bottom">
+    <div style="padding:10px 0 20px 0;">
+      <div style="font-size:11px;color:var(--mt);margin-bottom:6px;font-weight:700;">INDUSTRY BENCHMARK</div>
+      <select id="benchIndustry" style="width:100%;background:var(--s3);color:var(--tx);border:1px solid var(--br);border-radius:6px;padding:6px;font-size:12px;margin-bottom:8px">
+        <option value="">Select industry…</option>
+        <option value="retail">Retail</option>
+        <option value="saas">SaaS / Software</option>
+        <option value="ecommerce">E-Commerce</option>
+        <option value="manufacturing">Manufacturing</option>
+        <option value="finance">Finance / Banking</option>
+      </select>
+      <button onclick="showBenchmark()" style="width:100%;background:var(--v);color:#fff;border:none;border-radius:6px;padding:8px;font-size:12px;cursor:pointer">Compare vs Industry →</button>
+    </div>
+
     <div class="adv-row" id="advrow" onclick="toggleAdv()" style="margin-bottom:12px; background:rgba(255,158,11,0.05); padding:10px; border-radius:12px;">
       <span class="adv-lbl" style="font-size:11px;">⚡ ADVANCED MODE</span>
       <div class="adv-sw"></div>
     </div>
     
-    <div class="credits-hero">
-      <div class="cr-lbl">Available Credits</div>
-      <div class="cr-val" id="sideCredits">10</div>
-      <div style="font-size:10px; color:var(--text-muted); margin: 4px 0 12px;">Free Tier Plan</div>
-      <button class="cr-up" onclick="openPay('starter')">Upgrade Plan</button>
+    <div class="credits-hero" style="margin-bottom:20px;">
+      <div class="cr-lbl" style="font-size:12px; margin-bottom:8px;">Available Credits</div>
+      <div class="cr-val" id="sideCredits" style="font-size:48px; font-weight:700;">10</div>
+      <div style="font-size:11px; color:var(--text-muted); margin: 8px 0 16px;">Free Tier Plan</div>
+      <button class="cr-up" onclick="openPay('professional')" style="width:100%; height:44px; background:linear-gradient(135deg, var(--v), #0d9488); border-radius:8px;">Upgrade Plan</button>
     </div>
 
     <div class="lang-row" style="opacity:0.6; margin-top: auto; padding-top: 10px;">
@@ -1358,21 +1383,92 @@ async function runPredict() {
 }
 
 // ── SYSTEM PROMPT ──
-const SYS=`You are NEXUS-DATA ANALYST v6 — Universal AI Data Analyst. Combined: Senior Data Scientist + CFO + McKinsey Consultant + ML Engineer + Statistician + Risk Manager.
-ANALYSIS LAYERS:
-1. DATA PROFILING: Schema, quality, missing patterns, outliers (IQR/Z-score), cardinality.
-2. DESCRIPTIVE: Mean, median, mode, variance, std dev, IQR, skewness, kurtosis, CAGR, YoY/MoM/QoQ.
-3. INFERENTIAL: Hypothesis testing, t-tests, ANOVA, chi-square, correlation, regression, confidence intervals.
-4. DIAGNOSTIC: Waterfall decomp, Pareto/ABC, 5-Why, volume/price/mix variance, HHI.
-5. PREDICTIVE: Trend projection, time-series decomp, SMA/EMA, churn prediction, LTV projection.
-6. PRESCRIPTIVE: ROI-ranked action plan, resource allocation, 90-day roadmap.
-7. FINANCE: P&L decomp, DuPont ROE bridge, Altman Z-Score, Piotroski F, DCF sensitivity, WACC, CCC, 30+ ratios.
-8. RISK: Monte Carlo ranges, scenario stress test, HHI, sensitivity tornado chart.
-9. VISUALIZATIONS: Use [CHART:type|title|json] for bar/line/pie/area/radar charts. Use [KPI:label|value|delta|up/down/neutral] for KPI cards.
-10. CODE: SQL (CTEs, window functions), Python/pandas, DAX, R.
-ALWAYS: Detect anomalies, flag assumptions, end with ◆ NEXUS VERDICT + PRIORITY ACTIONS.
-Format: ══ sections, ▶ sub-sections, | tables, **bold** numbers.`;
-const MPRPTS={universal:'',statistics:'\n\n[STATISTICS MODE: Full battery — all central tendency, dispersion, normality tests, full correlation matrix, regression with p-values.]',finance:'\n\n[FINANCE MODE: P&L decomp, DuPont ROE bridge, Altman Z-Score, Piotroski F, DCF sensitivity, WACC, CCC, all 30+ ratios with benchmarks.]',ml:'\n\n[ML MODE: Frame problem, rank features, top 3 models with metrics, forecast with 80/95% CI, anomaly scores.]',operations:'\n\n[OPERATIONS MODE: OEE breakdown, TOC bottleneck, EOQ/safety stock, OTIF root cause, Sigma/DPMO/Cpk.]',marketing:'\n\n[MARKETING MODE: CAC by channel+payback, LTV:CAC, attribution comparison, D1/D7/D30 cohorts, ROAS rank.]',hr:'\n\n[HR MODE: Attrition voluntary/involuntary, flight risk, performance bell curve, compa-ratio, pay gap, eNPS, 9-box.]',risk:'\n\n[RISK MODE: All risk categories, Monte Carlo min/likely/max, HHI, Altman Z, 3-scenario stress test, sensitivity tornado.]',saas:'\n\n[SAAS MODE: MRR/ARR/NRR/GRR, expansion+churn decomp, Rule of 40, magic number, LTV:CAC, unit economics waterfall.]',strategy:'\n\n[STRATEGY MODE: MECE issue tree, BCG, Ansoff, Porter 5 Forces, OKRs, Impact×Effort 2x2, 30-60-90-180 roadmap.]',sql:'\n\n[SQL MODE: Production SQL with CTEs, window functions. Python/pandas. R/tidyverse. DAX measures.]',dashboard:'\n\n[DASHBOARD MODE: KPI hierarchy L1/L2/L3, chart rationale, layout wireframe, star schema DDL, DAX measures.]',realtime:'\n\n[MONITORING MODE: KPI thresholds warn/critical, anomaly rules, alert triggers, escalation matrix.]'};
+const SYS = `You are NEXUS-DATA ANALYST — the world's most rigorous AI data analyst.
+You receive PRE-CALCULATED statistics directly computed from raw data.
+These numbers are 100% accurate. Use them exactly. Never hallucinate or estimate.
+
+IRON RULES:
+1. Every number you cite must come from the pre-calculated stats provided
+2. If you cannot find a number in the provided stats, say "not in provided data"
+3. Always cite the column name when referencing a number
+4. Never say "approximately" for numbers that are in the stats
+
+RESPONSE FORMAT (always follow exactly):
+- Start with 4 KPI cards: [KPI:label|value|delta|up/down/neutral]
+- Key findings: 5 bullet points with EXACT numbers from provided stats
+- Deep analysis in sections using ══ headers
+- Charts using [CHART:type|title|jsonarray] with real data from stats
+- Risk flags using ⚠️ prefix
+- End with: ◆ NEXUS-DATA ANALYST VERDICT (1 sentence + 3 numbered priority actions)
+
+CHART FORMAT:
+[CHART:bar|Title|[{"name":"Label","value":123},{"name":"Label2","value":456}]]
+[CHART:line|Title|[{"name":"2022","value":100},{"name":"2023","value":150}]]
+[CHART:pie|Title|[{"name":"A","value":60},{"name":"B","value":40}]]
+
+Always generate minimum 2 charts using REAL numbers from the group stats provided.
+The chart data must exactly match numbers in the pre-calculated stats.`;
+const MPRPTS = {
+  universal: `\n\nYou are analyzing pre-calculated data provided above. Apply all relevant frameworks. Start with a 4-line executive summary with the most important insight and one specific number. Then go deep.`,
+  
+  statistics: `\n\n[STATISTICS MODE] Apply:
+- Full descriptive stats (already calculated above — cite exact values)
+- Distribution shape analysis: use skewness value to describe distribution
+- Normality: is the data normally distributed based on skewness/kurtosis?
+- Correlation interpretation: explain every strong correlation (|r|>0.5) in business terms
+- Regression: identify best predictor of main numeric column
+- Hypothesis: state 3 testable hypotheses this data suggests`,
+
+  finance: `\n\n[FINANCE MODE] Calculate from provided data:
+- Revenue/Cost/Margin analysis with exact numbers from stats
+- YoY growth rates using time series data provided
+- Concentration risk: what % does top customer/product represent?
+- Working capital efficiency from any balance sheet columns
+- DuPont framework: if sales + assets + equity available, decompose ROE
+- Altman Z-Score components if financial statement data available
+- 30+ financial ratios — calculate any possible from available columns
+- Flag: any ratio outside healthy industry range`,
+
+  'sales-mktg': `\n\n[SALES & MARKETING MODE] From provided data:
+- Revenue by segment (use group stats provided above — cite exact numbers)
+- Top customer concentration: top 10 = what % of total?
+- Deal size analysis: distribution of transaction sizes
+- Geographic analysis if location column exists
+- Product mix: revenue attribution by product line
+- Seasonality: use time series data to identify patterns
+- Calculate: LTV potential, CAC efficiency if data allows
+- Provide specific acquisition and retention recommendations`,
+
+  ml: `\n\n[ML & PREDICT MODE] From provided data:
+- Feature ranking: which columns best correlate with main metric? (use correlations above)
+- Segment identification: describe 3-5 natural clusters you see in the group stats
+- Outlier significance: are the anomalies detected meaningful or noise?
+- Predictive signal: what patterns predict high/low values of main metric?
+- Time series: use year-over-year data to project future (provide math)
+- Recommend: which ML model would work best for this data and why
+- Practical: what prediction would actually help this business?`,
+
+  operations: `\n\n[OPERATIONS MODE] From provided data:
+- Throughput analysis: identify bottlenecks from any process/time data
+- Quality metrics: defect/error rates if applicable
+- Efficiency: output per input ratios
+- Capacity: are there signs of over/under utilization?
+- Variation: high std dev columns indicate process inconsistency — flag them
+- Pareto: 20% of what drives 80% of results? (use group stats)
+- Actionable: 3 specific process improvements with expected impact`,
+
+  risk: `\n\n[RISK MODE] From provided data:
+- Concentration risk: HHI index from top group values
+- Dependency risk: which single column/segment if lost would hurt most?
+- Volatility: std dev / mean = coefficient of variation — flag high CV columns
+- Outlier risk: high outliers = what do they represent?
+- Scenario analysis: Base (current trend), Bear (−20%), Bull (+20%)
+- Missing data risk: columns with missing values — what decisions could be wrong?
+- Top 5 risks ranked by probability × impact`,
+  
+  marketing: `\n\n[MARKETING MODE] From provided data: Revenue by segment. LTV/CAC.`,
+  hr: `\n\n[HR MODE] From provided data: Attrition, salary stats.`
+};
 const MODS=[{id:'universal',i:'⚡',l:'Universal',d:'Auto-detect & analyze'},{id:'statistics',i:'∑',l:'Statistics',d:'Descriptive + inferential'},{id:'finance',i:'◈',l:'Finance',d:'P&L, DCF, ratios, valuation'},{id:'ml',i:'◉',l:'ML & Predict',d:'Models, features, forecast'},{id:'hr',i:'◎',l:'People',d:'Attrition, equity, eNPS'},{id:'operations',i:'⊗',l:'Operations',d:'OEE, supply chain, lean'},{id:'marketing',i:'◐',l:'Marketing',d:'CAC, LTV, attribution'},{id:'risk',i:'◇',l:'Risk',d:'Monte Carlo, stress, HHI'},{id:'saas',i:'◑',l:'SaaS/Tech',d:'MRR, NRR, Rule of 40'},{id:'strategy',i:'▲',l:'Strategy',d:'BCG, OKRs, roadmap'},{id:'sql',i:'</>',l:'SQL & Code',d:'SQL, Python, DAX, R'},{id:'dashboard',i:'▦',l:'Dashboard',d:'BI blueprint, KPI design'},{id:'realtime',i:'●',l:'Monitoring',d:'Alerts, thresholds, watch'}];
 const SAMPS=[{cat:'💰 Finance',items:[{l:'SaaS P&L 4 Years',t:'Analyze SaaS:\nRevenue: $2.4M Y1, $4.1M Y2, $7.8M Y3, $13.2M Y4\nCOGS: 22%, 20%, 19%, 18%\nR&D: $800K, $1.2M, $1.8M, $2.4M\nS&M: 45%, 42%, 38%, 35%\nG&A: 18%, 15%, 13%, 11%\nCustomers: 120, 285, 640, 1180\nChurn: 8.2%, 6.4%, 5.1%, 4.3%'},{l:'Manufacturing P&L',t:'Revenue $45M | COGS $32.5M | EBITDA $3M | DA $1.8M | Interest $420K | Tax 28%\nAssets $38M | Debt $21M\n5yr Revenue: $28M $33M $38M $42M $45M'}]},{cat:'📊 Sales',items:[{l:'E-Commerce Revenue',t:'Monthly revenue ($K): Jan:820 Feb:740 Mar:890 Apr:950 May:1020 Jun:980 Jul:1150 Aug:1080 Sep:1240 Oct:1680 Nov:2340 Dec:1920\nAOV $67 | Cart abandonment 71% | Returns 12%'},{l:'B2B Pipeline',t:'Prospect 340/$8.2M | Qualified 128/$4.1M | Demo 67/$2.8M | Proposal 41/$2.1M | Won 22/$1.1M'}]},{cat:'🔬 ML',items:[{l:'Churn Analysis',t:'Telecom (7043 customers, 26.5% churn):\nTenure: churned 17.9mo vs 37.6mo\nMonthly charges: churned $74.44 vs $61.27\nContract: M2M 42.7%, 1yr 11.3%, 2yr 2.8%'}]}];
 const COLORS=['#a78bfa','#34d399','#f59e0b','#60a5fa','#f87171','#fb923c','#2dd4bf','#e879f9'];
@@ -1594,10 +1690,430 @@ function loadFile(e){
   if(f.size > 10 * 1024 * 1024){ toast('❌ File too large (max 10MB)'); e.target.value=''; return; }
   S.fileName=f.name;
   const ext=f.name.split('.').pop().toLowerCase();if(['xlsx','xls'].includes(ext)){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name);}catch(e){toast('Error reading Excel');}};r.readAsBinaryString(f);}else{const r=new FileReader();r.onload=ev=>{const txt=ev.target.result;if(ext==='json'){try{S.fileData='JSON: '+f.name+'\n'+JSON.stringify(JSON.parse(txt),null,2).slice(0,9000);S.csv=null;showFOk(f.name,null);}catch(e){toast('Invalid JSON');}}else processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(/[,\t;]/)),f.name);};r.readAsText(f);}e.target.value='';}
-function processArr(rows,fname){if(!rows.length)return;const hdrs=rows[0].map(h=>String(h||'').trim());const data=rows.slice(1).filter(r=>r.some(c=>c&&String(c).trim()));S.csv={hdrs,data};let txt=`FILE: ${fname}\nROWS: ${data.length} | COLS: ${hdrs.length}\nHEADERS: ${hdrs.join(', ')}\n\nFIRST 50 ROWS:\n${hdrs.join(',')}\n`;data.slice(0,50).forEach(r=>{txt+=r.map(c=>String(c||'').trim()).join(',')+'\n';});txt+='\nCOLUMN STATS:\n';hdrs.forEach((h,hi)=>{const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');const nums=vals.map(v=>parseFloat(String(v).replace(/[,$% ]/g,''))).filter(v=>!isNaN(v));if(nums.length>0){const avg=nums.reduce((a,b)=>a+b,0)/nums.length;const sorted=[...nums].sort((a,b)=>a-b);txt+=`${h}: n=${nums.length} min=${sorted[0].toFixed(2)} max=${sorted[sorted.length-1].toFixed(2)} avg=${avg.toFixed(2)} median=${sorted[Math.floor(sorted.length/2)].toFixed(2)}\n`;}else txt+=`${h}: categorical n=${vals.length} unique=${new Set(vals).size}\n`;});S.fileData=txt.slice(0,12000);const info={rows:data.length,cols:hdrs.length,hdrs,data};showFOk(fname,info);detectAnom(hdrs,data);processDataUpgrade(info); }
+function processArr(rows, fname) {
+  if (!rows.length) return;
+  const hdrs = rows[0].map(h => String(h || '').trim());
+  const rawData = rows.slice(1).filter(r => r.some(c => c && String(c).trim()));
+  S.csv = { hdrs, data: rawData };
+
+  // ═══ COMPUTE EVERYTHING IN JS ═══
+  const colStats = {};
+  const groupStats = {};
+
+  hdrs.forEach((h, hi) => {
+    const allVals = rawData.map(r => r[hi]);
+    const strVals = allVals.map(v => String(v || '').trim()).filter(v => v !== '');
+    const nums = strVals.map(v => parseFloat(v.replace(/[,$%\s]/g, ''))).filter(v => !isNaN(v));
+
+    if (nums.length > 0) {
+      nums.sort((a, b) => a - b);
+      const n = nums.length;
+      const sum = nums.reduce((a, b) => a + b, 0);
+      const mean = sum / n;
+      const median = n % 2 === 0 ? (nums[n/2-1] + nums[n/2]) / 2 : nums[Math.floor(n/2)];
+      const variance = nums.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+      const stdDev = Math.sqrt(variance);
+      const q1 = nums[Math.floor(n * 0.25)];
+      const q3 = nums[Math.floor(n * 0.75)];
+      const iqr = q3 - q1;
+      const skewness = stdDev > 0 ? nums.reduce((a, b) => a + Math.pow((b - mean) / stdDev, 3), 0) / n : 0;
+      const negCount = nums.filter(v => v < 0).length;
+      const zeroCount = nums.filter(v => v === 0).length;
+      const outliers = nums.filter(v => v < q1 - 1.5 * iqr || v > q3 + 1.5 * iqr);
+
+      colStats[h] = {
+        type: 'numeric', n, sum: +sum.toFixed(2), mean: +mean.toFixed(4),
+        median: +median.toFixed(4), stdDev: +stdDev.toFixed(4),
+        min: nums[0], max: nums[n-1], q1: +q1.toFixed(4), q3: +q3.toFixed(4),
+        iqr: +iqr.toFixed(4), skewness: +skewness.toFixed(4),
+        negCount, zeroCount, outlierCount: outliers.length,
+        missing: allVals.length - strVals.length
+      };
+    } else {
+      const unique = [...new Set(strVals)];
+      const freq = {};
+      strVals.forEach(v => { freq[v] = (freq[v] || 0) + 1; });
+      const topVals = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 15);
+      colStats[h] = {
+        type: 'categorical', n: strVals.length, unique: unique.length,
+        topValues: topVals, missing: allVals.length - strVals.length
+      };
+    }
+  });
+
+  // ═══ GROUP-BY ANALYSIS ═══
+  const catCols = hdrs.filter(h => colStats[h].type === 'categorical');
+  const numCols = hdrs.filter(h => colStats[h].type === 'numeric');
+
+  catCols.slice(0, 6).forEach(cat => {
+    const hi = hdrs.indexOf(cat);
+    numCols.slice(0, 4).forEach(num => {
+      const ni = hdrs.indexOf(num);
+      const groups = {};
+      rawData.forEach(r => {
+        const key = String(r[hi] || '').trim();
+        const val = parseFloat(String(r[ni] || '').replace(/[,$%\s]/g, ''));
+        if (key && !isNaN(val)) {
+          if (!groups[key]) groups[key] = { sum: 0, count: 0 };
+          groups[key].sum += val;
+          groups[key].count++;
+        }
+      });
+      const sorted = Object.entries(groups)
+        .map(([k, v]) => ({ k, sum: +v.sum.toFixed(2), count: v.count, avg: +(v.sum/v.count).toFixed(2) }))
+        .sort((a, b) => b.sum - a.sum);
+      const key = `${cat} × ${num}`;
+      groupStats[key] = { top10: sorted.slice(0, 10), total: sorted.reduce((a, b) => a + b.sum, 0).toFixed(2) };
+    });
+  });
+
+  // ═══ TIME SERIES ═══
+  const dateCol = hdrs.find(h => rawData.slice(0,10).some(r => /\d{4}/.test(String(r[hdrs.indexOf(h)]))));
+  const timeStats = {};
+  if (dateCol && numCols.length > 0) {
+    const di = hdrs.indexOf(dateCol);
+    const mainNum = numCols.find(c => /sale|revenue|amount|value|total/i.test(c)) || numCols[0];
+    const ni = hdrs.indexOf(mainNum);
+    const byYear = {}, byMonth = {};
+    rawData.forEach(r => {
+      const d = String(r[di] || '');
+      const v = parseFloat(String(r[ni] || '').replace(/[,$%\s]/g, ''));
+      if (!isNaN(v)) {
+        const y = d.match(/\d{4}/)?.[0];
+        if (y) byYear[y] = (byYear[y] || 0) + v;
+        const m = d.match(/(\d{4})[\/\-](\d{1,2})/);
+        if (m) { const k = `${m[1]}-${m[2].padStart(2,'0')}`; byMonth[k] = (byMonth[k] || 0) + v; }
+      }
+    });
+    timeStats.byYear = Object.entries(byYear).sort().map(([y,v])=>({year:y,value:+v.toFixed(2)}));
+    timeStats.byMonth = Object.entries(byMonth).sort().slice(-24).map(([m,v])=>({month:m,value:+v.toFixed(2)}));
+    timeStats.column = mainNum;
+  }
+
+  // ═══ CORRELATION MATRIX ═══
+  const correlations = [];
+  numCols.slice(0, 8).forEach((c1, i) => {
+    numCols.slice(i+1, 8).forEach(c2 => {
+      const i1 = hdrs.indexOf(c1), i2 = hdrs.indexOf(c2);
+      const pairs = rawData.map(r => [
+        parseFloat(String(r[i1]||'').replace(/[,$%\s]/g,'')),
+        parseFloat(String(r[i2]||'').replace(/[,$%\s]/g,''))
+      ]).filter(p => !isNaN(p[0]) && !isNaN(p[1]));
+      if (pairs.length < 5) return;
+      const n = pairs.length;
+      const m1 = pairs.reduce((a,b)=>a+b[0],0)/n;
+      const m2 = pairs.reduce((a,b)=>a+b[1],0)/n;
+      const num = pairs.reduce((a,b)=>a+(b[0]-m1)*(b[1]-m2),0);
+      const d1 = Math.sqrt(pairs.reduce((a,b)=>a+Math.pow(b[0]-m1,2),0));
+      const d2 = Math.sqrt(pairs.reduce((a,b)=>a+Math.pow(b[1]-m2,2),0));
+      const r = d1*d2 > 0 ? +(num/(d1*d2)).toFixed(3) : 0;
+      if (Math.abs(r) > 0.3) correlations.push({ col1: c1, col2: c2, r });
+    });
+  });
+  correlations.sort((a,b) => Math.abs(b.r) - Math.abs(a.r));
+
+  // ═══ ANOMALY DETECTION ═══
+  const anomalies = [];
+  hdrs.forEach((h, hi) => {
+    const s = colStats[h];
+    if (s.type !== 'numeric') return;
+    rawData.forEach((r, ri) => {
+      const v = parseFloat(String(r[hi]||'').replace(/[,$%\s]/g,''));
+      if (isNaN(v)) return;
+      if (v < s.q1 - 1.5*s.iqr) anomalies.push({ row: ri+2, col: h, val: v, type: 'LOW_OUTLIER', severity: v < s.q1 - 3*s.iqr ? 'HIGH' : 'MEDIUM' });
+      else if (v > s.q3 + 1.5*s.iqr) anomalies.push({ row: ri+2, col: h, val: v, type: 'HIGH_OUTLIER', severity: v > s.q3 + 3*s.iqr ? 'HIGH' : 'MEDIUM' });
+    });
+  });
+  // Duplicate detection
+  const rowStrs = rawData.map(r => r.join('|'));
+  const seen = {}, dupes = [];
+  rowStrs.forEach((s, i) => { if (seen[s] !== undefined) dupes.push({ row: i+2, dupOf: seen[s]+2 }); else seen[s] = i; });
+
+  // ═══ STORE FOR AI CONTEXT ═══
+  S.localStats = { colStats, groupStats, timeStats, correlations, anomalies: anomalies.slice(0,30), dupes: dupes.slice(0,10), meta: { rows: rawData.length, cols: hdrs.length, numCols, catCols, dateCol: dateCol || null } };
+
+  // ═══ BUILD RICH DATA CONTEXT FOR AI ═══
+  let ctx = `═══ PRE-CALCULATED DATA (USE ONLY THESE EXACT NUMBERS — NEVER HALLUCINATE) ═══\n`;
+  ctx += `DATASET: ${fname} | ${rawData.length} rows × ${hdrs.length} columns\n`;
+  ctx += `NUMERIC COLS: ${numCols.join(', ')}\nCATEGORICAL COLS: ${catCols.join(', ')}\n\n`;
+
+  ctx += `COLUMN STATISTICS:\n`;
+  Object.entries(colStats).forEach(([col, s]) => {
+    if (s.type === 'numeric') {
+      ctx += `${col}: sum=${s.sum.toLocaleString()} mean=${s.mean} median=${s.median} min=${s.min} max=${s.max} std=${s.stdDev} outliers=${s.outlierCount} missing=${s.missing}\n`;
+    } else {
+      ctx += `${col}: ${s.unique} unique values, top5: ${s.topValues.slice(0,5).map(([k,v])=>`${k}(${v})`).join(', ')}, missing=${s.missing}\n`;
+    }
+  });
+
+  ctx += `\nGROUP ANALYSIS (top 10 per combination):\n`;
+  Object.entries(groupStats).forEach(([key, gs]) => {
+    ctx += `\n${key} (total=${gs.total}):\n`;
+    gs.top10.forEach(g => { ctx += `  ${g.k}: sum=${g.sum.toLocaleString()} count=${g.count} avg=${g.avg}\n`; });
+  });
+
+  if (timeStats.byYear?.length) {
+    ctx += `\nTIME SERIES (${timeStats.column} by year):\n`;
+    timeStats.byYear.forEach(t => { ctx += `  ${t.year}: ${t.value.toLocaleString()}\n`; });
+  }
+
+  if (correlations.length) {
+    ctx += `\nSTRONG CORRELATIONS:\n`;
+    correlations.slice(0,8).forEach(c => { ctx += `  ${c.col1} ↔ ${c.col2}: r=${c.r} (${Math.abs(c.r)>0.7?'STRONG':Math.abs(c.r)>0.4?'MODERATE':'WEAK'})\n`; });
+  }
+
+  ctx += `\nANOMALIES: ${anomalies.length} outliers, ${dupes.length} duplicates\n`;
+  if (anomalies.length > 0) {
+    ctx += `Top anomalies: ${anomalies.slice(0,5).map(a=>`Row${a.row} ${a.col}=${a.val}(${a.type})`).join(', ')}\n`;
+  }
+
+  ctx += `\n═══ END PRE-CALCULATED DATA ═══\n\nIMPORTANT: Use ONLY the numbers above. Never estimate or make up figures.\nIf something is not in above data, say "not available in this dataset".\n\nUser question: `;
+
+  S.fileData = ctx;
+  S.fileDataRaw = ctx;
+
+  // Show file info and auto-render charts
+  showFOk(fname, { rows: rawData.length, cols: hdrs.length, hdrs, data: rawData });
+  renderAutoCharts();
+  showAnomalyBanner(anomalies, dupes);
+}
+
+function renderAutoCharts() {
+  if (!S.localStats) return;
+  const { colStats, groupStats, timeStats, meta } = S.localStats;
+  const chat = document.getElementById('chat');
+  
+  // Remove welcome screen
+  const welcome = chat.querySelector('.welcome');
+  if (welcome) welcome.remove();
+
+  // Create chart container
+  const container = document.createElement('div');
+  container.className = 'mrow auto-charts';
+  container.innerHTML = '<div class="av ai">NX</div><div class="bub ai" id="autoChartBub"></div>';
+  chat.appendChild(container);
+  const bub = document.getElementById('autoChartBub');
+
+  // KPI Cards
+  const numCols = meta.numCols;
+  if (numCols.length > 0) {
+    const mainCol = numCols.find(c => /sale|revenue|amount|value|total/i.test(c)) || numCols[0];
+    const s = colStats[mainCol];
+    bub.innerHTML += `<div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Total ${mainCol}</div><div class="kpi-value">${s.sum.toLocaleString()}</div><div class="kpi-delta up">▲ ${meta.rows} records</div></div>
+      <div class="kpi-card"><div class="kpi-label">Average</div><div class="kpi-value">${s.mean.toLocaleString()}</div><div class="kpi-delta neutral">─ per record</div></div>
+      <div class="kpi-card"><div class="kpi-label">Maximum</div><div class="kpi-value">${s.max.toLocaleString()}</div><div class="kpi-delta up">▲ peak value</div></div>
+      <div class="kpi-card"><div class="kpi-label">Anomalies</div><div class="kpi-value">${S.localStats.anomalies.length}</div><div class="kpi-delta ${S.localStats.anomalies.length > 5 ? 'down' : 'neutral'}">${S.localStats.anomalies.length > 5 ? '▼ needs review' : '─ acceptable'}</div></div>
+    </div>`;
+  }
+
+  // Chart 1: Top group bar chart
+  const firstGroupKey = Object.keys(groupStats)[0];
+  if (firstGroupKey) {
+    const gs = groupStats[firstGroupKey];
+    const chartId = 'autoChart1';
+    bub.innerHTML += `<div class="chart-card" id="${chartId}"><div class="chart-lbl"><span>📊 ${firstGroupKey}</span><span class="chart-save-btn" onclick="saveOneChart('${chartId}')">⬇ PNG</span></div><canvas></canvas></div>`;
+    setTimeout(() => {
+      const canvas = document.querySelector(`#${chartId} canvas`);
+      if (!canvas) return;
+      new Chart(canvas, {
+        type: 'bar',
+        data: {
+          labels: gs.top10.map(g => g.k.length > 15 ? g.k.slice(0,15)+'…' : g.k),
+          datasets: [{ label: firstGroupKey, data: gs.top10.map(g => g.sum), backgroundColor: ['#a78bfa','#34d399','#60a5fa','#f59e0b','#f87171','#a78bfa99','#34d39999','#60a5fa99','#f59e0b99','#f8717199'], borderRadius: 6, borderWidth: 0 }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y.toLocaleString() } } }, scales: { x: { ticks: { color: '#566070', font: { size: 9 } }, grid: { display: false } }, y: { ticks: { color: '#566070', font: { size: 9 }, callback: v => v.toLocaleString() }, grid: { color: 'rgba(128,128,128,.1)' } } } }
+      });
+    }, 100);
+  }
+
+  // Chart 2: Time series line chart
+  if (timeStats.byYear?.length > 1) {
+    const chartId = 'autoChart2';
+    bub.innerHTML += `<div class="chart-card" id="${chartId}"><div class="chart-lbl"><span>📈 ${timeStats.column} Trend by Year</span><span class="chart-save-btn" onclick="saveOneChart('${chartId}')">⬇ PNG</span></div><canvas></canvas></div>`;
+    setTimeout(() => {
+      const canvas = document.querySelector(`#${chartId} canvas`);
+      if (!canvas) return;
+      new Chart(canvas, {
+        type: 'line',
+        data: {
+          labels: timeStats.byYear.map(t => t.year),
+          datasets: [{ label: timeStats.column, data: timeStats.byYear.map(t => t.value), borderColor: '#a78bfa', backgroundColor: 'rgba(167,139,250,0.1)', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: '#a78bfa', fill: true, tension: 0.4 }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ctx.parsed.y.toLocaleString() } } }, scales: { x: { ticks: { color: '#566070' }, grid: { display: false } }, y: { ticks: { color: '#566070', callback: v => v.toLocaleString() }, grid: { color: 'rgba(128,128,128,.1)' } } } }
+      });
+    }, 200);
+  }
+
+  // Chart 3: Second group pie/doughnut
+  const groupKeys = Object.keys(groupStats);
+  if (groupKeys.length > 1) {
+    const gs2 = groupStats[groupKeys[1]];
+    const chartId = 'autoChart3';
+    const COLORS = ['#a78bfa','#34d399','#60a5fa','#f59e0b','#f87171','#c084fc','#2dd4bf','#93c5fd'];
+    bub.innerHTML += `<div class="chart-card" id="${chartId}"><div class="chart-lbl"><span>🥧 ${groupKeys[1]} — Share</span><span class="chart-save-btn" onclick="saveOneChart('${chartId}')">⬇ PNG</span></div><canvas></canvas></div>`;
+    setTimeout(() => {
+      const canvas = document.querySelector(`#${chartId} canvas`);
+      if (!canvas) return;
+      new Chart(canvas, {
+        type: 'doughnut',
+        data: { labels: gs2.top10.map(g => g.k), datasets: [{ data: gs2.top10.map(g => g.sum), backgroundColor: COLORS, borderWidth: 0, hoverOffset: 8 }] },
+        options: { responsive: true, cutout: '58%', plugins: { legend: { labels: { color: '#566070', font: { size: 9 } } }, tooltip: { callbacks: { label: ctx => `${ctx.label}: ${ctx.parsed.toLocaleString()} (${((ctx.parsed/gs2.top10.reduce((a,b)=>a+b.sum,0))*100).toFixed(1)}%)` } } } }
+      });
+    }, 300);
+  }
+
+  bub.innerHTML += `<div class="auto-chart-note">⬆ Charts from real calculated data · Ask questions below to go deeper</div>`;
+  chat.scrollTop = chat.scrollHeight;
+  document.getElementById('predictFutureBtn').style.display = timeStats.byYear?.length > 1 ? 'flex' : 'none';
+}
+
+function showForecast() {
+  if (!S.localStats?.timeStats?.byYear?.length) return toast('No time series data detected');
+  const { byYear, column } = S.localStats.timeStats;
+  if (byYear.length < 2) return toast('Need at least 2 years of data');
+
+  const values = byYear.map(t => t.value);
+  const labels = byYear.map(t => t.year);
+  const n = values.length;
+  const PERIODS = 3;
+
+  // Linear Regression
+  const xMean = (n - 1) / 2;
+  const yMean = values.reduce((a, b) => a + b, 0) / n;
+  const slope = values.reduce((a, b, i) => a + (i - xMean) * (b - yMean), 0) / values.reduce((a, _, i) => a + Math.pow(i - xMean, 2), 0);
+  const intercept = yMean - slope * xMean;
+  const linearForecast = Array.from({ length: PERIODS }, (_, i) => +(intercept + slope * (n + i)).toFixed(2));
+
+  // Exponential Smoothing
+  let level = values[0];
+  const alpha = 0.4;
+  values.forEach(v => { level = alpha * v + (1 - alpha) * level; });
+  const expForecast = Array.from({ length: PERIODS }, () => +level.toFixed(2));
+
+  // Moving Average
+  const window = Math.min(3, n);
+  const maBase = values.slice(-window).reduce((a, b) => a + b, 0) / window;
+  const maForecast = Array.from({ length: PERIODS }, () => +maBase.toFixed(2));
+
+  // Confidence band
+  const residuals = values.map((v, i) => v - (intercept + slope * i));
+  const rStd = Math.sqrt(residuals.reduce((a, b) => a + b * b, 0) / residuals.length);
+  const upperBand = linearForecast.map(v => +(v + 1.5 * rStd).toFixed(2));
+  const lowerBand = linearForecast.map(v => Math.max(0, +(v - 1.5 * rStd).toFixed(2)));
+
+  const futureLabels = Array.from({ length: PERIODS }, (_, i) => String(parseInt(labels[labels.length - 1]) + i + 1));
+  const allLabels = [...labels, ...futureLabels];
+
+  // Direction
+  const trend = slope > 0 ? '📈 Growing' : '📉 Declining';
+  const pctChange = ((linearForecast[0] - values[n-1]) / values[n-1] * 100).toFixed(1);
+
+  const chartId = 'forecastChart_' + Date.now();
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className = 'mrow';
+  row.innerHTML = `<div class="av ai">NX</div><div class="bub ai">
+    <div class="sec-div"><span>◈ FORECAST ENGINE — ${column}</span></div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="kpi-label">Trend</div><div class="kpi-value" style="font-size:16px">${trend}</div><div class="kpi-delta ${slope>0?'up':'down'}">${slope>0?'▲':'▼'} ${Math.abs(slope).toLocaleString()}/yr</div></div>
+      <div class="kpi-card"><div class="kpi-label">Next Year (Linear)</div><div class="kpi-value">${linearForecast[0].toLocaleString()}</div><div class="kpi-delta ${pctChange>0?'up':'down'}">${pctChange>0?'▲':'▼'} ${Math.abs(pctChange)}% vs last</div></div>
+      <div class="kpi-card"><div class="kpi-label">Confidence Range</div><div class="kpi-value" style="font-size:13px">${lowerBand[0].toLocaleString()} – ${upperBand[0].toLocaleString()}</div><div class="kpi-delta neutral">─ 90% CI</div></div>
+    </div>
+    <div class="chart-card" id="${chartId}"><div class="chart-lbl"><span>📊 3-Method Forecast</span><span class="chart-save-btn" onclick="saveOneChart('${chartId}')">⬇ PNG</span></div><canvas></canvas></div>
+    <p class="mp" style="margin-top:8px;font-size:11px;color:var(--mt)">⚡ Linear Regression (violet) · Exponential Smoothing (teal) · Moving Average (orange) · Confidence Band (shaded)</p>
+  </div>`;
+  chat.appendChild(row);
+
+  setTimeout(() => {
+    const canvas = row.querySelector(`#${chartId} canvas`);
+    if (!canvas) return;
+    new Chart(canvas, {
+      type: 'line',
+      data: {
+        labels: allLabels,
+        datasets: [
+          { label: 'Historical', data: [...values, ...Array(PERIODS).fill(null)], borderColor: '#c4cdd8', borderWidth: 2, pointRadius: 4, tension: 0.3 },
+          { label: 'Linear', data: [...Array(n).fill(null), ...linearForecast], borderColor: '#a78bfa', borderDash: [6,3], borderWidth: 2, pointRadius: 5, tension: 0 },
+          { label: 'Exp Smooth', data: [...Array(n).fill(null), ...expForecast], borderColor: '#34d399', borderDash: [4,4], borderWidth: 2, pointRadius: 4 },
+          { label: 'Mov Avg', data: [...Array(n).fill(null), ...maForecast], borderColor: '#f59e0b', borderDash: [2,4], borderWidth: 2, pointRadius: 4 },
+          { label: 'Upper CI', data: [...Array(n).fill(null), ...upperBand], borderColor: 'transparent', backgroundColor: 'rgba(167,139,250,0.12)', fill: '+1', pointRadius: 0 },
+          { label: 'Lower CI', data: [...Array(n).fill(null), ...lowerBand], borderColor: 'transparent', backgroundColor: 'rgba(167,139,250,0.12)', fill: false, pointRadius: 0 }
+        ]
+      },
+      options: { responsive: true, interaction: { mode: 'index' }, plugins: { legend: { labels: { color: '#566070', font: { size: 9 } } }, tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + (ctx.parsed.y || 0).toLocaleString() } } }, scales: { x: { ticks: { color: '#566070' }, grid: { display: false } }, y: { ticks: { color: '#566070', callback: v => v.toLocaleString() }, grid: { color: 'rgba(128,128,128,.1)' } } } }
+    });
+    chat.scrollTop = chat.scrollHeight;
+  }, 150);
+}
+
+function showAnomalyBanner(anomalies, dupes) {
+  const total = anomalies.length + dupes.length;
+  const banner = document.getElementById('anomBanner');
+  const tags = document.getElementById('anomTags');
+  if (!banner) return;
+  
+  if (total === 0) {
+    banner.style.display = 'flex';
+    tags.innerHTML = '<span class="atag" style="color:var(--g)">✅ No anomalies detected</span>';
+    return;
+  }
+  
+  banner.style.display = 'flex';
+  const severity = anomalies.filter(a => a.severity === 'HIGH').length;
+  tags.innerHTML = `
+    <span class="atag" style="color:${severity>0?'var(--r)':'var(--o)'}">⚠️ ${anomalies.length} outliers</span>
+    ${dupes.length > 0 ? `<span class="atag" style="color:var(--o)">🔁 ${dupes.length} duplicates</span>` : ''}
+    <span class="atag" style="cursor:pointer;color:var(--v);text-decoration:underline" onclick="showAnomalyDetail()">View Details →</span>
+  `;
+}
+
+function showAnomalyDetail() {
+  if (!S.localStats) return;
+  const { anomalies, dupes } = S.localStats;
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className = 'mrow';
+  
+  let html = `<div class="av ai">NX</div><div class="bub ai">
+    <div class="sec-div"><span>⚠️ ANOMALY REPORT</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Row</th><th>Column</th><th>Value</th><th>Type</th><th>Severity</th></tr></thead>
+      <tbody>`;
+  
+  anomalies.slice(0, 25).forEach(a => {
+    html += `<tr><td>${a.row}</td><td>${a.col}</td><td><strong>${a.val.toLocaleString()}</strong></td><td>${a.type}</td><td style="color:${a.severity==='HIGH'?'var(--r)':'var(--o)'}">${a.severity}</td></tr>`;
+  });
+  
+  if (dupes.length > 0) {
+    html += `<tr class="hdr-row"><th colspan="5">🔁 DUPLICATE ROWS</th></tr>`;
+    dupes.forEach(d => { html += `<tr><td>${d.row}</td><td colspan="3">Duplicate of row ${d.dupOf}</td><td style="color:var(--o)">MEDIUM</td></tr>`; });
+  }
+  
+  html += `</tbody></table></div>
+    <div style="margin-top:10px;display:flex;gap:8px">
+      <button class="ic-btn" onclick="exportAnomalyCSV()" style="font-size:11px;padding:5px 12px;cursor:pointer;">📥 Export CSV</button>
+      <button class="ic-btn" onclick="sendMsg()" style="font-size:11px;padding:5px 12px;cursor:pointer;" id="askAiAnomalies">🤖 Ask AI to Explain</button>
+    </div>
+  </div>`;
+  
+  row.innerHTML = html;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function exportAnomalyCSV() {
+  if (!S.localStats?.anomalies) return;
+  const rows = [['Row','Column','Value','Type','Severity'], ...S.localStats.anomalies.map(a => [a.row, a.col, a.val, a.type, a.severity])];
+  const csv = rows.map(r => r.join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+  a.download = 'NEXUS-Anomalies.csv';
+  a.click();
+}
+
 function showFOk(fname,info){document.getElementById('fileok').style.display='';document.getElementById('fileok').textContent='✓ '+fname;if(info){document.getElementById('csvPrev').style.display='';document.getElementById('csvTit').textContent='📋 '+fname;document.getElementById('csvSt').textContent=info.rows+' × '+info.cols;const cols=info.hdrs.slice(0,8);document.getElementById('csvTbl').innerHTML=`<thead><tr>${cols.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${info.data.slice(0,5).map(r=>`<tr>${cols.map((_,i)=>`<td>${esc(String(r[i]||''))}</td>`).join('')}</tr>`).join('')}</tbody>`;}}
-function detectAnom(hdrs,data){const a=[];hdrs.forEach((h,hi)=>{const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');const nums=vals.map(v=>parseFloat(String(v).replace(/[,$% ]/g,''))).filter(v=>!isNaN(v));if(nums.length>3){const avg=nums.reduce((a,b)=>a+b,0)/nums.length;const std=Math.sqrt(nums.map(v=>(v-avg)**2).reduce((a,b)=>a+b,0)/nums.length);if(nums.filter(v=>Math.abs(v-avg)>2*std).length)a.push(`${h}: outliers`);if(nums.filter(v=>v<0).length&&/revenue|sales|price/i.test(h))a.push(`${h}: negatives`);}const miss=data.length-vals.length;if(miss>0&&miss/data.length>0.05)a.push(`${h}: ${((miss/data.length)*100).toFixed(0)}% missing`);});if(a.length){document.getElementById('anomBanner').style.display='';document.getElementById('anomTags').innerHTML=a.map(x=>`<span class="atag">${esc(x)}</span>`).join('');}}
-function scanAnom(){if(!S.csv)return toast('Upload a file first');detectAnom(S.csv.hdrs,S.csv.data);toast('Anomaly scan complete');}
+function scanAnom(){if(!S.localStats)return toast('Upload a file first');showAnomalyDetail();toast('Anomaly scan complete');}
 
 // ── CONNECTORS ──
 async function loadGSheets(){const url=document.getElementById('gsUrl').value.trim();if(!url)return toast('Paste a Sheets URL');const m=url.match(/\/d\/([a-zA-Z0-9-_]+)/);if(!m)return toast('Invalid URL');toast('Loading…');try{const res=await fetch(`https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`);if(!res.ok)throw new Error();processArr((await res.text()).split('\n').map(r=>r.split(',')));document.getElementById('livechip').style.display='';toast('✅ Sheet loaded!');sendAuto('Loaded from Google Sheets. Profile and analyze fully.');}catch(e){toast('❌ Sheet must be publicly shared');}}
@@ -1612,15 +2128,215 @@ function saveAsTXT(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!m
 function saveAsCSV(){if(!S.csv)return toast('No data loaded');dlBlob([S.csv.hdrs.join(','),...S.csv.data.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(','))].join('\n'),'NEXUS-Data-'+Date.now()+'.csv','text/csv');toast('✅ CSV saved!');}
 function saveMarkdown(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');let md='# NEXUS-DATA ANALYST v6 Analysis Report\n\n**Generated:** '+new Date().toLocaleString()+'\n\n---\n\n';msgs.forEach((m,i)=>{md+='## Analysis '+(i+1)+'\n\n'+m.content.replace(/═+/g,'---').replace(/▶ /g,'### ')+'\n\n---\n\n';});dlBlob(md,'NEXUS-DATA-ANALYST-Report-'+Date.now()+'.md','text/markdown');toast('✅ Markdown saved!');}
 async function saveChartImages(){const canvases=document.querySelectorAll('.chart-card canvas');if(!canvases.length)return toast('No charts');canvases.forEach((c,i)=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+(i+1)+'.png';a.click();});toast('✅ '+canvases.length+' chart(s) saved!');}
-async function exportPDF(){const el=document.querySelector('.bub.ai:last-of-type');if(!el)return toast('No analysis');toast('Generating PDF…');try{const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'p',unit:'mm',format:'a4'});const W=pdf.internal.pageSize.getWidth();pdf.setFillColor(8,9,13);pdf.rect(0,0,W,300,'F');pdf.setFontSize(13);pdf.setTextColor(167,139,250);pdf.text('NEXUS-DATA ANALYST v6 — Analysis Report',W/2,11,{align:'center'});pdf.setFontSize(8);pdf.setTextColor(86,96,112);pdf.text(new Date().toLocaleString(),W/2,16,{align:'center'});const canvas=await html2canvas(el,{backgroundColor:'#0c0e15',scale:1.4,useCORS:true});const imgData=canvas.toDataURL('image/png');const imgH=(canvas.height*(W-20))/canvas.width;let y=20,pH=pdf.internal.pageSize.getHeight()-10;if(imgH<=pH-y){pdf.addImage(imgData,'PNG',10,y,W-20,imgH);}else{let sY=0,slH=((pH-y)*canvas.width)/(W-20);while(sY<canvas.height){const sc=document.createElement('canvas');sc.width=canvas.width;sc.height=Math.min(slH,canvas.height-sY);sc.getContext('2d').drawImage(canvas,0,sY,canvas.width,sc.height,0,0,canvas.width,sc.height);pdf.addImage(sc.toDataURL('image/png'),'PNG',10,y,W-20,(sc.height*(W-20))/canvas.width);sY+=sc.height;if(sY<canvas.height){pdf.addPage();pdf.setFillColor(8,9,13);pdf.rect(0,0,W,300,'F');y=10;}}}pdf.save('NEXUS-DATA-ANALYST-Report-'+Date.now()+'.pdf');toast('✅ PDF saved!');}catch(e){toast('PDF failed — try Save as TXT');}}
+async function exportPDF() {
+  const msgs = S.messages.filter(m => m.role === 'assistant');
+  if (!msgs.length) return toast('Run an analysis first');
+  toast('Building professional report…');
+  
+  try {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    const W = 210, M = 15;
+    let y = 0;
+    
+    const newPage = () => {
+      pdf.addPage();
+      pdf.setFillColor(8, 9, 13);
+      pdf.rect(0, 0, W, 297, 'F');
+      y = 20;
+      // Footer
+      pdf.setFontSize(7); pdf.setTextColor(80, 96, 112);
+      pdf.text('NEXUS-DATA ANALYST · nexus-data-analyst-web.pages.dev', M, 290);
+      pdf.text(`Page ${pdf.internal.getNumberOfPages()}`, W - M, 290, { align: 'right' });
+    };
+    
+    // ── COVER PAGE ──
+    pdf.setFillColor(8, 9, 13);
+    pdf.rect(0, 0, W, 297, 'F');
+    pdf.setFillColor(167, 139, 250, 0.15);
+    pdf.rect(0, 80, W, 2, 'F');
+    pdf.setFillColor(167, 139, 250, 0.08);
+    pdf.rect(0, 82, W, 80, 'F');
+    
+    pdf.setFontSize(9); pdf.setTextColor(167, 139, 250);
+    pdf.text('NEXUS-DATA ANALYST', W/2, 70, { align: 'center' });
+    pdf.setFontSize(22); pdf.setTextColor(237, 242, 247);
+    pdf.text('DATA ANALYSIS', W/2, 110, { align: 'center' });
+    pdf.text('REPORT', W/2, 124, { align: 'center' });
+    pdf.setFontSize(10); pdf.setTextColor(80, 96, 112);
+    pdf.text(S.fileName || 'Dataset Analysis', W/2, 140, { align: 'center' });
+    pdf.text(new Date().toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' }), W/2, 150, { align: 'center' });
+    if (S.user?.name) { pdf.setTextColor(167, 139, 250); pdf.text('Prepared for: ' + S.user.name, W/2, 165, { align: 'center' }); }
+    pdf.setFontSize(7); pdf.setTextColor(80, 96, 112);
+    pdf.text('Generated by NEXUS AI · nexus-data-analyst-web.pages.dev', W/2, 280, { align: 'center' });
+    
+    // ── DATA OVERVIEW PAGE ──
+    newPage();
+    pdf.setFontSize(12); pdf.setTextColor(167, 139, 250);
+    pdf.text('DATASET OVERVIEW', M, y); y += 10;
+    
+    if (S.localStats) {
+      const { meta, colStats } = S.localStats;
+      pdf.setFontSize(9); pdf.setTextColor(196, 205, 216);
+      const overview = [
+        `File: ${S.fileName || 'Uploaded Dataset'}`,
+        `Dimensions: ${meta.rows.toLocaleString()} rows × ${meta.cols} columns`,
+        `Numeric columns: ${meta.numCols.length} (${meta.numCols.join(', ')})`,
+        `Categorical columns: ${meta.catCols.length} (${meta.catCols.join(', ')})`,
+        `Anomalies detected: ${S.localStats.anomalies.length} outliers, ${S.localStats.dupes.length} duplicates`
+      ];
+      overview.forEach(line => { pdf.text(line, M, y); y += 6; });
+      y += 6;
+      
+      // Stats table
+      pdf.setFontSize(8); pdf.setTextColor(167, 139, 250);
+      pdf.text('COLUMN STATISTICS', M, y); y += 5;
+      pdf.setFontSize(7); pdf.setTextColor(196, 205, 216);
+      Object.entries(colStats).forEach(([col, s]) => {
+        if (y > 270) newPage();
+        if (s.type === 'numeric') {
+          pdf.text(`${col}: Total=${s.sum.toLocaleString()} | Mean=${s.mean} | Median=${s.median} | Min=${s.min} | Max=${s.max} | Outliers=${s.outlierCount}`, M, y); y += 5;
+        } else {
+          pdf.text(`${col}: ${s.unique} unique values | Top: ${s.topValues.slice(0,3).map(([k,v])=>`${k}(${v})`).join(', ')}`, M, y); y += 5;
+        }
+      });
+    }
+    
+    // ── ANALYSIS PAGES ──
+    msgs.forEach((msg, idx) => {
+      newPage();
+      pdf.setFontSize(12); pdf.setTextColor(167, 139, 250);
+      pdf.text(`ANALYSIS ${idx + 1}`, M, y); y += 10;
+      pdf.setFontSize(8); pdf.setTextColor(196, 205, 216);
+      const lines = pdf.splitTextToSize(msg.content.replace(/[═▶◆\[\]]/g, '').replace(/\*\*/g, ''), W - M*2);
+      lines.forEach(line => {
+        if (y > 275) newPage();
+        if (/VERDICT|PRIORITY|FINDING/i.test(line)) { pdf.setTextColor(167, 139, 250); }
+        else if (/⚠️|WARNING|RISK/i.test(line)) { pdf.setTextColor(248, 113, 113); }
+        else { pdf.setTextColor(196, 205, 216); }
+        pdf.text(line, M, y); y += 4.5;
+      });
+    });
+    
+    // ── CHARTS PAGE ──
+    const canvases = document.querySelectorAll('.chart-card canvas');
+    if (canvases.length > 0) {
+      newPage();
+      pdf.setFontSize(12); pdf.setTextColor(167, 139, 250);
+      pdf.text('CHARTS & VISUALIZATIONS', M, y); y += 10;
+      for (const canvas of canvases) {
+        if (canvas.width === 0) continue;
+        if (y > 220) newPage();
+        try {
+          const imgData = canvas.toDataURL('image/png');
+          const imgW = W - M*2;
+          const imgH = Math.min((canvas.height / canvas.width) * imgW, 70);
+          pdf.addImage(imgData, 'PNG', M, y, imgW, imgH);
+          y += imgH + 8;
+        } catch(e) {}
+      }
+    }
+    
+    pdf.save(`NEXUS-Report-${S.fileName?.replace(/\.[^.]+$/,'') || Date.now()}.pdf`);
+    toast('✅ Professional PDF saved!');
+  } catch(e) {
+    console.error(e);
+    toast('PDF failed — try TXT export');
+  }
+}
 function exportExcel(){if(!S.messages.filter(m=>m.role==='assistant').length)return toast('No analysis');try{const wb=XLSX.utils.book_new();const last=S.messages.filter(m=>m.role==='assistant').slice(-1)[0].content;const rows=[];last.split('\n').forEach(l=>{if(l.trimStart().startsWith('|')&&!/^\|[\s\-|]+\|$/.test(l.trim()))rows.push(l.split('|').filter(c=>c.trim()).map(c=>c.trim()));});if(rows.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Tables');const full=[['NEXUS-DATA ANALYST v6 Report — '+new Date().toLocaleString()],[]];S.messages.filter(m=>m.role==='assistant').forEach((m,i)=>{full.push(['ANALYSIS '+(i+1)]);m.content.split('\n').forEach(l=>full.push([l]));full.push([]);});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(full),'Full Report');if(S.csv)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([S.csv.hdrs,...S.csv.data]),'Source Data');XLSX.writeFile(wb,'NEXUS-'+Date.now()+'.xlsx');toast('✅ Excel saved!');}catch(e){toast('Excel failed');}}
 function copyReport(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('Nothing to copy');navigator.clipboard.writeText('NEXUS-DATA ANALYST v6 Report\n'+new Date().toLocaleString()+'\n'+'═'.repeat(50)+'\n\n'+msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(50)+'\n\n')).then(()=>toast('✅ Copied!')).catch(()=>toast('Failed'));}
 function shareWhatsApp(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');const last=msgs[msgs.length-1].content;const verdict=last.match(/◆ NEXUS-DATA ANALYST VERDICT[\s\S]*?(?:\n\n|$)/)?.[0]||last.slice(0,600);window.open('https://wa.me/?text='+encodeURIComponent('*NEXUS-DATA ANALYST AI Analysis Report*\n'+new Date().toLocaleDateString()+'\n\n'+verdict+'\n\n_Generated by NEXUS-DATA ANALYST v6_'),'_blank');}
 function shareEmail(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');window.location.href=`mailto:?subject=NEXUS-DATA ANALYST AI Analysis — ${new Date().toLocaleDateString()}&body=${encodeURIComponent(msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n---\n\n').slice(0,2000))}`;}
 
+const INDUSTRY_BENCHMARKS = {
+  retail: { 'Gross Margin': [20,35], 'Net Margin': [2,5], 'Inventory Turnover': [4,8], 'Current Ratio': [1.5,2.5] },
+  saas: { 'Gross Margin': [60,80], 'Net Margin': [10,25], 'Churn Rate (monthly %)': [2,5], 'LTV:CAC': [3,7], 'Rule of 40': [40,100] },
+  ecommerce: { 'Gross Margin': [25,45], 'Conversion Rate (%)': [2,5], 'Cart Abandonment (%)': [60,75], 'Return Rate (%)': [10,20] },
+  manufacturing: { 'Gross Margin': [15,35], 'OEE (%)': [65,85], 'Inventory Turnover': [6,12], 'Net Margin': [5,15] },
+  finance: { 'ROE (%)': [10,15], 'Net Margin (%)': [20,30], 'ROA (%)': [1,2], 'Cost-Income Ratio': [40,60] }
+};
+
+function showBenchmark() {
+  const industry = document.getElementById('benchIndustry')?.value;
+  if (!industry || !S.localStats) return toast('Select industry and upload data first');
+  
+  const benchmarks = INDUSTRY_BENCHMARKS[industry];
+  const { colStats } = S.localStats;
+  const chat = document.getElementById('chat');
+  const row = document.createElement('div');
+  row.className = 'mrow';
+  
+  let tableRows = '';
+  Object.entries(benchmarks).forEach(([metric, [low, high]]) => {
+    const matchCol = Object.keys(colStats).find(c => c.toLowerCase().includes(metric.split(' ')[0].toLowerCase()));
+    const yourVal = matchCol && colStats[matchCol].type === 'numeric' ? colStats[matchCol].mean : null;
+    const inRange = yourVal !== null && yourVal >= low && yourVal <= high;
+    const above = yourVal !== null && yourVal > high;
+    const status = yourVal === null ? '—' : above ? '✅ Above avg' : inRange ? '🟡 In range' : '⚠️ Below avg';
+    const color = yourVal === null ? 'var(--mt)' : above ? 'var(--g)' : inRange ? 'var(--o)' : 'var(--r)';
+    tableRows += `<tr><td>${metric}</td><td>${yourVal !== null ? yourVal.toFixed(1) + '%' : '(upload data)'}</td><td>${low}–${high}</td><td style="color:${color}">${status}</td></tr>`;
+  });
+  
+  row.innerHTML = `<div class="av ai">NX</div><div class="bub ai">
+    <div class="sec-div"><span>📊 ${industry.toUpperCase()} INDUSTRY BENCHMARKS</span></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Metric</th><th>Your Value</th><th>Industry Range</th><th>Status</th></tr></thead>
+      <tbody>${tableRows}</tbody>
+    </table></div>
+    <p class="mp" style="margin-top:8px;font-size:10px;color:var(--mt)">Industry benchmarks based on public data. Upload labeled financial data for precise matching.</p>
+  </div>`;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
+}
+
 // ── MISC DASHBOARD FEATURES ──
-function setupVoice(){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;S.recog=new SR();S.recog.continuous=false;S.recog.interimResults=true;S.recog.onresult=e=>{const t=Array.from(e.results).map(r=>r[0].transcript).join('');document.getElementById('userinput').value=t;document.getElementById('sendbtn').disabled=!t.trim();};S.recog.onend=()=>{S.listening=false;document.getElementById('voicebtn').classList.remove('listening');document.getElementById('voicebtn').textContent='🎤 Voice';};}
-function toggleVoice(){if(!S.recog)return toast('Voice not supported');if(S.listening)S.recog.stop();else{S.recog.start();S.listening=true;document.getElementById('voicebtn').classList.add('listening');document.getElementById('voicebtn').textContent='🔴 Listening…';toast('🎤 Speak now…');}}
+function setupVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return;
+  S.recog = new SR();
+  S.recog.continuous = false;
+  S.recog.interimResults = true;
+  S.recog.lang = 'en-IN';
+  
+  S.recog.onresult = e => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('userinput').value = transcript;
+    document.getElementById('sendbtn').disabled = !transcript.trim();
+  };
+  
+  S.recog.onend = () => {
+    S.listening = false;
+    const vbtn = document.getElementById('voicebtn');
+    if (vbtn) { vbtn.classList.remove('listening'); vbtn.innerHTML = '🎤 Voice'; }
+    const wave = document.getElementById('voiceWave');
+    if (wave) wave.style.display = 'none';
+    if (document.getElementById('userinput').value.trim()) {
+      setTimeout(() => sendMsg(), 300);
+    }
+  };
+  
+  S.recog.onerror = e => {
+    S.listening = false;
+    const vbtn = document.getElementById('voicebtn');
+    if (vbtn) { vbtn.classList.remove('listening'); vbtn.innerHTML = '🎤 Voice'; }
+    toast('Voice error: ' + e.error);
+  };
+}
+
+function toggleVoice() {
+  if (!S.recog) return toast('Voice not supported in this browser');
+  if (S.listening) {
+    S.recog.stop();
+  } else {
+    S.recog.start();
+    S.listening = true;
+    const vbtn = document.getElementById('voicebtn');
+    if (vbtn) { vbtn.classList.add('listening'); vbtn.innerHTML = '🔴 Listening'; }
+    toast('🎤 Speak now — will auto-send when done');
+  }
+}
+
 function toggleSearch(){document.getElementById('searchBar').classList.toggle('show');if(document.getElementById('searchBar').classList.contains('show'))document.getElementById('searchInp').focus();}
 function closeSearch(){document.getElementById('searchBar').classList.remove('show');doSearch('');}
 function doSearch(q){document.querySelectorAll('.mrow').forEach(r=>{r.classList.toggle('hidden',!!q&&!r.innerText.toLowerCase().includes(q.toLowerCase()));});}
