@@ -69,7 +69,7 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 5
 .hdot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:hpulse 2s infinite}
 @keyframes hpulse{0%,100%{opacity:1}50%{opacity:.3}}
 h1{font-size:54px;font-weight:900;color:var(--hd);letter-spacing:-.045em;line-height:1.09;margin-bottom:18px}
-.hgr{background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hgr{background:linear-gradient(90deg,#a78bfa,#60a5fa,#34d399);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .hsub{font-size:16px;color:var(--mt);line-height:1.75;max-width:560px;margin:0 auto 32px;font-weight:400}
 .hero-searchbox{max-width:620px;margin:0 auto 40px}
 .hsb-label{font-family:var(--fm);font-size:9px;font-weight:600;color:var(--mt);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;text-align:center}
@@ -337,7 +337,7 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 @keyframes wup{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .w-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 11px;background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.2);border-radius:20px;font-family:var(--fm);font-size:9px;font-weight:600;color:var(--v);letter-spacing:.06em;margin-bottom:11px}
 .w-h1{font-size:21px;font-weight:900;color:var(--hd);letter-spacing:-.04em;line-height:1.15;margin-bottom:5px}
-.w-h1 em{font-style:normal;background:linear-gradient(90deg,var(--v),var(--b));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.w-h1 em{font-style:normal;background:linear-gradient(90deg,var(--v),var(--b));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent}
 .w-sub{font-size:11.5px;color:var(--mt);line-height:1.65;margin-bottom:12px;max-width:580px}
 .feat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:11px}
 .feat{padding:7px;background:var(--s2);border:1px solid var(--br);border-radius:7px;transition:all .18s}
@@ -991,24 +991,23 @@ async function sendMsg(){
     let reply = '';
 
     if (BACKEND_LIVE) {
-      // ── PRIMARY: Railway Backend ──
+      // ── PRIMARY: Cloudflare Worker Backend ──
       const tok = sessionStorage.getItem('nx_tok') || '';
       const res = await fetch(BACKEND + '/api/analyze', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-nexus-token': tok || 'guest'
+          'x-nexus-token': tok || ''
         },
         signal: AbortSignal.timeout(60000),
         body: JSON.stringify({
-          messages:     S.messages,
-          systemPrompt: SYS,
-          token:        tok || 'guest'
+          messages: S.messages,
+          fileData: S.fileName ? { name: S.fileName, text: S.fileData } : null
         })
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || data.message || 'Backend error: HTTP ' + res.status);
-      reply = data.text || data.content || '';
+      reply = data.reply || data.text || data.content || '';
       if (!reply) throw new Error('Backend returned empty response.');
 
     } else if (GEMINI_LIVE) {
@@ -1164,4 +1163,7 @@ function toast(msg,isErr){const el=document.createElement('div');el.className='t
 // ── INIT ──
 loadSession();
 if(typeof google!=='undefined')initGoogleBtn();
-else document.querySelector("script[s
+else document.querySelector("script[src*='accounts.google.com']")?.addEventListener('load', initGoogleBtn);
+</script>
+</body>
+</html>
