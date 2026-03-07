@@ -572,6 +572,51 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .stagger-in > *:nth-child(3) { animation-delay: 0.3s; }
 .stagger-in > *:nth-child(4) { animation-delay: 0.4s; }
 
+/* Welcome Dashboard Redesign */
+.welcome-box {
+  max-width: 900px; margin: 0 auto; padding: 40px 20px; text-align: center;
+  animation: fadeInUp 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.welcome-header { margin-bottom: 40px; }
+.welcome-badge {
+  display: inline-block; padding: 4px 12px; background: rgba(108, 99, 255, 0.1);
+  border: 1px solid rgba(108, 99, 255, 0.3); border-radius: 20px;
+  font-family: var(--font-head); font-size: 10px; font-weight: 700; color: var(--accent);
+  letter-spacing: 1px; margin-bottom: 16px;
+}
+.welcome-title { font-family: var(--font-head); font-size: 42px; font-weight: 800; color: var(--text); margin-bottom: 12px; letter-spacing: -1px; }
+.welcome-sub { font-size: 16px; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+
+.dash-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px; margin: 40px 0; perspective: 1000px;
+}
+.dash-card {
+  background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px;
+  padding: 24px; text-align: left; cursor: pointer; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex; flex-direction: column; gap: 12px;
+}
+.dash-card:hover {
+  transform: translateY(-8px) scale(1.02); background: rgba(255, 255, 255, 0.08);
+  border-color: var(--accent); box-shadow: 0 12px 40px rgba(108, 99, 255, 0.2);
+}
+.dash-card-icon {
+  font-size: 28px; width: 50px; height: 50px; border-radius: 14px;
+  background: rgba(108, 99, 255, 0.1); display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+.dash-card:hover .dash-card-icon { background: var(--accent); color: #fff; transform: rotate(5deg); }
+.dash-card-label { font-family: var(--font-head); font-size: 16px; font-weight: 700; color: var(--text); }
+.dash-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+.welcome-actions { display: flex; gap: 16px; justify-content: center; margin-bottom: 40px; }
+.btn-pill.large { height: 52px; padding: 0 32px; font-size: 15px; }
+
+.sample-row {
+  padding-top: 32px; border-top: 1px solid var(--border); display: flex;
+  flex-direction: column; align-items: center; gap: 16px;
+}
+
 /* Mobile adjustments */
 @media (max-width: 900px) {
   .nav-groups { gap: 12px; }
@@ -1204,7 +1249,7 @@ function initApp(){
   // Set brand
   const isAdmin=S.credits===Infinity;
   document.getElementById('dashBrandSub').textContent=isAdmin?'AI ANALYST · ADMIN':'AI ANALYST';
-  document.getElementById('dashVer').textContent=isAdmin?'v6.0 · ADMIN · GEMINI PRO':'v6.0 · GEMINI PRO · '+((S.plan||'FREE').toUpperCase());
+  document.getElementById('dashVer').textContent=isAdmin?'v7.0 · ADMIN · GEMINI PRO':'v7.0 · GEMINI PRO · '+((S.plan||'FREE').toUpperCase());
   updateDashCredits();
   const ta=document.getElementById('userinput');
   ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';document.getElementById('sendbtn').disabled=!ta.value.trim();});
@@ -1504,22 +1549,40 @@ function saveOneChart(id){const c=document.querySelector('#'+id+' canvas');if(!c
 function renderCharts(container){if(!window._pc||!window._pc.length)return;const toR=[...window._pc];window._pc=[];toR.forEach(({id,type,title,data})=>{const card=container.querySelector('#'+id);if(!card)return;const canvas=card.querySelector('canvas');if(!canvas||!data.length)return;const keys=Object.keys(data[0]).filter(k=>k!=='name');const labels=data.map(d=>d.name);let ct='bar';if(type==='line'||type==='area')ct='line';if(type==='pie'||type==='donut')ct='doughnut';if(type==='radar')ct='radar';const tip={backgroundColor:S.theme==='dark'?'#0d0f14':'#fff',borderColor:'rgba(167,139,250,.3)',borderWidth:1,titleColor:'#a0aec0',bodyColor:'#c8d0e0',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}};const ds=keys.map((k,i)=>({label:k,data:data.map(d=>d[k]),backgroundColor:COLORS.map(c=>c+'55'),borderColor:COLORS[i%COLORS.length],borderWidth:2,pointRadius:3,fill:type==='area',tension:.4,borderRadius:ct==='bar'?4:0}));const pd={labels,datasets:[{data:data.map(d=>d[keys[0]]),backgroundColor:COLORS,borderWidth:0,hoverOffset:6}]};new Chart(canvas,{type:ct,data:ct==='doughnut'?pd:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:true,animation:{duration:700},plugins:{legend:{labels:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:10,family:'IBM Plex Mono'}}},tooltip:tip},scales:ct!=='doughnut'&&ct!=='radar'?{x:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}},y:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}}}:undefined,cutout:type==='donut'?'58%':undefined}});});}
 
 function showWelcome(){
+  const modsHTML = MODS.map(m => `
+    <div class="dash-card" onclick="setMode('${m.id}')">
+      <div class="dash-card-icon">${m.i}</div>
+      <div class="dash-card-info">
+        <div class="dash-card-label">${m.l}</div>
+        <div class="dash-card-desc">${m.d}</div>
+      </div>
+    </div>
+  `).join('');
+
   document.getElementById('chat').innerHTML = `
-    <div class="empty-state">
-      <div class="empty-illustration"></div>
-      <h1 class="empty-title">Drop your data to begin</h1>
-      <p class="empty-sub">CSV, Excel, JSON, TXT — any format works</p>
-      
-      <div style="display:flex; gap:12px; justify-content:center; margin-bottom:40px;">
-        <button class="btn-pill" style="height:48px; padding:0 30px; font-size:14px; background:var(--accent); color:#fff; border:none;" onclick="document.getElementById('fileinput').click()">📄 Select File</button>
-        <button class="btn-pill" style="height:48px; padding:0 30px; font-size:14px;" onclick="swTab('conn')">🔗 Connect Source</button>
+    <div class="welcome-box">
+      <div class="welcome-header">
+        <div class="welcome-badge">PLATINUM v7.0</div>
+        <h1 class="welcome-title">The Universal Data Analyst</h1>
+        <p class="welcome-sub">Drop a file or select a specialized module to begin your deep-dive analysis.</p>
       </div>
 
-      <div style="font-family:var(--font-head); font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:16px;">Try a Sample</div>
-      <div class="prompt-chips">
-        <div class="prompt-chip" onclick="rSampById(0)">Try Sales Demo</div>
-        <div class="prompt-chip" onclick="rSampById(1)">Try Finance Demo</div>
-        <div class="prompt-chip" onclick="rSampById(2)">Try HR Demo</div>
+      <div class="dash-grid">
+        ${modsHTML}
+      </div>
+
+      <div class="welcome-actions">
+        <button class="btn-pill accent large" onclick="document.getElementById('fileinput').click()">📄 Upload Data Source</button>
+        <button class="btn-pill large" onclick="swTab('conn')">🔗 Connect External API</button>
+      </div>
+
+      <div class="sample-row">
+        <span style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Try a Demo</span>
+        <div class="prompt-chips">
+          <div class="prompt-chip" onclick="rSampById(0)">Sales Analysis</div>
+          <div class="prompt-chip" onclick="rSampById(1)">Finance Metrics</div>
+          <div class="prompt-chip" onclick="rSampById(2)">HR & Attrition</div>
+        </div>
       </div>
     </div>
   `;
