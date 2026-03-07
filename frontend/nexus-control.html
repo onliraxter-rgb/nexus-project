@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>NEXUS — Control Panel</title>
+<title>NEXUS-DATA ANALYST — Control Panel</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Epilogue:wght@400;600;700;800;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0}
@@ -369,16 +369,16 @@ function refreshAll(){
 
   // Fill inputs
   if(gk) document.getElementById('gemKey').value=gk;
-  document.getElementById('backUrl').value=bu||'https://nexus-backend-clean.onliraxter.workers.dev';
+  document.getElementById('backUrl').value=bu||'https://nexus-data-analyst-api.onliraxter.workers.dev';
   document.getElementById('googleId').value=gi||'152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.googleusercontent.com';
   if(ui) document.getElementById('upiId').value=ui;
   document.getElementById('freeCr').value=fc;
 
   // Auto-save defaults
-  if(!bu) localStorage.setItem('nx_cp_backend','https://nexus-backend-clean.onliraxter.workers.dev');
+  if(!bu) localStorage.setItem('nx_cp_backend','https://nexus-data-analyst-api.onliraxter.workers.dev');
   if(!gi) localStorage.setItem('nx_cp_google_id','152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.googleusercontent.com');
 
-  const backVal=bu||'https://nexus-backend-clean.onliraxter.workers.dev';
+  const backVal=bu||'https://nexus-data-analyst-api.onliraxter.workers.dev';
   const gidVal=gi||'152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.googleusercontent.com';
 
   const gemOk=gk.startsWith('AIzaSy');

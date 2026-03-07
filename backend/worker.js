@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════
-//  NEXUS v6 — Cloudflare Worker Backend
+//  NEXUS-DATA ANALYST v6 — Cloudflare Worker Backend
 //  KV: NEXUS_KV
 //  Routes: /health /api/auth/google /api/user/me
 //          /api/user/deduct-credit /api/user/refund-credit
@@ -210,7 +210,7 @@ ANALYSIS LAYERS:
 8. RISK: Monte Carlo ranges, scenario stress test, HHI, sensitivity tornado chart.
 9. VISUALIZATIONS: Use [CHART:type|title|json] for bar/line/pie/area/radar charts. Use [KPI:label|value|delta|up/down/neutral] for KPI cards.
 10. CODE: SQL (CTEs, window functions), Python/pandas, DAX, R.
-ALWAYS: Detect anomalies, flag assumptions, end with ◆ NEXUS VERDICT + PRIORITY ACTIONS.
+ALWAYS: Detect anomalies, flag assumptions, end with ◆ NEXUS-DATA ANALYST VERDICT + PRIORITY ACTIONS.
 Format: ══ sections, ▶ sub-sections, | tables, **bold** numbers.`,
             },
             ...groqMessages,
