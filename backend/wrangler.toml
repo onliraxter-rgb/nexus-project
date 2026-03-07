@@ -1,0 +1,10 @@
+name = "nexus-backend-clean"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[[kv_namespaces]]
+binding = "NEXUS_KV"
+id = "6c1a280596a8453fa4893dd7de5f7700"
+
+[vars]
+FREE_CREDITS = "10"
