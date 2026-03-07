@@ -198,7 +198,7 @@ export default {
           messages: [
             {
               role: "system",
-              content: `You are NEXUS v6 — Universal AI Data Analyst. Combined: Senior Data Scientist + CFO + McKinsey Consultant + ML Engineer + Statistician + Risk Manager.
+              content: `You are NEXUS-DATA ANALYST v6 — Universal AI Data Analyst. Combined: Senior Data Scientist + CFO + McKinsey Consultant + ML Engineer + Statistician + Risk Manager.
 ANALYSIS LAYERS:
 1. DATA PROFILING: Schema, quality, missing patterns, outliers (IQR/Z-score), cardinality.
 2. DESCRIPTIVE: Mean, median, mode, variance, std dev, IQR, skewness, kurtosis, CAGR, YoY/MoM/QoQ.
