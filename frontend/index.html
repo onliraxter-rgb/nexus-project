@@ -266,7 +266,8 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 /* Sidebar */
 .side {
   width: 280px; flex-shrink: 0; background: var(--bg); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; z-index: 100; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex; flex-direction: column; z-index: 1000; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 12px; pointer-events: auto;
 }
 .side.shut { width: 0; transform: translateX(-100%); }
 .side-in { width: 280px; display: flex; flex-direction: column; height: 100%; }
@@ -280,7 +281,7 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 .brand-name { font-family: var(--font-head); font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
 
 /* Hero Modules */
-.hero-mods { padding: 12px 16px; display: flex; flex-direction: column; gap: 6px; }
+.hero-mods { padding: 12px 0; display: flex; flex-direction: column; gap: 8px; }
 .hero-mod {
   display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 12px;
   background: var(--card-bg); border: 1px solid var(--border); cursor: pointer;
@@ -315,8 +316,9 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 }
 .more-mods-grid.open { max-height: 400px; padding-bottom: 24px; }
 .mod-pill {
-  display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 12px;
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px;
   background: var(--card-bg); border: 1px solid var(--border); font-size: 11px; cursor: pointer; transition: all 0.2s;
+  min-height: 36px;
 }
 .mod-pill:hover { background: rgba(255, 255, 255, 0.08); border-color: var(--accent); }
 .mod-pill.on { background: rgba(108, 99, 255, 0.1); border-color: var(--accent); color: var(--accent); }
@@ -325,12 +327,13 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 .credits-hero {
   background: linear-gradient(135deg, rgba(108, 99, 255, 0.1), rgba(0, 212, 170, 0.1));
   border: 1px solid rgba(108, 99, 255, 0.2); border-radius: 16px; padding: 16px; margin-bottom: 16px;
+  margin-top: 20px;
 }
-.cr-val { font-family: var(--font-head); font-size: 28px; font-weight: 700; color: var(--text); line-height: 1; }
+.cr-val { font-family: var(--font-head); font-size: 48px; font-weight: 700; color: var(--text); line-height: 1; margin: 8px 0; }
 .cr-lbl { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
 .cr-up {
-  width: 100%; padding: 8px; background: var(--accent); color: #fff; border: none;
-  border-radius: 10px; font-family: var(--font-head); font-size: 12px; font-weight: 600; cursor: pointer;
+  width: 100%; height: 44px; padding: 8px; background: linear-gradient(135deg, #7c3aed, #00d4aa); color: #fff; border: none;
+  border-radius: 10px; font-family: var(--font-head); font-size: 14px; font-weight: 600; cursor: pointer;
 }
 .slabel{font-family:var(--fm);font-size:8px;font-weight:600;color:var(--mt);letter-spacing:.1em;padding:7px 2px 3px;text-transform:uppercase}
 .conn-item{padding:7px 8px;background:var(--s3);border:1px solid var(--br);border-radius:7px;margin-bottom:4px}
@@ -400,7 +403,7 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 .nav-divider { width: 1px; height: 24px; background: var(--border); margin: 0 8px; }
 
 /* Main Search Hub */
-.search-hub { padding: 40px 60px 20px; max-width: 900px; margin: 0 auto; width: 100%; }
+.search-hub { padding: 40px 60px 20px; max-width: 900px; margin: 0 auto; width: 100%; position: relative; z-index: 100; pointer-events: auto; }
 .search-container {
   display: flex; align-items: center; gap: 12px; padding: 0 16px; height: 64px;
   background: rgba(255, 255, 255, 0.05); border: 1.5px solid rgba(108, 99, 255, 0.3);
@@ -865,9 +868,9 @@ tr:hover td{background:rgba(255,255,255,.015)}
       <button class="cr-up" onclick="openPay('starter')">Upgrade Plan</button>
     </div>
 
-    <div class="lang-row" style="opacity:0.6">
-      <span class="lang-lbl">Language:</span>
-      <select class="lang-sel" id="langsel" style="background:transparent; border:none; color:var(--text); font-size:11px;">
+    <div class="lang-row" style="opacity:0.6; margin-top: auto; padding-top: 10px;">
+      <span class="lang-lbl" style="font-size:9px;">Language:</span>
+      <select class="lang-sel" id="langsel" style="background:transparent; border:none; color:var(--text); font-size:9px;">
         <option value="english">English</option>
         <option value="hindi">Hindi</option>
       </select>
@@ -1398,13 +1401,13 @@ function rSampText(txt) {
 
 function setMode(id){
   S.mode=id;
-  document.querySelectorAll('.hero-mod, .mod-pill').forEach(e=>e.classList.remove('on'));
-  const all = [...document.querySelectorAll('.hero-mod'), ...document.querySelectorAll('.mod-pill')];
-  all.forEach(el => {
-    if(el.getAttribute('onclick')?.includes(`'${id}'`)) el.classList.add('on');
-  });
-  toast('Switched to ' + id.toUpperCase() + ' mode');
+  document.querySelectorAll('.hero-mod, .mod-pill').forEach(el=>el.classList.remove('on'));
+  const el = document.querySelector(`.hero-mod[onclick*="${id}"]`) || document.querySelector(`.mod-pill[onclick*="${id}"]`);
+  if(el) el.classList.add('on');
 }
+function openCalc() { toast("Opening Calculator...", false); }
+function scanAnom() { toast("Scanning anomalies. Check insight panel soon.", false); }
+function toggleSearch() { document.getElementById('userinput').focus(); }
 
 function rSamp(el){ rSampText(el.getAttribute('data-txt')); }
 function rSampById(id) {
