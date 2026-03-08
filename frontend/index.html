@@ -1824,14 +1824,43 @@ ${S.fileData.slice(0, 3000)}`;
         signal: AbortSignal.timeout(60000),
         body: JSON.stringify({
           messages:     S.messages,
-          systemPrompt: SYS,
-          token:        tok || 'guest'
+          stream:       true
         })
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || data.message || 'Backend error: HTTP ' + res.status);
-      reply = data.reply || data.text || data.content || '';
+      if (!res.ok) { const data = await res.json(); throw new Error(data.error || data.message || 'Backend error: HTTP ' + res.status); }
+      
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullReply = '';
+      let bubEl = null;
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
+        for (const line of lines) {
+          try {
+            const parsed = JSON.parse(line.slice(6));
+            if (parsed.token) {
+              fullReply += parsed.token;
+              if (!bubEl) {
+                removeTyp(tid);
+                document.getElementById('sendbtn').disabled = false;
+                bubEl = addBub('assistant', '', true, true);
+              }
+              bubEl.innerHTML = renderContent(fullReply);
+            }
+          } catch(e) {}
+        }
+      }
+      reply = fullReply;
       if (!reply) throw new Error('Backend returned empty response.');
+      if(bubEl && S.dataProfile) showConfidenceBadge(S.dataProfile, bubEl);
+      if(bubEl) {
+        const acts=document.createElement('div');acts.className='msg-acts';acts.innerHTML='<span class="mab" onclick="copyBub(this)">⎘ Copy</span><span class="mab" onclick="exportPDF()">📄 PDF</span><span class="mab" onclick="exportExcel()">📊 Excel</span><span class="mab" onclick="saveAsTXT()">📝 TXT</span><span class="mab" onclick="shareWhatsApp()">💬 WA</span>';bubEl.appendChild(acts);
+        renderCharts(bubEl);
+      }
 
     } else if (GEMINI_LIVE) {
       // ── FALLBACK: Direct Gemini ──
@@ -1870,10 +1899,12 @@ ${S.fileData.slice(0, 3000)}`;
       throw new Error('No AI configured. Backend is unreachable and no Gemini key set.');
     }
 
-    removeTyp(tid);
-    document.getElementById('sendbtn').disabled=false;
+    if (!document.querySelector('.bub.ai:last-of-type') || !reply.includes(document.querySelector('.bub.ai:last-of-type').innerText)) {
+      removeTyp(tid);
+      document.getElementById('sendbtn').disabled=false;
+      addBub('assistant', reply, true);
+    }
     S.messages.push({ role: 'assistant', content: reply });
-    addBub('assistant', reply, true);
     if (S.messages.length === 2) saveSess(raw.slice(0, 55));
     else if (MEM.sessions.length) {
       MEM.sessions[MEM.sessions.length - 1].mc   = S.messages.length;
@@ -1897,7 +1928,7 @@ ${S.fileData.slice(0, 3000)}`;
 }
 
 // ── CHAT UI ──
-function addBub(role,content,scroll){const chat=document.getElementById('chat');const row=document.createElement('div');row.className='mrow'+(role==='user'?' u':'');const av=document.createElement('div');av.className='av '+(role==='assistant'?'ai':'u');av.textContent=role==='assistant'?'NX':(S.user?.name||'U')[0].toUpperCase();const bub=document.createElement('div');bub.className='bub '+(role==='assistant'?'ai':'u');if(role==='user'){bub.textContent=content.replace(/\n\n\[(MODE|ADVANCED|LANGUAGE|DATA|MEMORY)[\s\S]*/g,'');}else{bub.innerHTML=renderContent(content);const acts=document.createElement('div');acts.className='msg-acts';acts.innerHTML='<span class="mab" onclick="copyBub(this)">⎘ Copy</span><span class="mab" onclick="exportPDF()">📄 PDF</span><span class="mab" onclick="exportExcel()">📊 Excel</span><span class="mab" onclick="saveAsTXT()">📝 TXT</span><span class="mab" onclick="shareWhatsApp()">💬 WA</span>';bub.appendChild(acts);}const pin=document.createElement('span');pin.className='pin-btn';pin.textContent='📍';pin.onclick=function(){togglePin(this);};row.appendChild(pin);setTimeout(()=>renderCharts(bub),80);row.appendChild(av);row.appendChild(bub);chat.appendChild(row);if(scroll)chat.scrollTop=chat.scrollHeight;
+function addBub(role,content,scroll,returnBub){const chat=document.getElementById('chat');const row=document.createElement('div');row.className='mrow'+(role==='user'?' u':'');const av=document.createElement('div');av.className='av '+(role==='assistant'?'ai':'u');av.textContent=role==='assistant'?'NX':(S.user?.name||'U')[0].toUpperCase();const bub=document.createElement('div');bub.className='bub '+(role==='assistant'?'ai':'u');if(role==='user'){bub.textContent=content.replace(/\n\n\[(MODE|ADVANCED|LANGUAGE|DATA|MEMORY)[\s\S]*/g,'');}else{bub.innerHTML=renderContent(content);if(!returnBub){const acts=document.createElement('div');acts.className='msg-acts';acts.innerHTML='<span class="mab" onclick="copyBub(this)">⎘ Copy</span><span class="mab" onclick="exportPDF()">📄 PDF</span><span class="mab" onclick="exportExcel()">📊 Excel</span><span class="mab" onclick="saveAsTXT()">📝 TXT</span><span class="mab" onclick="shareWhatsApp()">💬 WA</span>';bub.appendChild(acts);}}const pin=document.createElement('span');pin.className='pin-btn';pin.textContent='📍';pin.onclick=function(){togglePin(this);};row.appendChild(pin);if(!returnBub)setTimeout(()=>renderCharts(bub),80);row.appendChild(av);row.appendChild(bub);chat.appendChild(row);if(scroll)chat.scrollTop=chat.scrollHeight;
   // Auto-focus input on desktop
   if(window.innerWidth > 680){
     setTimeout(()=>{const ta=document.getElementById('userinput');if(ta)ta.focus();},300);
@@ -1919,7 +1950,65 @@ function loadFile(e){
   if(f.size > 10 * 1024 * 1024){ toast('❌ File too large (max 10MB)'); e.target.value=''; return; }
   S.fileName=f.name;
   const ext=f.name.split('.').pop().toLowerCase();if(['xlsx','xls'].includes(ext)){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name);}catch(e){toast('Error reading Excel');}};r.readAsBinaryString(f);}else{const r=new FileReader();r.onload=ev=>{const txt=ev.target.result;if(ext==='json'){try{S.fileData='JSON: '+f.name+'\n'+JSON.stringify(JSON.parse(txt),null,2).slice(0,9000);S.csv=null;showFOk(f.name,null);}catch(e){toast('Invalid JSON');}}else processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(/[,\t;]/)),f.name);};r.readAsText(f);}e.target.value='';}
-function processArr(rows,fname){if(!rows.length)return;const hdrs=rows[0].map(h=>String(h||'').trim());const data=rows.slice(1).filter(r=>r.some(c=>c&&String(c).trim()));S.csv={hdrs,data};let txt=`FILE: ${fname}\nROWS: ${data.length} | COLS: ${hdrs.length}\nHEADERS: ${hdrs.join(', ')}\n\nFIRST 50 ROWS:\n${hdrs.join(',')}\n`;data.slice(0,50).forEach(r=>{txt+=r.map(c=>String(c||'').trim()).join(',')+'\n';});txt+='\nCOLUMN STATS:\n';hdrs.forEach((h,hi)=>{const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');const nums=vals.map(v=>parseFloat(String(v).replace(/[,$% ]/g,''))).filter(v=>!isNaN(v));if(nums.length>0){const avg=nums.reduce((a,b)=>a+b,0)/nums.length;const sorted=[...nums].sort((a,b)=>a-b);txt+=`${h}: n=${nums.length} min=${sorted[0].toFixed(2)} max=${sorted[sorted.length-1].toFixed(2)} avg=${avg.toFixed(2)} median=${sorted[Math.floor(sorted.length/2)].toFixed(2)}\n`;}else txt+=`${h}: categorical n=${vals.length} unique=${new Set(vals).size}\n`;});S.fileData=txt.slice(0,3500);showFOk(fname,{rows:data.length,cols:hdrs.length,hdrs,data});detectAnom(hdrs,data);}
+function computeDataProfile(hdrs, data) {
+  const profile = { totalRows: data.length, totalCols: hdrs.length, columns: {}, duplicates: [], formulaMismatches: [], missingValues: {}, computedTotals: {}, outliers: {}, correlations: [] };
+  hdrs.forEach((h, hi) => {
+    const allVals = data.map(r => r[hi]); const strVals = allVals.map(v => String(v || '').trim());
+    const missing = strVals.filter(v => v === '' || v === 'null' || v === 'undefined').length;
+    let nums = strVals.map(v => parseFloat(v.replace(/[,$% ]/g, ''))).filter(v => !isNaN(v));
+    profile.missingValues[h] = missing;
+    if (nums.length > 0) {
+      const sorted = [...nums].sort((a, b) => a - b); const sum = nums.reduce((a, b) => a + b, 0); const mean = sum / nums.length;
+      const variance = nums.map(v => (v - mean) ** 2).reduce((a, b) => a + b, 0) / nums.length; const std = Math.sqrt(variance);
+      const q1 = sorted[Math.floor(sorted.length * 0.25)]; const q3 = sorted[Math.floor(sorted.length * 0.75)]; const iqr = q3 - q1;
+      profile.columns[h] = { type: 'numeric', count: nums.length, sum: sum, mean: mean, median: sorted[Math.floor(sorted.length / 2)], min: sorted[0], max: sorted[sorted.length - 1], std: std, q1, q3, iqr, missing: missing, missingPct: ((missing / data.length) * 100).toFixed(1) };
+      profile.computedTotals[h] = sum;
+      const outlierRows = data.map((r, ri) => { const v = parseFloat(String(r[hi] || '').replace(/[,$% ]/g, '')); return (!isNaN(v) && (v < q1 - 1.5 * iqr || v > q3 + 1.5 * iqr)) ? ri + 2 : null; }).filter(Boolean);
+      if (outlierRows.length > 0 && outlierRows.length <= 20) profile.outliers[h] = outlierRows.slice(0, 10);
+    } else {
+      const unique = new Set(strVals.filter(v => v !== '')).size;
+      profile.columns[h] = { type: 'categorical', count: strVals.filter(v => v !== '').length, unique, missing };
+    }
+  });
+  const idCols = hdrs.filter(h => /id|code|ref|order|invoice|customer|cust/i.test(h));
+  idCols.forEach(idCol => {
+    const idx = hdrs.indexOf(idCol); const seen = {};
+    data.forEach((row, ri) => {
+      const val = String(row[idx] || '').trim(); if (!val) return;
+      if (seen[val] !== undefined) profile.duplicates.push({ col: idCol, value: val, rows: [seen[val] + 2, ri + 2] });
+      else seen[val] = ri;
+    });
+  });
+  const revIdx = hdrs.findIndex(h => /^revenue|^total_rev|^sales$/i.test(h)); const unitIdx = hdrs.findIndex(h => /^units|^qty|^quantity/i.test(h)); const priceIdx = hdrs.findIndex(h => /^price|^unit_price|^rate/i.test(h)); const discIdx = hdrs.findIndex(h => /^discount|^disc/i.test(h));
+  if (revIdx >= 0 && unitIdx >= 0 && priceIdx >= 0) {
+    data.forEach((row, ri) => {
+      const rev = parseFloat(String(row[revIdx] || '').replace(/[,$]/g, '')); const units = parseFloat(String(row[unitIdx] || '')); const price = parseFloat(String(row[priceIdx] || '').replace(/[,$]/g, '')); const disc = discIdx >= 0 ? (1 - parseFloat(String(row[discIdx] || '0').replace(/%/, '')) / 100) : 1;
+      if (!isNaN(rev) && !isNaN(units) && !isNaN(price)) {
+        const expected = units * price * disc; const diff = Math.abs(rev - expected);
+        if (diff > 1 && diff / Math.max(rev, 1) > 0.01) profile.formulaMismatches.push({ row: ri + 2, actual: rev, expected: Math.round(expected), diff: Math.round(diff) });
+      }
+    });
+  }
+  const totalCells = data.length * hdrs.length; const missingCells = Object.values(profile.missingValues).reduce((a, b) => a + b, 0);
+  profile.qualityScore = Math.round(((totalCells - missingCells) / totalCells) * 100);
+  return profile;
+}
+function buildFactsPrompt(hdrs, data, profile) {
+  let txt = `═══ VERIFIED DATASET FACTS (computed by JavaScript, 100% accurate) ═══\nDataset: ${profile.totalRows} rows × ${profile.totalCols} columns\nData Quality: ${profile.qualityScore}% (across ALL ${profile.totalRows} rows)\n\n`;
+  const numCols = Object.entries(profile.columns).filter(([, v]) => v.type === 'numeric');
+  if (numCols.length > 0) { txt += `COMPUTED TOTALS (JavaScript-verified, exact):\n`; numCols.forEach(([col, stats]) => { txt += `  ${col}: SUM=${stats.sum.toLocaleString('en-IN')} | MEAN=${stats.mean.toFixed(2)} | MIN=${stats.min} | MAX=${stats.max} | MEDIAN=${stats.median}\n`; }); txt += '\n'; }
+  const missing = Object.entries(profile.missingValues).filter(([, v]) => v > 0);
+  if (missing.length > 0) { txt += `MISSING VALUES (JavaScript-verified):\n`; missing.forEach(([col, count]) => { txt += `  ${col}: ${count} missing (${((count / profile.totalRows) * 100).toFixed(1)}% of rows)\n`; }); txt += '\n'; }
+  if (profile.duplicates.length > 0) { txt += `DUPLICATE RECORDS DETECTED (JavaScript-verified):\n`; profile.duplicates.slice(0, 10).forEach(d => { txt += `  ${d.col}="${d.value}" appears at rows ${d.rows.join(', ')} — DATA INTEGRITY ISSUE\n`; }); txt += '\n'; }
+  if (profile.formulaMismatches.length > 0) { txt += `FORMULA MISMATCHES DETECTED (Revenue ≠ Units × Price):\n`; profile.formulaMismatches.slice(0, 10).forEach(m => { txt += `  Row ${m.row}: Actual=${m.actual.toLocaleString()} Expected=${m.expected.toLocaleString()} Diff=${m.diff.toLocaleString()}\n`; }); txt += '\n'; }
+  const outlierCols = Object.entries(profile.outliers); if (outlierCols.length > 0) { txt += `STATISTICAL OUTLIERS (IQR method):\n`; outlierCols.forEach(([col, rows]) => { txt += `  ${col}: outlier values at rows ${rows.join(', ')}\n`; }); txt += '\n'; }
+  txt += `COLUMN HEADERS: ${hdrs.join(', ')}\n\nSAMPLE DATA (first 30 rows for pattern recognition — use above stats for calculations):\n${hdrs.join(',')}\n`;
+  data.slice(0, 30).forEach(r => { txt += r.map(c => String(c || '').trim()).join(',') + '\n'; });
+  if (profile.totalRows > 100) { const catCols = Object.entries(profile.columns).filter(([, v]) => v.type === 'categorical' && v.unique <= 20); catCols.slice(0, 3).forEach(([col]) => { const idx = hdrs.indexOf(col); const counts = {}; data.forEach(row => { const val = String(row[idx] || '').trim(); if (val) counts[val] = (counts[val] || 0) + 1; }); txt += `\n${col} BREAKDOWN:\n`; Object.entries(counts).sort(([,a],[,b]) => b-a).slice(0, 15).forEach(([val, cnt]) => { txt += `  ${val}: ${cnt} rows (${((cnt/profile.totalRows)*100).toFixed(1)}%)\n`; }); }); }
+  return txt;
+}
+function showConfidenceBadge(profile, container) { if(!profile)return; const hasMismatches = profile.formulaMismatches.length > 0; const hasDuplicates = profile.duplicates.length > 0; const confidence = hasMismatches || hasDuplicates ? 'medium' : 'high'; const badge = document.createElement('div'); badge.className = `confidence-badge ${confidence}`; badge.innerHTML = confidence === 'high' ? '✅ Confidence: HIGH — all stats verified against actual data' : `⚠️ Confidence: MEDIUM — ${profile.formulaMismatches.length} formula mismatches, ${profile.duplicates.length} duplicates detected`; container.prepend(badge); }
+function processArr(rows,fname){if(!rows.length)return;const hdrs=rows[0].map(h=>String(h||'').trim());const data=rows.slice(1).filter(r=>r.some(c=>c&&String(c).trim()));S.csv={hdrs,data};const profile=computeDataProfile(hdrs,data);S.dataProfile=profile;const txt=buildFactsPrompt(hdrs,data,profile);S.fileData=txt;showFOk(fname,{rows:data.length,cols:hdrs.length,hdrs,data});detectAnom(hdrs,data);}
 function showFOk(fname,info){
   const fok=document.getElementById('fileok');
   if(fok){fok.style.display='inline-flex';fok.innerHTML='✅ '+esc(fname);}

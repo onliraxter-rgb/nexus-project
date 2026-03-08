@@ -322,7 +322,7 @@ export default {
 
       const body = await getJson();
       if (!body) return err("Malformed JSON", 400);
-      const { messages, fileData } = body;
+      const { messages, fileData, stream } = body;
 
       // Build initial messages
       const fullMessages = [];
@@ -359,13 +359,94 @@ export default {
         }
       }
 
-      const SYS_PROMPT = `You are NEXUS v9 — AI Data Analyst. Role: Data Scientist+CFO+Consultant.
-ALWAYS DO: 1)Profile data quality+anomalies 2)Descriptive stats 3)Inferential 4)Diagnostic 5)Predictive 6)Prescriptive 7)Finance ratios 8)Risk 9)NEXUS VERDICT
-CHARTS: [CHART:bar|Title|[{"name":"A","val":1},{"name":"B","val":2}]] types:bar/line/pie/donut/area/radar
-KPIs: [KPI:Label|Value|Delta|up/down/neutral]
-FORMAT: ══ sections, ▶ subsections, | tables, **bold** key numbers.
-CRITICAL: Use ACTUAL data numbers. END: ◆ NEXUS VERDICT + top 5 priority actions.
-MANDATORY: AT LEAST 3-4 charts per analysis.`;
+      const SYS_PROMPT = `You are NEXUS v7 — Precision AI Business Analyst.
+
+CRITICAL RULES — NEVER BREAK THESE:
+1. NEVER compute totals yourself. Use ONLY the JavaScript-verified numbers labeled "COMPUTED TOTALS" in the data facts.
+2. If a number is not in the verified facts, say "insufficient data" — do not estimate.
+3. Every chart must use actual values from the verified facts, never invented data.
+4. Flag every anomaly with: column name, row number, exact value, and why it's anomalous.
+5. Every financial ratio must show its formula and the exact inputs used.
+
+ANALYSIS STRUCTURE (follow in order):
+═══ 1. DATA INTEGRITY REPORT ═══
+Use the JavaScript-verified duplicates, formula mismatches, and missing values.
+State them as confirmed facts, not estimates.
+
+═══ 2. KEY METRICS DASHBOARD ═══
+Use ONLY verified computed totals. Show KPI cards.
+[KPI:Label|Value|Delta|up/down/neutral]
+
+═══ 3. STATISTICAL ANALYSIS ═══
+Use min/max/mean/median/std from verified facts.
+Identify distributions. Flag if data is skewed.
+
+═══ 4. BUSINESS ANALYSIS ═══
+For the specific module requested (Finance/Sales/Risk/etc).
+All calculations must reference verified totals.
+
+═══ 5. ANOMALY DEEP DIVE ═══
+For each anomaly found:
+- Exact location (row, column, value)
+- Statistical context (how many std devs from mean)
+- 3 possible business explanations
+- Recommended action
+
+═══ 6. CHARTS (minimum 3) ═══
+[CHART:bar|Revenue by Category|[{"name":"A","val":1000}]]
+Use actual data from verified facts only.
+
+◆ NEXUS VERDICT
+Top 5 priority actions with expected business impact.
+Confidence: HIGH/MEDIUM/LOW based on data quality score.`;
+
+      if (stream) {
+        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [{ role: "system", content: SYS_PROMPT }, ...trimmedMessages],
+            max_tokens: 8192,
+            temperature: 0.3,
+            stream: true
+          })
+        });
+
+        if (!groqRes.ok) return err(await groqRes.text(), groqRes.status, normalizedOrigin);
+
+        const { readable, writable } = new TransformStream();
+        const writer = writable.getWriter();
+        const encoder = new TextEncoder();
+
+        (async () => {
+          const reader = groqRes.body.getReader();
+          const decoder = new TextDecoder();
+          try {
+            while (true) {
+              const { done, value } = await reader.read();
+              if (done) break;
+              const text = decoder.decode(value);
+              for (const line of text.split('\n').filter(l => l.startsWith('data: '))) {
+                if (line === 'data: [DONE]') continue;
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  const token = data.choices?.[0]?.delta?.content || '';
+                  if (token) await writer.write(encoder.encode(`data: ${JSON.stringify({ token })}\n\n`));
+                } catch(e) {}
+              }
+            }
+          } finally {
+            await writer.close();
+          }
+        })();
+
+        const headers = { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", ...SECURITY_HEADERS };
+        Object.entries(CORS).forEach(([k, v]) => headers[k] = v);
+        if (normalizedOrigin) headers["Access-Control-Allow-Origin"] = normalizedOrigin;
+        
+        return new Response(readable, { headers });
+      }
 
       let attempts = 0;
       let finalRes = null;
@@ -385,8 +466,8 @@ MANDATORY: AT LEAST 3-4 charts per analysis.`;
               { role: "system", content: SYS_PROMPT },
               ...trimmedMessages,
             ],
-            max_tokens: 2000,
-            temperature: 0.7,
+            max_tokens: 8192,
+            temperature: 0.3,
           }),
         });
 
@@ -413,11 +494,11 @@ MANDATORY: AT LEAST 3-4 charts per analysis.`;
           user.credits++;
           await saveUser(env, user);
         }
-        return err(`We are experiencing high traffic. Your credit has been refunded. Please try again in 20 seconds.`, 502);
+        return err(`We are experiencing high traffic. Your credit has been refunded. Please try again in 20 seconds.`, 502, normalizedOrigin);
       }
 
       const reply = finalRes.choices?.[0]?.message?.content || "No response";
-      return json({ reply });
+      return json({ reply }, 200, normalizedOrigin);
     }
 
     // ── /api/payment-request ─────────────────────────────
