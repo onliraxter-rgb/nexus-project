@@ -688,6 +688,51 @@ tr:hover td{background:rgba(255,255,255,.015)}
 :focus-visible{outline:2px solid rgba(124,58,237,.5);outline-offset:2px}
 button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 
+
+/* ══ CONFIDENCE CARD ══ */
+.confidence-card{background:#080808;border:1px solid rgba(52,211,153,.15);border-radius:12px;padding:12px 14px;margin:4px 0 8px;max-width:560px}
+.conf-title{font-family:var(--fm);font-size:10px;font-weight:700;color:#34d399;margin-bottom:10px;letter-spacing:.06em}
+.conf-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
+.conf-item{display:flex;flex-direction:column;align-items:center;gap:2px}
+.conf-val{font-family:var(--fm);font-size:13px;font-weight:700}
+.conf-lbl{font-family:var(--fm);font-size:8px;color:#2a3545;text-align:center}
+/* ══ FOLLOW-UP CHIPS ══ */
+.followup-chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 4px;align-items:center}
+.fu-label{font-family:var(--fm);font-size:9px;color:#3a4555;font-weight:700;margin-right:2px;white-space:nowrap}
+.fu-chip{font-family:var(--fm);font-size:10px;padding:5px 12px;background:#0d0d0d;border:1px solid rgba(167,139,250,.2);border-radius:20px;color:#a78bfa;cursor:pointer;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.fu-chip:hover{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.4)}
+/* ══ DATASET CARD ENHANCEMENTS ══ */
+.dc-alert{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:6px;padding:6px 10px;font-family:var(--fm);font-size:10px;color:#f87171;margin:4px 0}
+.dc-alert-orange{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:#f59e0b}
+.dc-clean-btn{font-family:var(--fm);font-size:9px;padding:4px 10px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:6px;color:#34d399;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.dc-clean-btn:hover{background:rgba(52,211,153,.18)}
+.dc-corr{display:flex;flex-wrap:wrap;gap:4px;padding:4px 14px 8px}
+.dc-corr-tag{font-family:var(--fm);font-size:9px;padding:3px 8px;border-radius:10px}
+.dc-corr-tag.pos{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)}
+.dc-corr-tag.neg{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2)}
+/* ══ WHAT-IF SIMULATOR ══ */
+#whatIfOv{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;display:none;align-items:center;justify-content:center;padding:16px}
+.wi-box{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto}
+.wi-title{font-family:var(--fm);font-size:13px;font-weight:700;color:#f0f4f8;margin-bottom:4px}
+.wi-row{margin-bottom:12px}
+.wi-label{font-family:var(--fm);font-size:11px;color:#8892a0;display:flex;justify-content:space-between;margin-bottom:4px}
+.wi-base{color:#3a4555;font-size:10px}
+.wi-slider{width:100%;accent-color:#a78bfa;cursor:pointer}
+.wi-pct{font-family:var(--fm);font-size:11px;color:#a78bfa;font-weight:700;min-width:36px;text-align:right}
+.wi-result{background:#050505;border:1px solid rgba(255,255,255,.06);border-radius:8px;padding:12px;margin-top:12px}
+.wi-res-title{font-family:var(--fm);font-size:9px;color:#3a4555;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em}
+.wi-res-row{display:flex;justify-content:space-between;font-family:var(--fm);font-size:11px;color:#8892a0;padding:3px 0}
+.wi-ask-btn{margin-top:12px;width:100%;padding:10px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:8px;color:#fff;font-family:var(--fm);font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.wi-ask-btn:hover{opacity:.9}
+/* ══ DEPTH BUTTONS ══ */
+.depth-sel{display:flex;gap:3px;align-items:center;padding:0 4px}
+.depth-btn{font-family:var(--fm);font-size:9px;padding:3px 7px;background:#0d0d0d;border:1px solid rgba(255,255,255,.07);border-radius:4px;cursor:pointer;color:#3a4555;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .12s}
+.depth-btn.active{color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.06)}
+/* ══ STREAMING CURSOR ══ */
+.streaming-cursor{display:inline-block;width:2px;height:14px;background:#a78bfa;margin-left:2px;animation:blink .7s infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+/* ══ COMPARE BUTTON ACTIVE ══ */
+#compareModeBtn.active{color:#34d399!important;border-color:rgba(52,211,153,.3)!important;background:rgba(52,211,153,.06)!important}
 </style>
 
 <script>
@@ -1460,6 +1505,9 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
   <button class="tb" onclick="copyReport()">⎘ Copy</button>
   <button class="tb" style="color:#34d399;border-color:rgba(52,211,153,.18)" id="compareModeBtn" onclick="toggleCompareMode()">⚖️ Compare</button>
   <button class="tb" style="color:#f59e0b;border-color:rgba(245,158,11,.18)" onclick="openWhatIf()">🔢 What-If</button>
+  <button class="tb" style="color:#34d399;border-color:rgba(52,211,153,.18)" id="compareModeBtn" onclick="toggleCompareMode()">⚖️ Compare</button>
+  <button class="tb" style="color:#60a5fa;border-color:rgba(96,165,250,.18)" onclick="exportAuditTrail()">📋 Audit</button>
+  <button class="tb" style="color:#34d399;border-color:rgba(52,211,153,.18)" onclick="downloadCleanedCSV()">🧹 Clean CSV</button>
   <button class="tb" onclick="exportAuditTrail()">📋 Audit</button>
   <div class="tb-sep"></div>
   <button class="tb" onclick="clearMem()">🗑️ Clear</button>
@@ -1854,6 +1902,8 @@ async function sendMsg(){
   let prompt=raw+(MPRPTS[S.mode]||'');
   if(S.adv)prompt+='\n\n[ADVANCED MODE: Monte Carlo, ML feature importance, time series decomp, cluster profiling, 30-60-90-180 roadmap.]';
   if(S.lang!=='english')prompt+=`\n\n[LANGUAGE: Respond entirely in ${S.lang}. Use ₹ for currency. Use lakhs/crores format.]`;
+  const depthMap={1:'\n\n[DEPTH 1 — QUICK: Only top 5 KPIs and 1 chart. Be concise.]',2:'\n\n[DEPTH 2 — SUMMARY: KPIs + top 3 anomalies + 2 charts.]',3:'',4:'\n\n[DEPTH 4 — DEEP: Full stats + regression + correlation analysis + all anomalies.]',5:'\n\n[DEPTH 5 — CFO GRADE: Everything in depth 4 + Monte Carlo ranges + 90-day roadmap + board executive summary.]'};
+  if(S.depth&&S.depth!==3)prompt+=depthMap[S.depth]||'';
 
   // DEPTH LEVEL
   const depthInstructions={
@@ -1961,6 +2011,8 @@ async function sendMsg(){
         bubEl.appendChild(acts);
         renderCharts(bubEl);
       }
+
+    } else if(GEMINI_LIVE){
       const geminiMsgs = S.messages.map(m => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }]
@@ -1993,7 +2045,7 @@ async function sendMsg(){
       if (!reply) throw new Error('Gemini returned empty response.');
 
     } else {
-      throw new Error('No AI configured. Backend is unreachable and no Gemini key set.');
+      throw new Error('No AI configured.');
     }
 
     if (!document.querySelector('.bub.ai:last-of-type') || !reply.includes(document.querySelector('.bub.ai:last-of-type').innerText)) {
@@ -2002,6 +2054,16 @@ async function sendMsg(){
       addBub('assistant', reply, true);
     }
     S.messages.push({ role: 'assistant', content: reply });
+    // Confidence card + follow-up chips
+    if(S.confidenceData&&S.messages.filter(m=>m.role==='assistant').length<=2)showConfidenceCard();
+    showFollowUpChips(reply);
+
+    // Audit log
+    if(S.auditLog&&S.auditLog.length>0){
+      S.auditLog[S.auditLog.length-1].lastQuestion=raw.slice(0,100);
+      try{localStorage.setItem('nx_audit',JSON.stringify(S.auditLog.slice(-50)));}catch(e){}
+    }
+
     if (S.messages.length === 2) saveSess(raw.slice(0, 55));
     else if (MEM.sessions.length) {
       MEM.sessions[MEM.sessions.length - 1].mc   = S.messages.length;
@@ -2039,7 +2101,7 @@ function renderContent(text){const pc=[];text=text.replace(/\[CHART:([\w]+)\|(.*
 function saveOneChart(id){const c=document.querySelector('#'+id+' canvas');if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+id+'.png';a.click();}
 function renderCharts(container){if(!window._pc||!window._pc.length)return;const toR=[...window._pc];window._pc=[];toR.forEach(({id,type,title,data})=>{const card=container.querySelector('#'+id);if(!card)return;const canvas=card.querySelector('canvas');if(!canvas||!data.length)return;const keys=Object.keys(data[0]).filter(k=>k!=='name');const labels=data.map(d=>d.name);let ct='bar';if(type==='line'||type==='area')ct='line';if(type==='pie'||type==='donut')ct='doughnut';if(type==='radar')ct='radar';const tip={backgroundColor:S.theme==='dark'?'#0d0f14':'#fff',borderColor:'rgba(167,139,250,.3)',borderWidth:1,titleColor:'#a0aec0',bodyColor:'#c8d0e0',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}};const ds=keys.map((k,i)=>({label:k,data:data.map(d=>d[k]),backgroundColor:COLORS.map(c=>c+'55'),borderColor:COLORS[i%COLORS.length],borderWidth:2,pointRadius:3,fill:type==='area',tension:.4,borderRadius:ct==='bar'?4:0}));const pd={labels,datasets:[{data:data.map(d=>d[keys[0]]),backgroundColor:COLORS,borderWidth:0,hoverOffset:6}]};new Chart(canvas,{type:ct,data:ct==='doughnut'?pd:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:true,animation:{duration:700},plugins:{legend:{labels:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:10,family:'IBM Plex Mono'}}},tooltip:tip},scales:ct!=='doughnut'&&ct!=='radar'?{x:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}},y:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}}}:undefined,cutout:type==='donut'?'58%':undefined}});});}
 
-function showWelcome(){document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v6 · ALL FEATURES</div><h1 class="w-h1">Ready to <em>analyze.</em></h1><p class="w-sub">13 modules, all connectors, 7 save formats. Credits shown top-right.</p><div class="feat-grid">${[['📊','Finance','P&L, DCF, ratios'],['📈','Sales','Revenue, forecast'],['🔬','ML','Churn, anomalies'],['⚙️','Ops','OEE, OTIF'],['🎯','Marketing','CAC, LTV, ROAS'],['🌍','World Bank','GDP, inflation'],['💱','Currency','Live FX rates'],['🔗','Sheets','Import public sheet'],['📄','PDF','Full report'],['📊','Excel','Tables + data'],['📝','TXT','Plain text'],['📋','CSV','Data export'],['{ }','JSON','Structured'],['📓','MD','Notion/Obsidian'],['🖼️','Charts','PNG images'],['🎤','Voice','Speak questions'],['🔢','Calc','Formula engine'],['📌','Pin','Bookmark insights'],['🔎','Search','Find in history'],['💬','WA','Share verdict']].map(([i,t,d])=>`<div class="feat"><div class="feat-ic">${i}</div><div class="feat-t">${t}</div><div class="feat-d">${d}</div></div>`).join('')}</div><div class="qk-grid"><div class="qk" onclick="swTab('conn')"><div class="qk-t">🔗 Connect Source</div><div class="qk-d">Sheets, World Bank, currency</div></div><div class="qk" onclick="document.getElementById('fileinput').click()"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="toggleAdv()"><div class="qk-t">⚡ Advanced Mode</div><div class="qk-d">Monte Carlo, ML, time-series</div></div><div class="qk" onclick="swTab('tools')"><div class="qk-t">💾 Save Options</div><div class="qk-d">7 formats to your device</div></div></div></div>`;}
+function showWelcome(){document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v11 · JS-VERIFIED ANALYSIS</div><h1 class="w-h1">Ready to <em>analyze.</em></h1><p class="w-sub">JS-verified accuracy · Streaming · What-If Simulator · Compare Mode · Depth Levels</p><div class="feat-grid">${[['📊','Finance','P&L, DCF, ratios'],['📈','Sales','Revenue, forecast'],['🔬','ML','Churn, anomalies'],['⚙️','Ops','OEE, OTIF'],['🎯','Marketing','CAC, LTV, ROAS'],['🌍','World Bank','GDP, inflation'],['💱','Currency','Live FX rates'],['🔗','Sheets','Import public sheet'],['📄','PDF','Full report'],['📊','Excel','Tables + data'],['📝','TXT','Plain text'],['📋','CSV','Data export'],['{ }','JSON','Structured'],['📓','MD','Notion/Obsidian'],['🖼️','Charts','PNG images'],['🎤','Voice','Speak questions'],['🔢','Calc','Formula engine'],['📌','Pin','Bookmark insights'],['🔎','Search','Find in history'],['💬','WA','Share verdict']].map(([i,t,d])=>`<div class="feat"><div class="feat-ic">${i}</div><div class="feat-t">${t}</div><div class="feat-d">${d}</div></div>`).join('')}</div><div class="qk-grid"><div class="qk" onclick="swTab('conn')"><div class="qk-t">🔗 Connect Source</div><div class="qk-d">Sheets, World Bank, currency</div></div><div class="qk" onclick="document.getElementById('fileinput').click()"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="toggleAdv()"><div class="qk-t">⚡ Advanced Mode</div><div class="qk-d">Monte Carlo, ML, time-series</div></div><div class="qk" onclick="swTab('tools')"><div class="qk-t">💾 Save Options</div><div class="qk-d">7 formats to your device</div></div></div></div>`;}
 
 // ── FILE UPLOAD ──
 function loadFile(e){
@@ -2423,7 +2485,10 @@ function showFOk(fname,info){
     <div class="dc-head">
       <div class="dc-icon">📊</div>
       <div><div class="dc-title">${esc(fname)}</div><div class="dc-sub">Dataset loaded · ${info.rows.toLocaleString('en-IN')} rows · Ready to analyze</div></div>
-      <div class="dc-x" onclick="document.getElementById('dcCard').remove()">✕</div>
+      <div style="display:flex;gap:6px;align-items:center">
+        <button class="dc-clean-btn" onclick="downloadCleanedCSV()">🧹 Clean CSV</button>
+        <div class="dc-x" onclick="document.getElementById('dcCard').remove()">✕</div>
+      </div>
     </div>
     <div class="dc-stats">
       <div class="dc-stat"><div class="dc-sv" style="color:#34d399">${info.rows.toLocaleString('en-IN')}</div><div class="dc-sl">Rows</div></div>
@@ -2439,8 +2504,7 @@ function showFOk(fname,info){
   const chat=document.getElementById('chat');
   if(chat&&chat.parentNode)chat.parentNode.insertBefore(card,chat);
 }
-function detectAnom(hdrs,data){const a=[];hdrs.forEach((h,hi)=>{const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');const nums=vals.map(v=>parseFloat(String(v).replace(/[,$% ]/g,''))).filter(v=>!isNaN(v));if(nums.length>3){const avg=nums.reduce((a,b)=>a+b,0)/nums.length;const std=Math.sqrt(nums.map(v=>(v-avg)**2).reduce((a,b)=>a+b,0)/nums.length);if(nums.filter(v=>Math.abs(v-avg)>2*std).length)a.push(`${h}: outliers`);if(nums.filter(v=>v<0).length&&/revenue|sales|price/i.test(h))a.push(`${h}: negatives`);}const miss=data.length-vals.length;if(miss>0&&miss/data.length>0.05)a.push(`${h}: ${((miss/data.length)*100).toFixed(0)}% missing`);});if(a.length){document.getElementById('anomBanner').style.display='';document.getElementById('anomTags').innerHTML=a.map(x=>`<span class="atag">${esc(x)}</span>`).join('');}}
-function scanAnom(){if(!S.csv)return toast('Upload a file first');detectAnom(S.csv.hdrs,S.csv.data);toast('Anomaly scan complete');}
+// detectAnom v2 defined above
 
 // ── CONNECTORS ──
 async function loadGSheets(){const url=document.getElementById('gsUrl').value.trim();if(!url)return toast('Paste a Sheets URL');const m=url.match(/\/d\/([a-zA-Z0-9-_]+)/);if(!m)return toast('Invalid URL');toast('Loading…');try{const res=await fetch(`https://docs.google.com/spreadsheets/d/${m[1]}/export?format=csv`);if(!res.ok)throw new Error();processArr((await res.text()).split('\n').map(r=>r.split(',')));document.getElementById('livechip').style.display='';toast('✅ Sheet loaded!');sendAuto('Loaded from Google Sheets. Profile and analyze fully.');}catch(e){toast('❌ Sheet must be publicly shared');}}
@@ -2512,6 +2576,188 @@ function swChType(id,type){
   ch.update();
 }
 function scanAnom(){setSugAndSend('Find ALL anomalies, outliers and data quality issues. List every one with exact value, expected range, and business impact.');}
+// ── CONFIDENCE SCORE CARD ──
+function showConfidenceCard(){
+  if(!S.confidenceData)return;
+  const c=S.confidenceData;
+  const chat=document.getElementById('chat');
+  const card=document.createElement('div');
+  card.className='confidence-card';
+  const color=c.level==='HIGH'?'#34d399':c.level==='MEDIUM'?'#f59e0b':'#f87171';
+  card.innerHTML=`<div class="conf-title">🎯 NEXUS Analysis Confidence</div>
+  <div class="conf-grid">
+    <div class="conf-item"><span class="conf-val" style="color:${color}">${c.level}</span><span class="conf-lbl">Overall</span></div>
+    <div class="conf-item"><span class="conf-val" style="color:${c.qualityScore>=80?'#34d399':c.qualityScore>=60?'#f59e0b':'#f87171'}">${c.qualityScore}%</span><span class="conf-lbl">Quality</span></div>
+    <div class="conf-item"><span class="conf-val" style="color:#60a5fa">${c.totalRows.toLocaleString('en-IN')}</span><span class="conf-lbl">Rows</span></div>
+    <div class="conf-item"><span class="conf-val" style="color:${c.dupCount>0?'#f87171':'#34d399'}">${c.dupCount}</span><span class="conf-lbl">Dups</span></div>
+    <div class="conf-item"><span class="conf-val" style="color:${c.mismatchCount>0?'#f87171':'#34d399'}">${c.mismatchCount}</span><span class="conf-lbl">Errors</span></div>
+    <div class="conf-item"><span class="conf-val" style="color:#a78bfa">JS✓</span><span class="conf-lbl">Verified</span></div>
+  </div>`;
+  chat.appendChild(card);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+// ── AUTO FOLLOW-UP CHIPS ──
+function showFollowUpChips(reply){
+  const chat=document.getElementById('chat');
+  const chips=[];
+  if(S.duplicates&&S.duplicates.length>0)chips.push(`🔍 Investigate the ${S.duplicates.length} duplicate IDs`);
+  if(S.formulaMismatches&&S.formulaMismatches.length>0)chips.push(`🔧 Show all ${S.formulaMismatches.length} formula mismatches`);
+  if(reply.toLowerCase().includes('revenue'))chips.push('📈 Monthly revenue trend with forecast');
+  if(reply.toLowerCase().includes('margin')||reply.toLowerCase().includes('profit'))chips.push('💰 Deep dive into profit margins');
+  if(S.correlationMatrix)chips.push('🔗 Explain strongest correlations');
+  chips.push('📄 Generate executive summary');
+  chips.push('⚠️ Top 3 business risks?');
+  if(chips.length===0)return;
+  const div=document.createElement('div');
+  div.className='followup-chips';
+  div.innerHTML='<div class="fu-label">💡 Ask next</div>'+chips.slice(0,4).map(c=>`<span class="fu-chip" onclick="setSugAndSend('${c.replace(/'/g,"\\'").replace(/"/g,"&quot;")}');this.parentElement.remove()">${esc(c)}</span>`).join('');
+  chat.appendChild(div);
+  chat.scrollTop=chat.scrollHeight;
+}
+
+// ── DOWNLOAD CLEANED CSV ──
+function downloadCleanedCSV(){
+  if(!S.csv)return toast('Upload a file first');
+  const{hdrs,data}=S.csv;
+  const seen=new Set();
+  const mismatchRows=new Set((S.formulaMismatches||[]).map(m=>m.row-2));
+  const dupRows=new Set();
+  (S.duplicates||[]).forEach(d=>d.rows.forEach(r=>dupRows.add(r-2)));
+  const cleaned=[];
+  data.forEach((r,ri)=>{
+    const key=r.map(c=>String(c||'').trim()).join('|');
+    if(seen.has(key))return;
+    seen.add(key);
+    const flags=[];
+    if(mismatchRows.has(ri))flags.push('FORMULA_MISMATCH');
+    if(dupRows.has(ri))flags.push('DUPLICATE_ID');
+    cleaned.push([...r, flags.join('|')]);
+  });
+  const newHdrs=[...hdrs,'NEXUS_FLAG'];
+  const csv=[newHdrs,...cleaned].map(r=>r.map(c=>{
+    const s=String(c||'').trim();
+    return s.includes(',')||s.includes('"')?`"${s.replace(/"/g,'""')}"`  :s;
+  }).join(',')).join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=(S.fileName||'data').replace(/\.[^.]+$/,'')+'_NEXUS_cleaned.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  toast(`✅ Cleaned CSV: ${cleaned.length} rows (${data.length-cleaned.length} dupes removed)`);
+}
+
+// ── WHAT-IF SIMULATOR ──
+function openWhatIf(){
+  if(!S.csv||!S.verifiedFacts)return toast('Upload a file first');
+  const numCols=Object.entries(S.verifiedFacts).filter(([,f])=>f.type==='numeric').slice(0,6);
+  if(numCols.length<2)return toast('Need at least 2 numeric columns');
+  const ov=document.getElementById('whatIfOv');
+  if(!ov)return;
+  const body=document.getElementById('whatIfBody');
+  body.innerHTML=`<p style="font-family:var(--fm);font-size:11px;color:#4a5568;margin-bottom:16px">Adjust sliders to simulate scenarios. Recalculates instantly — no AI credits used.</p>`+
+    numCols.map(([h,f])=>`<div class="wi-row">
+      <div class="wi-label">${esc(h)}<span class="wi-base">Base: ${fmtN(f.sum)}</span></div>
+      <input type="range" class="wi-slider" id="wi_${h.replace(/[^a-zA-Z0-9]/g,'_')}" min="-50" max="50" value="0" oninput="recalcWhatIf()">
+      <span class="wi-pct" id="wip_${h.replace(/[^a-zA-Z0-9]/g,'_')}">0%</span>
+    </div>`).join('');
+  body.innerHTML+=`<div id="wi-result" class="wi-result"></div>
+    <button class="wi-ask-btn" onclick="askWhatIf()">🤖 Analyze this scenario with AI →</button>`;
+  ov.style.display='flex';
+  recalcWhatIf();
+}
+function recalcWhatIf(){
+  if(!S.verifiedFacts)return;
+  const numCols=Object.entries(S.verifiedFacts).filter(([,f])=>f.type==='numeric').slice(0,6);
+  const changes={};
+  numCols.forEach(([h])=>{
+    const id='wi_'+h.replace(/[^a-zA-Z0-9]/g,'_');
+    const slider=document.getElementById(id);
+    const pctEl=document.getElementById('wip_'+h.replace(/[^a-zA-Z0-9]/g,'_'));
+    if(slider){const pct=parseInt(slider.value);changes[h]=pct;if(pctEl)pctEl.textContent=(pct>=0?'+':'')+pct+'%';}
+  });
+  const result=document.getElementById('wi-result');
+  if(!result)return;
+  let html='<div class="wi-res-title">Simulated Impact</div>';
+  numCols.forEach(([h,f])=>{
+    const pct=changes[h]||0;
+    const newVal=f.sum*(1+pct/100);
+    const diff=newVal-f.sum;
+    html+=`<div class="wi-res-row"><span>${esc(h)}</span><span style="color:${diff>=0?'#34d399':'#f87171'}">${fmtN(newVal)} (${diff>=0?'+':''}${fmtN(diff)})</span></div>`;
+  });
+  result.innerHTML=html;
+}
+function askWhatIf(){
+  if(!S.verifiedFacts)return;
+  const numCols=Object.entries(S.verifiedFacts).filter(([,f])=>f.type==='numeric').slice(0,6);
+  const changes=numCols.map(([h])=>{
+    const slider=document.getElementById('wi_'+h.replace(/[^a-zA-Z0-9]/g,'_'));
+    if(!slider)return null;
+    const pct=parseInt(slider.value);
+    if(pct===0)return null;
+    return `${h} ${pct>=0?'+':''}${pct}%`;
+  }).filter(Boolean);
+  if(changes.length===0)return toast('Adjust at least one slider first');
+  const prompt=`What-If Scenario: ${changes.join(', ')}. Using verified base totals, calculate exact impact on all related metrics. Show new totals, deltas, and business implications.`;
+  document.getElementById('whatIfOv').style.display='none';
+  setSugAndSend(prompt);
+}
+
+// ── DEPTH CONTROL ──
+function setDepth(d){
+  S.depth=d;
+  document.querySelectorAll('.depth-btn').forEach((b,i)=>b.classList.toggle('active',i+1===d));
+  const labels={1:'Quick KPIs',2:'Summary',3:'Full Analysis',4:'Deep Dive',5:'CFO Grade'};
+  toast('Depth: '+labels[d]);
+}
+
+// ── COMPARE MODE ──
+function toggleCompareMode(){
+  S.compareMode=!S.compareMode;
+  const btn=document.getElementById('compareModeBtn');
+  if(btn)btn.classList.toggle('active',S.compareMode);
+  if(S.compareMode){
+    toast('Compare mode ON — upload File 2');
+    const fi2=document.getElementById('fileinput2');
+    if(fi2)fi2.click();
+  } else {
+    S.csv2=null;S.verifiedFacts2=null;S.factsSummary2='';
+    toast('Compare mode OFF');
+  }
+}
+function loadFile2(e){
+  const f=e.target.files[0];if(!f)return;
+  const ext=f.name.split('.').pop().toLowerCase();
+  if(['xlsx','xls'].includes(ext)){
+    const r=new FileReader();r.onload=ev=>{
+      try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name,true);}
+      catch(e){toast('Error reading Excel');}
+    };r.readAsBinaryString(f);
+  } else {
+    const r=new FileReader();r.onload=ev=>{
+      processArr(ev.target.result.split('\n').filter(r=>r.trim()).map(r=>r.split(/[,\t;]/)),f.name,true);
+    };r.readAsText(f);
+  }
+  e.target.value='';
+  toast('✅ File 2 loaded');
+}
+
+// ── AUDIT TRAIL ──
+function exportAuditTrail(){
+  const log=S.auditLog||[];
+  if(!log.length)return toast('No audit entries yet');
+  const csv=['Timestamp,File,Rows,Columns,Quality%,Duplicates,Mismatches,Question',
+    ...log.map(e=>`${e.ts},${e.file},${e.rows},${e.cols},${e.quality},${e.dups||0},${e.mismatches||0},"${(e.lastQuestion||'').replace(/"/g,"'")}"`
+    )].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='NEXUS_Audit_'+Date.now()+'.csv';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  toast('✅ Audit trail exported');
+}
+
+
 function setSugAndSend(txt){
   const ta=document.getElementById('userinput');
   ta.value=txt;ta.focus();
@@ -2712,5 +2958,18 @@ else document.querySelector("script[src*='accounts.google.com']")?.addEventListe
 </div>
 
 <input type="file" id="fileinput" style="display:none" onchange="loadFile(event)" accept=".csv,.xlsx,.xls,.json,.txt"/>
+
+<!-- NEXUS v11: WHAT-IF SIMULATOR MODAL -->
+<div id="whatIfOv" onclick="if(event.target===this)this.style.display='none'">
+  <div class="wi-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="wi-title">🔢 What-If Simulator</div>
+      <span style="cursor:pointer;color:#3a4555;font-size:18px;line-height:1" onclick="document.getElementById('whatIfOv').style.display='none'">✕</span>
+    </div>
+    <div id="whatIfBody"><p style="font-family:var(--fm);font-size:11px;color:#3a4555">Upload a file first to use the simulator.</p></div>
+  </div>
+</div>
+<!-- COMPARE MODE: second file input -->
+<input type="file" id="fileinput2" accept=".csv,.txt,.tsv,.json,.xlsx,.xls" style="display:none" onchange="loadFile2(event)"/>
 </body>
 </html>
