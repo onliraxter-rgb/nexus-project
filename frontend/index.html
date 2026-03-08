@@ -18,6 +18,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
 <style>
 
 /* ══ GLOBAL TOUCH FIX ══ */
@@ -1439,6 +1440,15 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
   <button class="tb" onclick="saveAsCSV()">📋 CSV</button>
   <div class="tb-sep"></div>
   <span style="font-family:var(--fm);font-size:7px;font-weight:700;color:#2a3545;padding:0 5px;white-space:nowrap;text-transform:uppercase;letter-spacing:.08em">Analyze</span>
+  <div class="depth-sel">
+    <span style="font-family:var(--fm);font-size:7px;color:#2a3545;white-space:nowrap">Depth</span>
+    <button class="depth-btn" onclick="setDepth(1)">1</button>
+    <button class="depth-btn" onclick="setDepth(2)">2</button>
+    <button class="depth-btn active" onclick="setDepth(3)" id="depth3btn">3</button>
+    <button class="depth-btn" onclick="setDepth(4)">4</button>
+    <button class="depth-btn" onclick="setDepth(5)">5</button>
+  </div>
+  <div class="tb-sep"></div>
   <button class="tb" style="color:#a78bfa;border-color:rgba(167,139,250,.18)" onclick="setSugAndSend('Visualize this data with 4 charts — bar chart of top categories, line chart of monthly trends, pie chart of distribution, and comparison chart. Use real numbers.')">📈 Charts</button>
   <button class="tb" style="color:#f87171;border-color:rgba(248,113,113,.18)" onclick="setSugAndSend('Find ALL anomalies, outliers and data quality issues. List every one with exact value, expected range, and business impact.')">⚠️ Anomalies</button>
   <button class="tb" style="color:#f59e0b;border-color:rgba(245,158,11,.18)" id="advTbBtn" onclick="toggleAdv()">⚡ ADV</button>
@@ -1448,6 +1458,9 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
   <button class="tb" onclick="toggleSearch()">🔎 Search</button>
   <button class="tb" onclick="shareWhatsApp()">💬 WA</button>
   <button class="tb" onclick="copyReport()">⎘ Copy</button>
+  <button class="tb" style="color:#34d399;border-color:rgba(52,211,153,.18)" id="compareModeBtn" onclick="toggleCompareMode()">⚖️ Compare</button>
+  <button class="tb" style="color:#f59e0b;border-color:rgba(245,158,11,.18)" onclick="openWhatIf()">🔢 What-If</button>
+  <button class="tb" onclick="exportAuditTrail()">📋 Audit</button>
   <div class="tb-sep"></div>
   <button class="tb" onclick="clearMem()">🗑️ Clear</button>
 </div>
@@ -1539,6 +1552,19 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 
 <div class="modal-bg" id="modalBg"><div class="modal-box"><h3 id="mTitle"></h3><p id="mMsg"></p><input class="modal-inp" id="mInp" style="display:none"/><div class="modal-btns"><button class="mdbtn cancel" onclick="closeModal()">Cancel</button><button class="mdbtn confirm" id="mConfirm">OK</button></div></div></div>
 
+<!-- WHAT-IF SIMULATOR MODAL -->
+<div id="whatIfOv" onclick="if(event.target===this)this.style.display='none'">
+  <div class="wi-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+      <div class="wi-title">🔢 What-If Simulator</div>
+      <span style="cursor:pointer;color:#3a4555;font-size:16px" onclick="document.getElementById('whatIfOv').style.display='none'">✕</span>
+    </div>
+    <div id="whatIfBody"></div>
+  </div>
+</div>
+<!-- SECOND FILE INPUT FOR COMPARISON -->
+<input type="file" id="fileinput2" accept=".csv,.txt,.tsv,.json,.xlsx,.xls" style="display:none" onchange="loadFile2(event)"/>
+
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ════════════════════════════════════════════════════
 // NEXUS v6 — CONFIG (Auto-configured, works out of the box)
@@ -1571,7 +1597,20 @@ const S = {
   mode:'universal', adv:false, lang:'english',
   fileData:null, fileName:null, csv:null,
   messages:[], sideOpen:true, cCount:0,
-  listening:false, recog:null, theme:'dark'
+  listening:false, recog:null, theme:'dark',
+  verifiedFacts: null,
+  factsSummary: '',
+  anomalyFacts: '',
+  duplicates: [],
+  formulaMismatches: [],
+  correlationMatrix: null,
+  depth: 3,
+  compareMode: false,
+  csv2: null,
+  verifiedFacts2: null,
+  auditLog: [],
+  templates: [],
+  confidenceData: null,
 };
 const RATE = {n:0, t:Date.now(), limit:50};
 let MEM = JSON.parse(localStorage.getItem('nexus_mem')||'{"sessions":[]}');
@@ -1744,20 +1783,49 @@ function initApp(){
 }
 
 // ── SYSTEM PROMPT ──
-const SYS=`You are NEXUS v6 — Universal AI Data Analyst. Combined: Senior Data Scientist + CFO + McKinsey Consultant + ML Engineer + Statistician + Risk Manager.
-ANALYSIS LAYERS:
-1. DATA PROFILING: Schema, quality, missing patterns, outliers (IQR/Z-score), cardinality.
-2. DESCRIPTIVE: Mean, median, mode, variance, std dev, IQR, skewness, kurtosis, CAGR, YoY/MoM/QoQ.
-3. INFERENTIAL: Hypothesis testing, t-tests, ANOVA, chi-square, correlation, regression, confidence intervals.
-4. DIAGNOSTIC: Waterfall decomp, Pareto/ABC, 5-Why, volume/price/mix variance, HHI.
-5. PREDICTIVE: Trend projection, time-series decomp, SMA/EMA, churn prediction, LTV projection.
-6. PRESCRIPTIVE: ROI-ranked action plan, resource allocation, 90-day roadmap.
-7. FINANCE: P&L decomp, DuPont ROE bridge, Altman Z-Score, Piotroski F, DCF sensitivity, WACC, CCC, 30+ ratios.
-8. RISK: Monte Carlo ranges, scenario stress test, HHI, sensitivity tornado chart.
-9. VISUALIZATIONS: Use [CHART:type|title|json] for bar/line/pie/area/radar charts. Use [KPI:label|value|delta|up/down/neutral] for KPI cards.
-10. CODE: SQL (CTEs, window functions), Python/pandas, DAX, R.
-ALWAYS: Detect anomalies, flag assumptions, end with ◆ NEXUS VERDICT + PRIORITY ACTIONS.
-Format: ══ sections, ▶ sub-sections, | tables, **bold** numbers.`;
+const SYS=`You are NEXUS v11 — Verified AI Business Analyst for Indian SMEs and enterprises.
+
+CRITICAL RULES — NEVER BREAK:
+1. NEVER compute totals yourself. ONLY use numbers labeled "NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS". These are computed on ALL rows by JavaScript and are ground truth.
+2. If a number is not in the verified facts, say "not in verified data" — do not estimate.
+3. Every chart must use ONLY values from verified facts. Never invent chart data.
+4. Every anomaly was pre-detected by JavaScript. Treat JAVASCRIPT-VERIFIED ANOMALIES as confirmed facts.
+5. Every financial ratio must show its formula and exact inputs from verified facts.
+6. Format large Indian numbers as: ₹12.3L (lakhs) or ₹1.2Cr (crores). Never write full 7+ digit numbers without formatting.
+7. After analysis, suggest 3 follow-up questions based on what you actually found.
+
+ANALYSIS STRUCTURE:
+══ 1. DATA INTEGRITY REPORT ══
+State verified duplicates, formula mismatches, missing values as confirmed facts.
+
+══ 2. KEY METRICS DASHBOARD ══
+Use ONLY verified sums. Format: [KPI:Label|Value|Delta|up/down/neutral]
+
+══ 3. STATISTICAL ANALYSIS ══
+Use verified min/max/mean/median/std. State distributions. Flag skewness.
+
+══ 4. BUSINESS ANALYSIS ══
+Module-specific deep dive. All calculations from verified totals.
+
+══ 5. ANOMALY DEEP DIVE ══
+For each verified anomaly: exact location + 3 business explanations + action.
+
+══ 6. CHARTS (minimum 3) ══
+[CHART:bar|Title|[{"name":"X","val":100}]]
+Use ONLY data from verified facts.
+
+══ 7. INDIA BENCHMARK COMPARISON ══
+If industry detected: compare metrics to Indian industry averages.
+
+◆ NEXUS VERDICT
+Top 5 priority actions. Confidence: HIGH/MEDIUM/LOW based on data quality.
+
+FOLLOW-UP SUGGESTIONS:
+After verdict, always add:
+💡 SUGGESTED NEXT QUESTIONS:
+1. [specific question based on what was found]
+2. [specific question based on anomalies or patterns]
+3. [specific question for deeper dive]`;
 const MPRPTS={universal:'',statistics:'\n\n[STATISTICS MODE: Full battery — all central tendency, dispersion, normality tests, full correlation matrix, regression with p-values.]',finance:'\n\n[FINANCE MODE: P&L decomp, DuPont ROE bridge, Altman Z-Score, Piotroski F, DCF sensitivity, WACC, CCC, all 30+ ratios with benchmarks.]',ml:'\n\n[ML MODE: Frame problem, rank features, top 3 models with metrics, forecast with 80/95% CI, anomaly scores.]',operations:'\n\n[OPERATIONS MODE: OEE breakdown, TOC bottleneck, EOQ/safety stock, OTIF root cause, Sigma/DPMO/Cpk.]',marketing:'\n\n[MARKETING MODE: CAC by channel+payback, LTV:CAC, attribution comparison, D1/D7/D30 cohorts, ROAS rank.]',hr:'\n\n[HR MODE: Attrition voluntary/involuntary, flight risk, performance bell curve, compa-ratio, pay gap, eNPS, 9-box.]',risk:'\n\n[RISK MODE: All risk categories, Monte Carlo min/likely/max, HHI, Altman Z, 3-scenario stress test, sensitivity tornado.]',saas:'\n\n[SAAS MODE: MRR/ARR/NRR/GRR, expansion+churn decomp, Rule of 40, magic number, LTV:CAC, unit economics waterfall.]',strategy:'\n\n[STRATEGY MODE: MECE issue tree, BCG, Ansoff, Porter 5 Forces, OKRs, Impact×Effort 2x2, 30-60-90-180 roadmap.]',sql:'\n\n[SQL MODE: Production SQL with CTEs, window functions. Python/pandas. R/tidyverse. DAX measures.]',dashboard:'\n\n[DASHBOARD MODE: KPI hierarchy L1/L2/L3, chart rationale, layout wireframe, star schema DDL, DAX measures.]',realtime:'\n\n[MONITORING MODE: KPI thresholds warn/critical, anomaly rules, alert triggers, escalation matrix.]'};
 const MODS=[{id:'universal',i:'⚡',l:'Universal',d:'Auto-detect & analyze'},{id:'statistics',i:'∑',l:'Statistics',d:'Descriptive + inferential'},{id:'finance',i:'◈',l:'Finance',d:'P&L, DCF, ratios, valuation'},{id:'ml',i:'◉',l:'ML & Predict',d:'Models, features, forecast'},{id:'operations',i:'⊗',l:'Operations',d:'OEE, supply chain, lean'},{id:'marketing',i:'◐',l:'Marketing',d:'CAC, LTV, attribution'},{id:'hr',i:'◎',l:'People',d:'Attrition, equity, eNPS'},{id:'risk',i:'◇',l:'Risk',d:'Monte Carlo, stress, HHI'},{id:'saas',i:'◑',l:'SaaS/Tech',d:'MRR, NRR, Rule of 40'},{id:'strategy',i:'▲',l:'Strategy',d:'BCG, OKRs, roadmap'},{id:'sql',i:'</>',l:'SQL & Code',d:'SQL, Python, DAX, R'},{id:'dashboard',i:'▦',l:'Dashboard',d:'BI blueprint, KPI design'},{id:'realtime',i:'●',l:'Monitoring',d:'Alerts, thresholds, watch'}];
 const SAMPS=[{cat:'💰 Finance',items:[{l:'SaaS P&L 4 Years',t:'Analyze SaaS:\nRevenue: $2.4M Y1, $4.1M Y2, $7.8M Y3, $13.2M Y4\nCOGS: 22%, 20%, 19%, 18%\nR&D: $800K, $1.2M, $1.8M, $2.4M\nS&M: 45%, 42%, 38%, 35%\nG&A: 18%, 15%, 13%, 11%\nCustomers: 120, 285, 640, 1180\nChurn: 8.2%, 6.4%, 5.1%, 4.3%'},{l:'Manufacturing P&L',t:'Revenue $45M | COGS $32.5M | EBITDA $3M | DA $1.8M | Interest $420K | Tax 28%\nAssets $38M | Debt $21M\n5yr Revenue: $28M $33M $38M $42M $45M'}]},{cat:'📊 Sales',items:[{l:'E-Commerce Revenue',t:'Monthly revenue ($K): Jan:820 Feb:740 Mar:890 Apr:950 May:1020 Jun:980 Jul:1150 Aug:1080 Sep:1240 Oct:1680 Nov:2340 Dec:1920\nAOV $67 | Cart abandonment 71% | Returns 12%'},{l:'B2B Pipeline',t:'Prospect 340/$8.2M | Qualified 128/$4.1M | Demo 67/$2.8M | Proposal 41/$2.1M | Won 22/$1.1M'}]},{cat:'🔬 ML',items:[{l:'Churn Analysis',t:'Telecom (7043 customers, 26.5% churn):\nTenure: churned 17.9mo vs 37.6mo\nMonthly charges: churned $74.44 vs $61.27\nContract: M2M 42.7%, 1yr 11.3%, 2yr 2.8%'}]}];
@@ -1772,99 +1840,127 @@ function toggleAdv(){S.adv=!S.adv;document.getElementById('advrow').classList.to
 function toggleSide(){S.sideOpen=!S.sideOpen;document.getElementById('sidebar').classList.toggle('shut',!S.sideOpen);}
 
 // ── SEND MESSAGE ──
-let isSending = false;
+let isSending=false;
 async function sendMsg(){
-  // 1. CHECK INPUT FIRST — never touch credits before this
-  const ta  = document.getElementById('userinput');
-  const raw = ta.value.trim();
-  if (!raw) return;
+  const ta=document.getElementById('userinput');
+  const raw=ta.value.trim();
+  if(!raw)return;
+  if(isSending)return;
+  isSending=true;
+  if(!rateOk()){isSending=false;return toast('Rate limit reached. Wait a moment.');}
+  if(!await deductCredit()){isSending=false;return;}
 
-  // 2. Prevent double-send (Enter key spam / button double-click)
-  if (isSending) return;
-  isSending = true;
+  // Build prompt with verified facts (NOT raw CSV slice)
+  let prompt=raw+(MPRPTS[S.mode]||'');
+  if(S.adv)prompt+='\n\n[ADVANCED MODE: Monte Carlo, ML feature importance, time series decomp, cluster profiling, 30-60-90-180 roadmap.]';
+  if(S.lang!=='english')prompt+=`\n\n[LANGUAGE: Respond entirely in ${S.lang}. Use ₹ for currency. Use lakhs/crores format.]`;
 
-  // 3. Rate limit check
-  if (!rateOk()) { isSending = false; return toast('Rate limit reached. Wait a moment.'); }
+  // DEPTH LEVEL
+  const depthInstructions={
+    1:'\n\n[DEPTH 1 — QUICK: Only top 5 KPIs and 1 chart. Be concise.]',
+    2:'\n\n[DEPTH 2 — SUMMARY: KPIs + top 3 anomalies + 2 charts.]',
+    3:'',// default — full analysis
+    4:'\n\n[DEPTH 4 — DEEP: Full analysis + complete statistical breakdown + regression + correlation analysis.]',
+    5:'\n\n[DEPTH 5 — CFO GRADE: Everything in depth 4 + show all formulas used + Monte Carlo ranges + full 90-day roadmap + executive summary for board.]'
+  };
+  if(S.depth&&S.depth!==3)prompt+=depthInstructions[S.depth]||'';
 
-  // 4. Deduct credit (only after all checks pass)
-  if (!await deductCredit()) { isSending = false; return; }
+  // First message: inject full verified facts
+  // Follow-up messages: inject compact reminder only
+  const isFirstWithData=S.messages.length===0&&S.factsSummary;
+  const hasData=!!S.factsSummary&&S.factsSummary.length>10;
+  if(hasData){
+    if(isFirstWithData||!S.messages.some(m=>m.content.includes('NEXUS v11 JAVASCRIPT-VERIFIED'))){
+      prompt+='\n\n'+S.factsSummary;
+    } else {
+      // Compact reminder for follow-ups (saves tokens)
+      const numKeys=S.verifiedFacts?Object.keys(S.verifiedFacts).filter(k=>S.verifiedFacts[k].type==='numeric'):[];
+      if(numKeys.length>0){
+        const reminder=numKeys.slice(0,5).map(k=>`${k}:SUM=${fmtN(S.verifiedFacts[k].sum)}`).join(', ');
+        prompt+=`\n\n[DATA REMINDER: ${reminder}. Use verified facts from initial message only.]`;
+      }
+    }
+  }
 
-  let prompt = raw + (MPRPTS[S.mode] || '');
-  if (S.adv) prompt += '\n\n[ADVANCED MODE: Monte Carlo, ML feature importance, time series decomp, cluster profiling, 30-60-90-180 roadmap.]';
-  if (S.lang !== 'english') prompt += `\n\n[LANGUAGE: Respond entirely in ${S.lang}.]`;
-  // Truncate large data to avoid token overflow (6000 chars safe limit)
-  if (S.fileData) prompt += `
+  // Inject anomaly facts if first analysis
+  if(S.anomalyFacts&&S.messages.length===0){
+    prompt+=`\n\n[JAVASCRIPT-VERIFIED ANOMALIES — TREAT AS GROUND TRUTH, DO NOT CONTRADICT:\n${S.anomalyFacts}]`;
+  }
 
-[DATA]
-${S.fileData.slice(0, 3000)}`;
+  // Comparison mode
+  if(S.compareMode&&S.factsSummary2){
+    prompt+='\n\n[COMPARISON MODE — FILE 2 FACTS:\n'+S.factsSummary2.slice(0,3000)+']';
+  }
 
-  // 5. Keep last 10 messages max to prevent token overflow on long sessions
-  if (S.messages.length > 6) S.messages = S.messages.slice(-6);
-  S.messages.push({ role: 'user', content: prompt });
+  // Keep last 8 messages (dataset NOT stored in history — saves tokens)
+  if(S.messages.length>8)S.messages=S.messages.slice(-8);
+  S.messages.push({role:'user',content:prompt});
 
-  const chat = document.getElementById('chat');
-  if (document.querySelector('.welcome')) chat.innerHTML = '';
-  addBub('user', raw, true);
-  const tid = addTyp();
-  ta.value = ''; ta.style.height = 'auto';
-  document.getElementById('sendbtn').disabled = true;
+  const chat=document.getElementById('chat');
+  if(document.querySelector('.welcome'))chat.innerHTML='';
+  addBub('user',raw,true);
+  const tid=addTyp();
+  ta.value='';ta.style.height='auto';
+  document.getElementById('sendbtn').disabled=true;
 
-  try {
-    let reply = '';
+  try{
+    let reply='';
 
-    if (BACKEND_LIVE) {
-      // ── PRIMARY: Railway Backend ──
-      const tok = sessionStorage.getItem('nx_tok') || '';
-      const res = await fetch(BACKEND + '/api/analyze', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-nexus-token': tok || 'guest'
-        },
-        signal: AbortSignal.timeout(60000),
-        body: JSON.stringify({
-          messages:     S.messages,
-          stream:       true
-        })
+    if(BACKEND_LIVE){
+      const tok=sessionStorage.getItem('nx_tok')||'';
+
+      // ── STREAMING MODE ──
+      const streamRes=await fetch(BACKEND+'/api/analyze',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-nexus-token':tok||'guest'},
+        signal:AbortSignal.timeout(90000),
+        body:JSON.stringify({messages:S.messages,stream:true,token:tok||'guest'})
       });
-      if (!res.ok) { const data = await res.json(); throw new Error(data.error || data.message || 'Backend error: HTTP ' + res.status); }
-      
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let fullReply = '';
+
+      if(!streamRes.ok)throw new Error(`Backend streaming HTTP error: ${streamRes.status}`);
+
+      // Streaming response
       let bubEl = null;
 
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(l => l.startsWith('data: '));
-        for (const line of lines) {
-          try {
-            const parsed = JSON.parse(line.slice(6));
-            if (parsed.token) {
-              fullReply += parsed.token;
+      const reader=streamRes.body.getReader();
+      const decoder=new TextDecoder();
+      let fullText='';
+      let buffer='';
+
+      while(true){
+        const{done,value}=await reader.read();
+        if(done)break;
+        buffer+=decoder.decode(value,{stream:true});
+        const lines=buffer.split('\n');
+        buffer=lines.pop()||'';
+        for(const line of lines){
+          if(!line.startsWith('data: '))continue;
+          const json=line.slice(6);
+          if(json==='[DONE]')continue;
+          try{
+            const d=JSON.parse(json);
+            const token=d.token||d.choices?.[0]?.delta?.content||'';
+            if(token){
+              fullText+=token;
               if (!bubEl) {
                 removeTyp(tid);
                 document.getElementById('sendbtn').disabled = false;
                 bubEl = addBub('assistant', '', true, true);
               }
-              if (bubEl) bubEl.innerHTML = fullReply.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>") + '<span class="streaming-cursor"></span>';
+              if (bubEl) bubEl.innerHTML = fullText.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>") + '<span class="streaming-cursor"></span>';
             }
-          } catch(e) {}
+          }catch(e){}
         }
       }
-      reply = fullReply;
+      reply=fullText;
       if (!reply) throw new Error('Backend returned empty response.');
       if(bubEl) {
         bubEl.innerHTML = renderContent(reply);
-        if (S.dataProfile) showConfidenceBadge(S.dataProfile, bubEl);
-        const acts=document.createElement('div');acts.className='msg-acts';acts.innerHTML='<span class="mab" onclick="copyBub(this)">⎘ Copy</span><span class="mab" onclick="exportPDF()">📄 PDF</span><span class="mab" onclick="exportExcel()">📊 Excel</span><span class="mab" onclick="saveAsTXT()">📝 TXT</span><span class="mab" onclick="shareWhatsApp()">💬 WA</span>';bubEl.appendChild(acts);
+        const acts=document.createElement('div');acts.className='msg-acts';
+        acts.innerHTML='<span class="mab" onclick="copyBub(this)">⎘ Copy</span><span class="mab" onclick="exportPDF()">📄 PDF</span><span class="mab" onclick="exportExcel()">📊 Excel</span><span class="mab" onclick="saveAsTXT()">📝 TXT</span><span class="mab" onclick="shareWhatsApp()">💬 WA</span>';
+        bubEl.appendChild(acts);
         renderCharts(bubEl);
       }
-
-    } else if (GEMINI_LIVE) {
-      // ── FALLBACK: Direct Gemini ──
       const geminiMsgs = S.messages.map(m => ({
         role: m.role === 'assistant' ? 'model' : 'user',
         parts: [{ text: m.content }]
@@ -1952,88 +2048,373 @@ function loadFile(e){
   if(f.size > 10 * 1024 * 1024){ toast('❌ File too large (max 10MB)'); e.target.value=''; return; }
   S.fileName=f.name;
   const ext=f.name.split('.').pop().toLowerCase();if(['xlsx','xls'].includes(ext)){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name);}catch(e){toast('Error reading Excel');}};r.readAsBinaryString(f);}else{const r=new FileReader();r.onload=ev=>{const txt=ev.target.result;if(ext==='json'){try{S.fileData='JSON: '+f.name+'\n'+JSON.stringify(JSON.parse(txt),null,2).slice(0,9000);S.csv=null;showFOk(f.name,null);}catch(e){toast('Invalid JSON');}}else processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(/[,\t;]/)),f.name);};r.readAsText(f);}e.target.value='';}
-function computeDataProfile(hdrs, data) {
-  const profile = { totalRows: data.length, totalCols: hdrs.length, columns: {}, duplicates: [], formulaMismatches: [], missingValues: {}, computedTotals: {}, outliers: {}, correlations: [] };
-  hdrs.forEach((h, hi) => {
-    const allVals = data.map(r => r[hi]); const strVals = allVals.map(v => String(v || '').trim());
-    const missing = strVals.filter(v => v === '' || v === 'null' || v === 'undefined').length;
-    let nums = strVals.map(v => parseFloat(v.replace(/[,$% ]/g, ''))).filter(v => !isNaN(v));
-    profile.missingValues[h] = missing;
-    if (nums.length > 0) {
-      const sorted = [...nums].sort((a, b) => a - b); const sum = nums.reduce((a, b) => a + b, 0); const mean = sum / nums.length;
-      const variance = nums.map(v => (v - mean) ** 2).reduce((a, b) => a + b, 0) / nums.length; const std = Math.sqrt(variance);
-      const q1 = sorted[Math.floor(sorted.length * 0.25)]; const q3 = sorted[Math.floor(sorted.length * 0.75)]; const iqr = q3 - q1;
-      profile.columns[h] = { type: 'numeric', count: nums.length, sum: sum, mean: mean, median: sorted[Math.floor(sorted.length / 2)], min: sorted[0], max: sorted[sorted.length - 1], std: std, q1, q3, iqr, missing: missing, missingPct: ((missing / data.length) * 100).toFixed(1) };
-      profile.computedTotals[h] = sum;
-      const outlierRows = data.map((r, ri) => { const v = parseFloat(String(r[hi] || '').replace(/[,$% ]/g, '')); return (!isNaN(v) && (v < q1 - 1.5 * iqr || v > q3 + 1.5 * iqr)) ? ri + 2 : null; }).filter(Boolean);
-      if (outlierRows.length > 0 && outlierRows.length <= 20) profile.outliers[h] = outlierRows.slice(0, 10);
+function processArr(rows,fname,isSecond){
+  if(!rows.length)return;
+  const hdrs=rows[0].map(h=>String(h||'').trim());
+  const data=rows.slice(1).filter(r=>r.some(c=>c&&String(c).trim()));
+  const csv={hdrs,data};
+  if(isSecond){S.csv2=csv;}else{S.csv=csv;}
+
+  // ═══ LAYER 1: JS PRE-COMPUTATION — ALL ROWS (truly unlimited) ═══
+  const facts={};
+  const numCols=[];
+  const catCols=[];
+
+  hdrs.forEach((h,hi)=>{
+    const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');
+    const nums=vals.map(v=>parseFloat(String(v).replace(/[,₹$%\s]/g,''))).filter(v=>!isNaN(v)&&isFinite(v));
+    if(nums.length>0&&nums.length/vals.length>0.7){
+      numCols.push({h,hi,nums});
+      const sorted=[...nums].sort((a,b)=>a-b);
+      const sum=nums.reduce((a,b)=>a+b,0);
+      const avg=sum/nums.length;
+      const median=sorted[Math.floor(sorted.length/2)];
+      const variance=nums.map(v=>(v-avg)**2).reduce((a,b)=>a+b,0)/nums.length;
+      const std=Math.sqrt(variance);
+      // Top/Bottom 5
+      const top5=[...sorted].reverse().slice(0,5);
+      const bot5=[...sorted].slice(0,5);
+      // IQR outliers
+      const q1=sorted[Math.floor(sorted.length*0.25)];
+      const q3=sorted[Math.floor(sorted.length*0.75)];
+      const iqr=q3-q1;
+      const outlierRows=data.reduce((acc,r,ri)=>{
+        const v=parseFloat(String(r[hi]||'').replace(/[,₹$%\s]/g,''));
+        if(!isNaN(v)&&(v<q1-1.5*iqr||v>q3+1.5*iqr))acc.push({row:ri+2,val:v});
+        return acc;
+      },[]);
+      const negCount=nums.filter(v=>v<0).length;
+      facts[h]={type:'numeric',count:nums.length,sum:sum,avg:avg,median:median,std:std,min:sorted[0],max:sorted[sorted[sorted.length-1]],q1,q3,top5,bot5,outlierCount:outlierRows.length,outlierRows:outlierRows.slice(0,5),negCount};
     } else {
-      const unique = new Set(strVals.filter(v => v !== '')).size;
-      profile.columns[h] = { type: 'categorical', count: strVals.filter(v => v !== '').length, unique, missing };
+      catCols.push({h,hi,vals});
+      const freq={};
+      vals.forEach(v=>{const k=String(v).trim();freq[k]=(freq[k]||0)+1;});
+      const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+      facts[h]={type:'categorical',count:vals.length,unique:new Set(vals).size,top5:sorted.slice(0,5).map(([v,c])=>({val:v,count:c})),missing:data.length-vals.length};
     }
   });
-  const idCols = hdrs.filter(h => /id|code|ref|order|invoice|customer|cust/i.test(h));
-  idCols.forEach(idCol => {
-    const idx = hdrs.indexOf(idCol); const seen = {};
-    data.forEach((row, ri) => {
-      const val = String(row[idx] || '').trim(); if (!val) return;
-      if (seen[val] !== undefined) profile.duplicates.push({ col: idCol, value: val, rows: [seen[val] + 2, ri + 2] });
-      else seen[val] = ri;
+
+  // ═══ DUPLICATE DETECTION — ALL ROWS ═══
+  const dups=[];
+  // Find likely ID column
+  const idColIdx=hdrs.findIndex(h=>/\bid\b|code|no\b|num\b|cust|invoice|order|sku/i.test(h));
+  if(idColIdx>=0){
+    const idMap={};
+    data.forEach((r,ri)=>{
+      const v=String(r[idColIdx]||'').trim();
+      if(!v)return;
+      if(!idMap[v])idMap[v]=[];
+      idMap[v].push(ri+2);
     });
-  });
-  const revIdx = hdrs.findIndex(h => /^revenue|^total_rev|^sales$/i.test(h)); const unitIdx = hdrs.findIndex(h => /^units|^qty|^quantity/i.test(h)); const priceIdx = hdrs.findIndex(h => /^price|^unit_price|^rate/i.test(h)); const discIdx = hdrs.findIndex(h => /^discount|^disc/i.test(h));
-  if (revIdx >= 0 && unitIdx >= 0 && priceIdx >= 0) {
-    data.forEach((row, ri) => {
-      const rev = parseFloat(String(row[revIdx] || '').replace(/[,$]/g, '')); const units = parseFloat(String(row[unitIdx] || '')); const price = parseFloat(String(row[priceIdx] || '').replace(/[,$]/g, '')); const disc = discIdx >= 0 ? (1 - parseFloat(String(row[discIdx] || '0').replace(/%/, '')) / 100) : 1;
-      if (!isNaN(rev) && !isNaN(units) && !isNaN(price)) {
-        const expected = units * price * disc; const diff = Math.abs(rev - expected);
-        if (diff > 1 && diff / Math.max(rev, 1) > 0.01) profile.formulaMismatches.push({ row: ri + 2, actual: rev, expected: Math.round(expected), diff: Math.round(diff) });
-      }
+    Object.entries(idMap).forEach(([v,rows])=>{
+      if(rows.length>1)dups.push({id:v,col:hdrs[idColIdx],rows,count:rows.length});
     });
   }
-  const totalCells = data.length * hdrs.length; const missingCells = Object.values(profile.missingValues).reduce((a, b) => a + b, 0);
-  profile.qualityScore = Math.round(((totalCells - missingCells) / totalCells) * 100);
-  return profile;
+  // Full row duplicates
+  const rowHash={};
+  const fullRowDups=[];
+  data.forEach((r,ri)=>{
+    const key=r.map(c=>String(c||'').trim()).join('|');
+    if(!key.replace(/\|/g,''))return;
+    if(!rowHash[key])rowHash[key]=[];
+    rowHash[key].push(ri+2);
+  });
+  Object.entries(rowHash).forEach(([,rows])=>{if(rows.length>1)fullRowDups.push(rows);});
+
+  // ═══ FORMULA MISMATCH DETECTION — ALL ROWS ═══
+  const mismatches=[];
+  const revIdx=hdrs.findIndex(h=>/^revenue$|^sales$|^amount$|^total$/i.test(h.trim()));
+  const unitIdx=hdrs.findIndex(h=>/^units?$|^qty$|^quantity$/i.test(h.trim()));
+  const priceIdx=hdrs.findIndex(h=>/^price$|^rate$|^mrp$|unit.price/i.test(h.trim()));
+  const discIdx=hdrs.findIndex(h=>/^discount$|^disc%?$|^discount%?$/i.test(h.trim()));
+  if(revIdx>=0&&unitIdx>=0&&priceIdx>=0){
+    data.forEach((r,ri)=>{
+      const rev=parseFloat(String(r[revIdx]||'').replace(/[,₹$\s]/g,''));
+      const units=parseFloat(String(r[unitIdx]||'').replace(/[,\s]/g,''));
+      const price=parseFloat(String(r[priceIdx]||'').replace(/[,₹$\s]/g,''));
+      if(isNaN(rev)||isNaN(units)||isNaN(price))return;
+      const disc=discIdx>=0?parseFloat(String(r[discIdx]||'').replace(/[%\s]/g,''))/100:0;
+      const expected=units*price*(1-(isNaN(disc)?0:disc));
+      const diff=Math.abs(rev-expected);
+      if(diff>Math.max(1,expected*0.02))mismatches.push({row:ri+2,revenue:rev,expected:Math.round(expected),diff:Math.round(diff)});
+    });
+  }
+
+  // ═══ GST DETECTION ═══
+  const gstCols=hdrs.filter(h=>/gst|cgst|sgst|igst|tax/i.test(h));
+  let gstSummary='';
+  if(gstCols.length>0){
+    gstSummary='\nGST COLUMNS DETECTED: '+gstCols.join(', ');
+    gstCols.forEach(gc=>{
+      const gcIdx=hdrs.indexOf(gc);
+      const gcFacts=facts[gc];
+      if(gcFacts&&gcFacts.type==='numeric')gstSummary+=`\n  ${gc}: Total=₹${gcFacts.sum.toFixed(2)}, Avg=₹${gcFacts.avg.toFixed(2)}`;
+    });
+  }
+
+  // ═══ QUALITY SCORE — ALL ROWS ═══
+  const totalCells=data.length*hdrs.length||1;
+  const filledCells=hdrs.reduce((t,h,hi)=>{
+    return t+data.filter(r=>r[hi]!=null&&String(r[hi]).trim()!=='').length;
+  },0);
+  const qualityScore=Math.round(filledCells/totalCells*100);
+
+  // ═══ PEARSON CORRELATION MATRIX ═══
+  let corrMatrix=null;
+  if(typeof ss!=='undefined'&&numCols.length>=2&&numCols.length<=10){
+    corrMatrix={};
+    numCols.forEach(({h:h1,nums:n1})=>{
+      corrMatrix[h1]={};
+      numCols.forEach(({h:h2,nums:n2})=>{
+        if(h1===h2){corrMatrix[h1][h2]=1;return;}
+        try{
+          const len=Math.min(n1.length,n2.length);
+          if(len<3){corrMatrix[h1][h2]=null;return;}
+          corrMatrix[h1][h2]=ss.sampleCorrelation(n1.slice(0,len),n2.slice(0,len));
+        }catch(e){corrMatrix[h1][h2]=null;}
+      });
+    });
+  }
+
+  // ═══ AUTO FORECAST — largest numeric col ═══
+  let forecastSummary='';
+  if(typeof ss!=='undefined'&&numCols.length>0){
+    const mainNum=numCols.reduce((a,b)=>b.nums.length>a.nums.length?b:a);
+    if(mainNum.nums.length>=6){
+      try{
+        const pts=mainNum.nums.slice(-12).map((v,i)=>[i,v]);
+        const reg=ss.linearRegression(pts);
+        const fn=ss.linearRegressionLine(reg);
+        const r2=ss.rSquaredXY(pts,fn);
+        const next3=[(pts.length),(pts.length+1),(pts.length+2)].map(x=>Math.max(0,fn(x)));
+        forecastSummary=`\nFORECAST (${mainNum.h}, linear, R²=${r2.toFixed(2)}): Next 3 periods: ${next3.map(v=>v.toFixed(2)).join(', ')} ${r2>0.7?'[HIGH CONFIDENCE]':r2>0.4?'[MEDIUM CONFIDENCE]':'[LOW CONFIDENCE — weak trend]'}`;
+      }catch(e){}
+    }
+  }
+
+  // ═══ INDIA BENCHMARKS AUTO-DETECT ═══
+  const INDIA_BENCHMARKS={
+    retail:{gross_margin:[25,35],net_margin:[3,8],inventory_turns:[6,12]},
+    pharma:{gross_margin:[18,22],net_margin:[10,15]},
+    fmcg:{gross_margin:[40,55],net_margin:[8,15]},
+    it_services:{gross_margin:[60,75],net_margin:[15,25]},
+    manufacturing:{gross_margin:[15,25],net_margin:[4,10]},
+    ecommerce:{gross_margin:[30,45],net_margin:[-5,5]},
+    saas:{gross_margin:[65,80],net_margin:[10,25]},
+  };
+  let benchmarkHint='';
+  const allText=(hdrs.join(' ')+data.slice(0,20).map(r=>r.join(' ')).join(' ')).toLowerCase();
+  let detectedIndustry=null;
+  if(/pharma|medicine|drug|tablet|capsule/i.test(allText))detectedIndustry='pharma';
+  else if(/software|saas|subscription|mrr|arr/i.test(allText))detectedIndustry='saas';
+  else if(/retail|store|sku|inventory|pos/i.test(allText))detectedIndustry='retail';
+  else if(/manufacture|production|oee|defect/i.test(allText))detectedIndustry='manufacturing';
+  else if(/order|cart|shipping|ecommerce|amazon|flipkart/i.test(allText))detectedIndustry='ecommerce';
+  if(detectedIndustry&&INDIA_BENCHMARKS[detectedIndustry]){
+    benchmarkHint=`\nDETECTED INDUSTRY: ${detectedIndustry.toUpperCase()}\nINDIA BENCHMARKS for ${detectedIndustry}: ${JSON.stringify(INDIA_BENCHMARKS[detectedIndustry])}`;
+  }
+
+  // ═══ BUILD VERIFIED FACTS SUMMARY (sent to AI instead of raw CSV) ═══
+  let summary=`━━━ NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS ━━━
+FILE: ${fname} | ROWS: ${data.length} | COLS: ${hdrs.length} | QUALITY: ${qualityScore}%
+NOTE: ALL numbers below are computed by JavaScript on ALL ${data.length} rows. They are GROUND TRUTH. Do NOT contradict them. Do NOT re-compute. Use them directly.
+
+━━━ COMPUTED COLUMN STATS (ALL ${data.length} ROWS) ━━━\n`;
+
+  hdrs.forEach(h=>{
+    const f=facts[h];
+    if(!f)return;
+    if(f.type==='numeric'){
+      summary+=`${h}: SUM=${fmtN(f.sum)} | AVG=${fmtN(f.avg)} | MEDIAN=${fmtN(f.median)} | MIN=${fmtN(f.min)} | MAX=${fmtN(f.max)} | STD=${fmtN(f.std)} | COUNT=${f.count}`;
+      if(f.negCount>0)summary+=` | ⚠️ ${f.negCount} NEGATIVES`;
+      if(f.outlierCount>0)summary+=` | ⚠️ ${f.outlierCount} OUTLIERS (IQR)`;
+      summary+='\n';
+    } else {
+      summary+=`${h}: CATEGORICAL | UNIQUE=${f.unique} | COUNT=${f.count} | MISSING=${f.missing}`;
+      if(f.top5.length)summary+=` | TOP: ${f.top5.slice(0,3).map(x=>`${x.val}(${x.count})`).join(', ')}`;
+      summary+='\n';
+    }
+  });
+
+  if(dups.length>0){
+    summary+=`\n━━━ DUPLICATE IDs FOUND (JavaScript verified) ━━━\n`;
+    dups.forEach(d=>summary+=`⚠️ ${d.col}="${d.id}" appears ${d.count}x in rows: ${d.rows.join(',')}\n`);
+  }
+  if(fullRowDups.length>0){
+    summary+=`⚠️ ${fullRowDups.length} FULLY DUPLICATE ROWS detected\n`;
+  }
+  if(mismatches.length>0){
+    summary+=`\n━━━ FORMULA MISMATCHES (Revenue ≠ Units×Price) ━━━\n`;
+    mismatches.slice(0,5).forEach(m=>summary+=`⚠️ Row ${m.row}: Revenue=${fmtN(m.revenue)} but Units×Price=${fmtN(m.expected)} (diff=${fmtN(m.diff)})\n`);
+    if(mismatches.length>5)summary+=`...and ${mismatches.length-5} more\n`;
+  }
+  if(corrMatrix){
+    summary+='\n━━━ CORRELATION MATRIX (Pearson, JS-computed) ━━━\n';
+    const numHdrs=numCols.map(c=>c.h);
+    numHdrs.forEach(h1=>{
+      const row=numHdrs.map(h2=>{const v=corrMatrix[h1]?.[h2];return v!=null?v.toFixed(2):'N/A';}).join(' | ');
+      summary+=`${h1}: ${row}\n`;
+    });
+  }
+  if(forecastSummary)summary+=forecastSummary+'\n';
+  if(gstSummary)summary+=gstSummary+'\n';
+  if(benchmarkHint)summary+=benchmarkHint+'\n';
+  summary+=`\n━━━ DATA SAMPLE (first 8 rows for context) ━━━\n${hdrs.join(',')}\n`;
+  data.slice(0,8).forEach(r=>summary+=r.map(c=>String(c||'').trim()).join(',')+'\n');
+
+  // Store
+  if(isSecond){
+    S.verifiedFacts2=facts;
+    S.factsSummary2=summary;
+  } else {
+    S.verifiedFacts=facts;
+    S.factsSummary=summary.slice(0,9000); // safe limit
+    S.duplicates=dups;
+    S.formulaMismatches=mismatches;
+    S.correlationMatrix=corrMatrix;
+
+    // Build anomaly facts for injection
+    const anomFacts=[];
+    hdrs.forEach(h=>{
+      const f=facts[h];
+      if(!f)return;
+      if(f.type==='numeric'){
+        if(f.outlierRows&&f.outlierRows.length>0)anomFacts.push(`${h}: ${f.outlierCount} outliers (IQR). Rows: ${f.outlierRows.map(o=>`row${o.row}=val${o.val}`).join(',')}`);
+        if(f.negCount>0&&/revenue|sales|price|profit/i.test(h))anomFacts.push(`⚠️ ${h}: ${f.negCount} negative values in revenue/sales column`);
+      } else {
+        if(f.missing>0)anomFacts.push(`${h}: ${f.missing} missing values (${Math.round(f.missing/data.length*100)}% of rows)`);
+      }
+    });
+    if(dups.length>0)anomFacts.push(`DUPLICATE IDs: ${dups.length} duplicate ID values found`);
+    if(mismatches.length>0)anomFacts.push(`FORMULA MISMATCH: ${mismatches.length} rows where Revenue ≠ Units×Price`);
+    S.anomalyFacts=anomFacts.join('\n');
+
+    // Confidence data
+    S.confidenceData={
+      qualityScore,
+      totalRows:data.length,
+      dupCount:dups.length+fullRowDups.length,
+      mismatchCount:mismatches.length,
+      missingCols:hdrs.filter(h=>facts[h]&&facts[h].type==='categorical'&&facts[h].missing>0).length,
+      level:qualityScore>=85&&dups.length===0&&mismatches.length===0?'HIGH':qualityScore>=65?'MEDIUM':'LOW'
+    };
+
+    // Audit log entry
+    S.auditLog.push({
+      ts:new Date().toISOString(),
+      file:fname,
+      rows:data.length,
+      cols:hdrs.length,
+      quality:qualityScore,
+      dups:dups.length,
+      mismatches:mismatches.length
+    });
+    try{localStorage.setItem('nx_audit',JSON.stringify(S.auditLog.slice(-50)));}catch(e){}
+  }
+
+  // Update S.fileData (legacy fallback, no longer primary)
+  S.fileData='[FACTS COMPUTED — see S.factsSummary]';
+  S.fileName=fname;
+
+  showFOk(fname,{rows:data.length,cols:hdrs.length,hdrs,data,facts,qualityScore,dups,mismatches,isSecond});
+  if(!isSecond)detectAnom(hdrs,data,facts);
 }
-function buildFactsPrompt(hdrs, data, profile) {
-  let txt = `═══ VERIFIED DATASET FACTS (computed by JavaScript, 100% accurate) ═══\nDataset: ${profile.totalRows} rows × ${profile.totalCols} columns\nData Quality: ${profile.qualityScore}% (across ALL ${profile.totalRows} rows)\n\n`;
-  const numCols = Object.entries(profile.columns).filter(([, v]) => v.type === 'numeric');
-  if (numCols.length > 0) { txt += `COMPUTED TOTALS (JavaScript-verified, exact):\n`; numCols.forEach(([col, stats]) => { txt += `  ${col}: SUM=${stats.sum.toLocaleString('en-IN')} | MEAN=${stats.mean.toFixed(2)} | MIN=${stats.min} | MAX=${stats.max} | MEDIAN=${stats.median}\n`; }); txt += '\n'; }
-  const missing = Object.entries(profile.missingValues).filter(([, v]) => v > 0);
-  if (missing.length > 0) { txt += `MISSING VALUES (JavaScript-verified):\n`; missing.forEach(([col, count]) => { txt += `  ${col}: ${count} missing (${((count / profile.totalRows) * 100).toFixed(1)}% of rows)\n`; }); txt += '\n'; }
-  if (profile.duplicates.length > 0) { txt += `DUPLICATE RECORDS DETECTED (JavaScript-verified):\n`; profile.duplicates.slice(0, 10).forEach(d => { txt += `  ${d.col}="${d.value}" appears at rows ${d.rows.join(', ')} — DATA INTEGRITY ISSUE\n`; }); txt += '\n'; }
-  if (profile.formulaMismatches.length > 0) { txt += `FORMULA MISMATCHES DETECTED (Revenue ≠ Units × Price):\n`; profile.formulaMismatches.slice(0, 10).forEach(m => { txt += `  Row ${m.row}: Actual=${m.actual.toLocaleString()} Expected=${m.expected.toLocaleString()} Diff=${m.diff.toLocaleString()}\n`; }); txt += '\n'; }
-  const outlierCols = Object.entries(profile.outliers); if (outlierCols.length > 0) { txt += `STATISTICAL OUTLIERS (IQR method):\n`; outlierCols.forEach(([col, rows]) => { txt += `  ${col}: outlier values at rows ${rows.join(', ')}\n`; }); txt += '\n'; }
-  txt += `COLUMN HEADERS: ${hdrs.join(', ')}\n\nSAMPLE DATA (first 30 rows for pattern recognition — use above stats for calculations):\n${hdrs.join(',')}\n`;
-  data.slice(0, 30).forEach(r => { txt += r.map(c => String(c || '').trim()).join(',') + '\n'; });
-  if (profile.totalRows > 100) { const catCols = Object.entries(profile.columns).filter(([, v]) => v.type === 'categorical' && v.unique <= 20); catCols.slice(0, 3).forEach(([col]) => { const idx = hdrs.indexOf(col); const counts = {}; data.forEach(row => { const val = String(row[idx] || '').trim(); if (val) counts[val] = (counts[val] || 0) + 1; }); txt += `\n${col} BREAKDOWN:\n`; Object.entries(counts).sort(([,a],[,b]) => b-a).slice(0, 15).forEach(([val, cnt]) => { txt += `  ${val}: ${cnt} rows (${((cnt/profile.totalRows)*100).toFixed(1)}%)\n`; }); }); }
-  return txt;
+
+// Helper: format number Indian style
+function fmtN(n){
+  if(n==null||isNaN(n))return'N/A';
+  if(Math.abs(n)>=10000000)return'₹'+(n/10000000).toFixed(2)+'Cr';
+  if(Math.abs(n)>=100000)return'₹'+(n/100000).toFixed(2)+'L';
+  if(Math.abs(n)>=1000)return n.toLocaleString('en-IN',{maximumFractionDigits:2});
+  return n.toFixed(2);
 }
-function showConfidenceBadge(profile, container) { if(!profile)return; const hasMismatches = profile.formulaMismatches.length > 0; const hasDuplicates = profile.duplicates.length > 0; const confidence = hasMismatches || hasDuplicates ? 'medium' : 'high'; const badge = document.createElement('div'); badge.className = `confidence-badge ${confidence}`; badge.innerHTML = confidence === 'high' ? '✅ Confidence: HIGH — all stats verified against actual data' : `⚠️ Confidence: MEDIUM — ${profile.formulaMismatches.length} formula mismatches, ${profile.duplicates.length} duplicates detected`; container.prepend(badge); }
-function processArr(rows,fname){if(!rows.length)return;const hdrs=rows[0].map(h=>String(h||'').trim());const data=rows.slice(1).filter(r=>r.some(c=>c&&String(c).trim()));S.csv={hdrs,data};const profile=computeDataProfile(hdrs,data);S.dataProfile=profile;const txt=buildFactsPrompt(hdrs,data,profile);S.fileData=txt;showFOk(fname,{rows:data.length,cols:hdrs.length,hdrs,data});detectAnom(hdrs,data);}
+
+function detectAnom(hdrs,data,facts){
+  const a=[];
+  // Use pre-computed facts if available
+  if(facts){
+    hdrs.forEach(h=>{
+      const f=facts[h];
+      if(!f)return;
+      if(f.type==='numeric'){
+        if(f.outlierCount>0)a.push(`${h}: ${f.outlierCount} outliers`);
+        if(f.negCount>0&&/revenue|sales|price|profit/i.test(h))a.push(`${h}: negative values`);
+      } else {
+        if(f.missing>data.length*0.05)a.push(`${h}: ${Math.round(f.missing/data.length*100)}% missing`);
+      }
+    });
+  } else {
+    // Fallback: basic scan
+    hdrs.forEach((h,hi)=>{
+      const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');
+      const nums=vals.map(v=>parseFloat(String(v).replace(/[,₹$%\s]/g,''))).filter(v=>!isNaN(v));
+      if(nums.length>3){
+        const avg=nums.reduce((a,b)=>a+b,0)/nums.length;
+        const std=Math.sqrt(nums.map(v=>(v-avg)**2).reduce((a,b)=>a+b,0)/nums.length);
+        if(nums.filter(v=>Math.abs(v-avg)>2*std).length)a.push(`${h}: outliers`);
+        if(nums.filter(v=>v<0).length&&/revenue|sales|price/i.test(h))a.push(`${h}: negatives`);
+      }
+      const miss=data.length-vals.length;
+      if(miss>0&&miss/data.length>0.05)a.push(`${h}: ${Math.round(miss/data.length*100)}% missing`);
+    });
+  }
+  if(S.duplicates&&S.duplicates.length>0)a.push(`Duplicate IDs: ${S.duplicates.length} found`);
+  if(S.formulaMismatches&&S.formulaMismatches.length>0)a.push(`Formula mismatch: ${S.formulaMismatches.length} rows`);
+  const banner=document.getElementById('anomBanner');
+  if(a.length&&banner){
+    banner.style.display='';
+    document.getElementById('anomTags').innerHTML=a.map(x=>`<span class="atag">${esc(x)}</span>`).join('');
+  }
+}
+
 function showFOk(fname,info){
   const fok=document.getElementById('fileok');
-  if(fok){fok.style.display='inline-flex';fok.innerHTML='✅ '+esc(fname);}
+  if(fok){fok.style.display='inline-flex';fok.innerHTML='✅ '+esc(fname)+(info.isSecond?' (File 2)':'');}
   const ta=document.getElementById('userinput');
-  if(ta&&!ta.value.trim()){ta.value='Analyze this data and give complete insights with charts and KPI cards';ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';}
+  if(ta&&!ta.value.trim()){
+    ta.value=info.isSecond?'Compare File 1 vs File 2. Show all key differences, changes, and insights.':'Analyze this data and give complete insights with charts and KPI cards';
+    ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';
+  }
   document.getElementById('sendbtn').disabled=false;
-  const old=document.getElementById('dcCard');
-  if(old)old.remove();
-  const csvP=document.getElementById('csvPrev');
-  if(csvP)csvP.style.display='none';
+  const old=document.getElementById('dcCard');if(old)old.remove();
+  const csvP=document.getElementById('csvPrev');if(csvP)csvP.style.display='none';
   if(!info)return;
-  const numCols=info.hdrs.filter(h=>/revenue|sales|price|profit|cost|amount|units|qty|margin|spend|value|income/i.test(h)).length;
-  const dateCols=info.hdrs.filter(h=>/date|time|month|year|quarter|day|week/i.test(h)).length;
-  const filled=info.data.slice(0,50).reduce((t,r)=>t+r.filter(c=>c!=null&&String(c).trim()!=='').length,0);
-  const totalCells=(Math.min(50,info.data.length)*info.hdrs.length)||1;
-  const quality=Math.round(filled/totalCells*100);
+
+  // Quality score now uses real pre-computed value
+  const quality=info.qualityScore||Math.round(
+    info.data.slice(0,50).reduce((t,r)=>t+r.filter(c=>c!=null&&String(c).trim()!=='').length,0)/
+    ((Math.min(50,info.data.length)*info.hdrs.length)||1)*100
+  );
+
   const sugs=[];
-  if(numCols>0)sugs.push('📊 Revenue & Profit Analysis');
-  if(dateCols>0)sugs.push('📈 Trend Over Time');
+  if(numCols>0)sugs.push('📊 Full Analysis with verified numbers');
+  if(dateCols>0)sugs.push('📈 Trend & Forecast');
   sugs.push('⚠️ Find All Anomalies');
-  sugs.push('📄 Executive Summary');
+  sugs.push('📄 Executive Report');
   if(info.hdrs.some(h=>/salesperson|employee|rep|agent/i.test(h)))sugs.push('🏆 Top Performers');
-  if(info.hdrs.some(h=>/region|city|state|zone/i.test(h)))sugs.push('🗺️ Regional Performance');
+  if(info.hdrs.some(h=>/region|city|state|zone/i.test(h)))sugs.push('🗺️ Regional Analysis');
+  if(info.dups&&info.dups.length>0)sugs.push(`🔍 Investigate ${info.dups.length} duplicate IDs`);
+  if(info.mismatches&&info.mismatches.length>0)sugs.push(`🔧 Fix ${info.mismatches.length} formula mismatches`);
+
+  const dupAlert=info.dups&&info.dups.length>0?`<div class="dc-alert">⚠️ ${info.dups.length} Duplicate IDs detected — JS verified</div>`:'';
+  const mmAlert=info.mismatches&&info.mismatches.length>0?`<div class="dc-alert dc-alert-orange">⚠️ ${info.mismatches.length} Formula mismatches (Revenue≠Units×Price) — JS verified</div>`:'';
+  // Correlation highlights
+  let corrHtml='';
+  if(S.correlationMatrix){
+    const entries=[];
+    const keys=Object.keys(S.correlationMatrix);
+    keys.forEach(k1=>keys.forEach(k2=>{
+      if(k1>=k2)return;
+      const v=S.correlationMatrix[k1][k2];
+      if(v!=null&&Math.abs(v)>0.6)entries.push({k1,k2,v});
+    }));
+    if(entries.length>0){
+      corrHtml=`<div class="dc-sec">🔗 Strong Correlations</div><div class="dc-corr">${
+        entries.slice(0,4).map(e=>`<span class="dc-corr-tag ${e.v>0?'pos':'neg'}">${e.k1} ↔ ${e.k2}: ${e.v.toFixed(2)}</span>`).join('')
+      }</div>`;
+    }
+  }
+
   const cols=info.hdrs.slice(0,6);
   const rows=info.data.slice(0,3);
   const card=document.createElement('div');
