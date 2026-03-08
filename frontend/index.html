@@ -1849,15 +1849,16 @@ ${S.fileData.slice(0, 3000)}`;
                 document.getElementById('sendbtn').disabled = false;
                 bubEl = addBub('assistant', '', true, true);
               }
-              bubEl.innerHTML = renderContent(fullReply);
+              if (bubEl) bubEl.innerHTML = fullReply.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>") + '<span class="streaming-cursor"></span>';
             }
           } catch(e) {}
         }
       }
       reply = fullReply;
       if (!reply) throw new Error('Backend returned empty response.');
-      if(bubEl && S.dataProfile) showConfidenceBadge(S.dataProfile, bubEl);
       if(bubEl) {
+        bubEl.innerHTML = renderContent(reply);
+        if (S.dataProfile) showConfidenceBadge(S.dataProfile, bubEl);
         const acts=document.createElement('div');acts.className='msg-acts';acts.innerHTML='<span class="mab" onclick="copyBub(this)">⎘ Copy</span><span class="mab" onclick="exportPDF()">📄 PDF</span><span class="mab" onclick="exportExcel()">📊 Excel</span><span class="mab" onclick="saveAsTXT()">📝 TXT</span><span class="mab" onclick="shareWhatsApp()">💬 WA</span>';bubEl.appendChild(acts);
         renderCharts(bubEl);
       }
@@ -1933,6 +1934,7 @@ function addBub(role,content,scroll,returnBub){const chat=document.getElementByI
   if(window.innerWidth > 680){
     setTimeout(()=>{const ta=document.getElementById('userinput');if(ta)ta.focus();},300);
   }
+  if(returnBub) return bub;
 }
 function addTyp(){const chat=document.getElementById('chat');const id='t'+Date.now();const r=document.createElement('div');r.className='mrow';r.id=id;r.innerHTML='<div class="av ai">NX</div><div class="bub ai"><div class="dots"><span></span><span></span><span></span></div></div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;return id;}
 function removeTyp(id){const el=document.getElementById(id);if(el)el.remove();}
