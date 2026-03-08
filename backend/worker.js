@@ -317,65 +317,106 @@ export default {
 
     // ── /api/analyze ──────────────────────────────────────
     if (path === "/api/analyze" && method === "POST") {
-      const user = await getUser(request, env);
+      let user = await getUser(request, env);
       if (!user) return err("Unauthorized", 401);
 
       const body = await getJson();
       if (!body) return err("Malformed JSON", 400);
       const { messages, fileData } = body;
 
-      // Build Groq request
-      const groqMessages = [];
+      // Build initial messages
+      const fullMessages = [];
       if (fileData) {
-        groqMessages.push({
+        fullMessages.push({
           role: "user",
           content: `[File attached: ${sanitize(fileData.name)}]\n${sanitize(fileData.text) || ""}`,
         });
       }
       (messages || []).forEach(m => {
-        groqMessages.push({ role: m.role, content: sanitize(m.content) });
+        fullMessages.push({ role: m.role, content: sanitize(m.content) });
       });
 
-      const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${env.GROQ_API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [
-            {
-              role: "system",
-              content: `You are NEXUS-DATA ANALYST v6 — Universal AI Data Analyst. Combined: Senior Data Scientist + CFO + McKinsey Consultant + ML Engineer + Statistician + Risk Manager.
-ANALYSIS LAYERS:
-1. DATA PROFILING: Schema, quality, missing patterns, outliers (IQR/Z-score), cardinality.
-2. DESCRIPTIVE: Mean, median, mode, variance, std dev, IQR, skewness, kurtosis, CAGR, YoY/MoM/QoQ.
-3. INFERENTIAL: Hypothesis testing, t-tests, ANOVA, chi-square, correlation, regression, confidence intervals.
-4. DIAGNOSTIC: Waterfall decomp, Pareto/ABC, 5-Why, volume/price/mix variance, HHI.
-5. PREDICTIVE: Trend projection, time-series decomp, SMA/EMA, churn prediction, LTV projection.
-6. PRESCRIPTIVE: ROI-ranked action plan, resource allocation, 90-day roadmap.
-7. FINANCE: P&L decomp, DuPont ROE bridge, Altman Z-Score, Piotroski F, DCF sensitivity, WACC, CCC, 30+ ratios.
-8. RISK: Monte Carlo ranges, scenario stress test, HHI, sensitivity tornado chart.
-9. VISUALIZATIONS: Use [CHART:type|title|json] for bar/line/pie/area/radar charts. Use [KPI:label|value|delta|up/down/neutral] for KPI cards.
-10. CODE: SQL (CTEs, window functions), Python/pandas, DAX, R.
-ALWAYS: Detect anomalies, flag assumptions, end with ◆ NEXUS-DATA ANALYST VERDICT + PRIORITY ACTIONS.
-Format: ══ sections, ▶ sub-sections, | tables, **bold** numbers.`,
-            },
-            ...groqMessages,
-          ],
-          max_tokens: 4096,
-          temperature: 0.7,
-        }),
-      });
-
-      if (!groqRes.ok) {
-        const errData = await groqRes.text();
-        return err(`AI error: ${errData}`, 502);
+      // Token trimming to stay under 7000 estimated tokens (~28000 chars)
+      const MAX_CHARS = 25000;
+      let currentChars = 0;
+      const trimmedMessages = [];
+      
+      for (let i = fullMessages.length - 1; i >= 0; i--) {
+        const msgLen = fullMessages[i].content.length;
+        if (currentChars + msgLen <= MAX_CHARS) {
+          trimmedMessages.unshift(fullMessages[i]);
+          currentChars += msgLen;
+        } else {
+          // If the very first huge message (like fileData) exceeds limits, slice it
+          if (trimmedMessages.length === 0) {
+            const allowed = MAX_CHARS - currentChars;
+            trimmedMessages.unshift({
+                role: fullMessages[i].role,
+                content: fullMessages[i].content.slice(0, allowed) + "...[TRUNCATED]"
+            });
+          }
+          break;
+        }
       }
 
-      const groqData = await groqRes.json();
-      const reply    = groqData.choices?.[0]?.message?.content || "No response";
+      const SYS_PROMPT = `You are NEXUS v9 — AI Data Analyst. Role: Data Scientist+CFO+Consultant.
+ALWAYS DO: 1)Profile data quality+anomalies 2)Descriptive stats 3)Inferential 4)Diagnostic 5)Predictive 6)Prescriptive 7)Finance ratios 8)Risk 9)NEXUS VERDICT
+CHARTS: [CHART:bar|Title|[{"name":"A","val":1},{"name":"B","val":2}]] types:bar/line/pie/donut/area/radar
+KPIs: [KPI:Label|Value|Delta|up/down/neutral]
+FORMAT: ══ sections, ▶ subsections, | tables, **bold** key numbers.
+CRITICAL: Use ACTUAL data numbers. END: ◆ NEXUS VERDICT + top 5 priority actions.
+MANDATORY: AT LEAST 3-4 charts per analysis.`;
+
+      let attempts = 0;
+      let finalRes = null;
+      let errorMsg = "";
+
+      while (attempts < 3) {
+        attempts++;
+        const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${env.GROQ_API_KEY}`,
+          },
+          body: JSON.stringify({
+            model: "llama-3.3-70b-versatile",
+            messages: [
+              { role: "system", content: SYS_PROMPT },
+              ...trimmedMessages,
+            ],
+            max_tokens: 2000,
+            temperature: 0.7,
+          }),
+        });
+
+        if (groqRes.ok) {
+          finalRes = await groqRes.json();
+          break;
+        }
+
+        const errText = await groqRes.text();
+        errorMsg = errText;
+        
+        if (groqRes.status === 429 && attempts < 3) {
+          const waitMatch = errText.match(/try again in ([0-9.]+)s/i);
+          const waitSecs = waitMatch ? parseFloat(waitMatch[1]) : 2;
+          await new Promise(r => setTimeout(r, (waitSecs * 1000) + 100)); // sleep exact seconds
+          continue;
+        }
+        break; // Stop on non-429 error or out of retries
+      }
+
+      if (!finalRes) {
+        // Refund credit
+        if (user.plan !== "unlimited") {
+          user.credits++;
+          await saveUser(env, user);
+        }
+        return err(`We are experiencing high traffic. Your credit has been refunded. Please try again in 20 seconds.`, 502);
+      }
+
+      const reply = finalRes.choices?.[0]?.message?.content || "No response";
       return json({ reply });
     }
 
