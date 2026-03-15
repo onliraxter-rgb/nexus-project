@@ -12,7 +12,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
-<title>NEXUS — AI Business Data Analyst</title>
+<title>NEXUS — AI Data Analyst for Indian Business | Free to Start</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -733,6 +733,207 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
 /* ══ COMPARE BUTTON ACTIVE ══ */
 #compareModeBtn.active{color:#34d399!important;border-color:rgba(52,211,153,.3)!important;background:rgba(52,211,153,.06)!important}
+
+
+/* ═══════════════════════════════════════════════
+   NEXUS LANDING v4 — ALL 10 EFFECTS
+   Self-contained WebGL · No CDN · Works file://
+═══════════════════════════════════════════════ */
+#view-landing{font-family:'Syne','DM Sans',system-ui,sans-serif;background:#050508;color:#e2e8f0;overflow-x:hidden}
+#view-landing *{box-sizing:border-box}
+
+/* Cursor */
+#lp-c1{position:fixed;width:8px;height:8px;background:#a78bfa;border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);mix-blend-mode:screen}
+#lp-c2{position:fixed;width:36px;height:36px;border:1px solid rgba(167,139,250,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .1s,top .1s,width .22s,height .22s,border-color .22s}
+
+/* Nav */
+#lp-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 56px;background:rgba(5,5,12,.6);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.04);transition:background .35s,border-color .35s}
+#lp-nav.lp-scrolled{background:rgba(5,5,12,.94);border-bottom-color:rgba(124,58,237,.14)}
+.lp-logo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+.lp-logo-mark{width:33px;height:33px;background:linear-gradient(135deg,#7c3aed,#2563eb);border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;font-weight:700;color:#fff;box-shadow:0 0 18px rgba(124,58,237,.5);flex-shrink:0}
+.lp-logo-name{font-size:17px;font-weight:800;color:#fff;letter-spacing:-.03em}
+.lp-nav-links{display:flex;gap:30px}
+.lp-nlink{font-size:12px;color:rgba(255,255,255,.42);text-decoration:none;font-family:monospace;letter-spacing:.04em;transition:color .2s;position:relative;padding-bottom:3px}
+.lp-nlink::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:linear-gradient(90deg,#7c3aed,#60a5fa);transition:width .28s}
+.lp-nlink:hover{color:#fff}.lp-nlink:hover::after{width:100%}
+.lp-nav-right{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.lp-btn-ghost{padding:8px 17px;border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#fff;font-size:12px;font-weight:600;background:transparent;cursor:pointer;font-family:inherit;transition:all .2s}
+.lp-btn-ghost:hover{border-color:rgba(167,139,250,.5);background:rgba(124,58,237,.09)}
+.lp-btn-pri{position:relative;padding:9px 20px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:9px;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;overflow:hidden;box-shadow:0 0 18px rgba(124,58,237,.35);transition:transform .2s,box-shadow .2s}
+.lp-btn-pri:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(124,58,237,.65)}
+.lp-arrow{display:inline-block;transition:transform .2s}.lp-btn-pri:hover .lp-arrow{transform:translateX(3px)}
+.lp-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.14) 50%,transparent 60%);transform:translateX(-100%);transition:transform .55s}
+.lp-btn-pri:hover .lp-shine{transform:translateX(100%)}
+
+/* Hero */
+.lp-hero{position:relative;z-index:10;min-height:100vh;display:grid;grid-template-columns:1fr 440px;gap:52px;align-items:center;padding:120px 56px 80px;overflow:hidden}
+
+/* 1. Grid background */
+.lp-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(124,58,237,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(124,58,237,.055) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 85% 85% at 50% 40%,#000 20%,transparent 100%);-webkit-mask-image:radial-gradient(ellipse 85% 85% at 50% 40%,#000 20%,transparent 100%);pointer-events:none}
+
+/* 5. Beams */
+.lp-beams{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lp-beam{position:absolute;left:-5%;height:1px;width:var(--w,50%);top:var(--t,50%);background:linear-gradient(90deg,transparent,var(--c,rgba(124,58,237,.5)),transparent);animation:lp-bm 5s var(--d,0s) ease-in-out infinite}
+@keyframes lp-bm{0%,100%{transform:scaleX(0);opacity:0}15%{opacity:1}55%{transform:scaleX(1) translateX(25%)}90%{opacity:.2}95%{transform:scaleX(1.1) translateX(50%);opacity:0}}
+
+/* 3. Text reveals */
+.lp-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:5px 14px 5px 6px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.28);border-radius:100px;font-family:monospace;font-size:10px;color:#a78bfa;letter-spacing:.07em;margin-bottom:26px;animation:lp-fu .85s .05s both}
+.lp-eyebrow-dot{width:6px;height:6px;background:#34d399;border-radius:50%;animation:lp-pulse 2s infinite;flex-shrink:0;box-shadow:0 0 6px #34d399}
+@keyframes lp-pulse{0%,100%{transform:scale(1)}50%{transform:scale(.55);opacity:.4}}
+@keyframes lp-fu{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.lp-h1{margin-bottom:4px;overflow:hidden}
+.lp-hl{display:block;font-size:clamp(50px,7.8vw,106px);font-weight:800;line-height:.94;letter-spacing:-.04em;overflow:hidden;color:#fff;animation:lp-si .88s cubic-bezier(.16,1,.3,1) both}
+.lp-hl1{animation-delay:.08s}.lp-hl2{animation-delay:.18s;-webkit-text-stroke:1.5px rgba(167,139,250,.55);color:transparent}.lp-hl3{animation-delay:.28s}
+@keyframes lp-si{from{transform:translateY(108%)}to{transform:translateY(0)}}
+.lp-hash{color:#a78bfa;-webkit-text-stroke:0}
+.lp-sub{font-size:15px;color:rgba(255,255,255,.44);line-height:1.8;max-width:460px;margin:22px 0 28px;animation:lp-fu .9s .38s both}
+.lp-sub strong{color:rgba(255,255,255,.82);font-weight:600}
+
+/* 8. CTA button */
+.lp-btns{display:flex;gap:11px;flex-wrap:wrap;animation:lp-fu .9s .5s both}
+.lp-cta{position:relative;display:inline-flex;align-items:center;gap:8px;padding:13px 30px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:12px;color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;overflow:hidden;box-shadow:0 0 28px rgba(124,58,237,.45),0 0 0 1px rgba(124,58,237,.3),inset 0 1px 0 rgba(255,255,255,.14);transition:transform .22s,box-shadow .22s}
+.lp-cta:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(124,58,237,.72),0 0 0 1px rgba(124,58,237,.5),inset 0 1px 0 rgba(255,255,255,.2)}
+.lp-cta:active{transform:translateY(0)}
+.lp-cta svg{transition:transform .2s;flex-shrink:0}.lp-cta:hover svg{transform:translateX(4px)}
+.lp-cta-shine{position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,255,255,.16) 50%,transparent 65%);transform:translateX(-100%);transition:transform .58s}.lp-cta:hover .lp-cta-shine{transform:translateX(100%)}
+.lp-cta-glow{position:absolute;inset:-1px;border-radius:inherit;background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(37,99,235,.2));filter:blur(8px);z-index:-1;opacity:0;transition:opacity .28s}.lp-cta:hover .lp-cta-glow{opacity:1}
+.lp-cta-lg{padding:15px 42px;font-size:15px}
+.lp-cta-ghost{padding:13px 26px;border:1px solid rgba(255,255,255,.1);border-radius:12px;color:#fff;font-size:14px;font-weight:600;background:rgba(255,255,255,.03);cursor:pointer;font-family:inherit;transition:all .22s;backdrop-filter:blur(10px)}
+.lp-cta-ghost:hover{border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.07)}
+
+/* 6. Stats */
+.lp-stats{display:flex;align-items:stretch;margin-top:38px;background:rgba(255,255,255,.025);border:1px solid rgba(255,255,255,.07);border-radius:13px;overflow:hidden;animation:lp-fu .9s .62s both;width:fit-content}
+.lp-stat{padding:13px 21px;text-align:center;position:relative;cursor:default;transition:background .25s,transform .25s}
+.lp-stat:hover{background:rgba(124,58,237,.1);transform:translateY(-2px)}
+.lp-stat-sep{width:1px;background:rgba(255,255,255,.06);flex-shrink:0}
+.lp-sv{font-family:monospace;font-size:20px;font-weight:700;color:var(--ac,#fff);line-height:1;margin-bottom:4px;transition:text-shadow .25s}
+.lp-stat:hover .lp-sv{text-shadow:0 0 18px var(--ac,rgba(124,58,237,.5))}
+.lp-sl{font-family:monospace;font-size:9px;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em}
+.lp-sg{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,var(--ac,rgba(124,58,237,.3)),transparent 70%);opacity:0;transition:opacity .25s;pointer-events:none}.lp-stat:hover .lp-sg{opacity:.14}
+
+/* Mock card */
+.lp-hero-r{animation:lp-fu .9s .18s both;position:relative;z-index:2}
+.lp-mock{background:rgba(6,6,18,.92);border:1px solid rgba(124,58,237,.16);border-radius:18px;padding:18px;box-shadow:0 50px 100px rgba(0,0,0,.75),0 0 0 1px rgba(124,58,237,.07),0 0 60px rgba(124,58,237,.05);position:relative;overflow:hidden;transition:transform .38s,box-shadow .38s}
+.lp-mock:hover{transform:translateY(-5px) scale(1.01);box-shadow:0 60px 120px rgba(0,0,0,.8),0 0 0 1px rgba(124,58,237,.14),0 0 80px rgba(124,58,237,.1)}
+.lp-mock-halo{position:absolute;top:-90px;right:-90px;width:280px;height:280px;background:radial-gradient(circle,rgba(124,58,237,.13),transparent 65%);animation:lp-ps 4s ease-in-out infinite;pointer-events:none}
+@keyframes lp-ps{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.18);opacity:1}}
+.lp-mock-top{display:flex;align-items:center;gap:8px;margin-bottom:14px;padding-bottom:11px;border-bottom:1px solid rgba(255,255,255,.05)}
+.lp-mdots{display:flex;gap:5px;flex-shrink:0}.lp-mdots span{width:8px;height:8px;border-radius:50%;display:block;flex-shrink:0}
+.lp-mtitle{flex:1;text-align:center;font-family:monospace;font-size:9px;color:rgba(255,255,255,.2)}
+.lp-mlive{font-family:monospace;font-size:8px;color:#34d399}
+.lp-mkpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px}
+.lp-mkpi{padding:10px 8px;background:rgba(255,255,255,.03);border-radius:8px;border-left:2px solid var(--bc,#7c3aed);transition:background .2s}.lp-mkpi:hover{background:rgba(124,58,237,.09)}
+.lp-mkl{font-family:monospace;font-size:7px;color:rgba(255,255,255,.25);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.lp-mkv{font-family:monospace;font-size:16px;font-weight:700;color:#f0f4f8;line-height:1}
+.lp-mkd{font-family:monospace;font-size:7px;margin-top:2px}
+.lp-mchart{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);border-radius:8px;padding:10px;margin-bottom:10px}
+.lp-mchart-lbl{font-family:monospace;font-size:8px;color:rgba(255,255,255,.2);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.lp-bars{display:flex;align-items:flex-end;gap:5px;height:60px}
+.lp-bar{flex:1;height:0;border-radius:3px 3px 0 0;background:linear-gradient(to top,var(--c,#7c3aed),rgba(255,255,255,.15));transition:height 1.1s cubic-bezier(.34,1.4,.64,1);position:relative}
+.lp-bar::after{content:attr(data-v);position:absolute;top:-17px;left:50%;transform:translateX(-50%);font-family:monospace;font-size:7px;color:rgba(255,255,255,.22);white-space:nowrap;opacity:0;transition:opacity .15s}.lp-bar:hover::after{opacity:1}
+.lp-bar-hi{box-shadow:0 0 14px rgba(52,211,153,.5)}
+.lp-mverdict{font-family:monospace;font-size:10px;color:#a78bfa;padding:9px 11px;background:rgba(124,58,237,.07);border:1px solid rgba(124,58,237,.16);border-radius:8px;line-height:1.6}
+
+/* Ticker */
+.lp-ticker-wrap{position:relative;z-index:10;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04);overflow:hidden;padding:12px 0;background:rgba(255,255,255,.012)}
+.lp-ticker{display:flex;white-space:nowrap;animation:lp-tk 28s linear infinite;width:max-content}.lp-ticker:hover{animation-play-state:paused}
+.lp-ticker span{font-family:monospace;font-size:11px;color:rgba(255,255,255,.28);padding:0 16px}
+.lp-dot{color:rgba(124,58,237,.4)!important;padding:0 4px!important}
+@keyframes lp-tk{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* Sections */
+.lp-sec{position:relative;z-index:10;padding:96px 56px;max-width:1180px;margin:0 auto}
+.lp-sh-wrap{text-align:center;margin-bottom:54px}
+.lp-kicker{font-family:monospace;font-size:10px;color:#a78bfa;letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px}
+.lp-sh{font-size:clamp(34px,5vw,58px);font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1.06}
+.lp-sho{-webkit-text-stroke:1.5px rgba(167,139,250,.5);color:transparent}
+.lp-ssub{font-size:15px;color:rgba(255,255,255,.38);max-width:480px;margin:13px auto 0;line-height:1.72}
+
+/* 2. Feature cards */
+.lp-fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+.lp-fc{padding:25px;background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.06);border-radius:16px;position:relative;overflow:hidden;transition:transform .32s,border-color .32s,box-shadow .32s;cursor:default}
+.lp-fc::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .32s;pointer-events:none}
+.lp-fc:hover{transform:translateY(-6px);box-shadow:0 28px 56px rgba(0,0,0,.55)}.lp-fc:hover::before{opacity:1}
+.lp-fc-g:hover{border-color:rgba(52,211,153,.22)!important}.lp-fc-g::before{background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(52,211,153,.09),transparent)}
+.lp-fc-b:hover{border-color:rgba(96,165,250,.22)!important}.lp-fc-b::before{background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(96,165,250,.09),transparent)}
+.lp-fc-p:hover{border-color:rgba(244,114,182,.22)!important}.lp-fc-p::before{background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(244,114,182,.09),transparent)}
+.lp-fc:not(.lp-fc-g):not(.lp-fc-b):not(.lp-fc-p):hover{border-color:rgba(167,139,250,.18)}
+.lp-fcg{position:absolute;width:100px;height:100px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.28),transparent 70%);pointer-events:none;opacity:0;transition:opacity .22s;transform:translate(-50%,-50%)}
+.lp-fc:hover .lp-fcg{opacity:1}
+.lp-fci{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:15px;background:var(--fi,rgba(124,58,237,.14));border:1px solid var(--fb,rgba(124,58,237,.2))}
+.lp-fcn{font-size:15px;font-weight:700;color:#fff;margin-bottom:7px;letter-spacing:-.02em}
+.lp-fcd{font-size:12px;color:rgba(255,255,255,.37);line-height:1.72}
+.lp-fct{display:inline-block;margin-top:13px;font-family:monospace;font-size:9px;padding:3px 9px;border-radius:20px;font-weight:600;color:var(--ft,#a78bfa);background:var(--fb2,rgba(124,58,237,.12));border:1px solid var(--ft,rgba(124,58,237,.2))}
+
+/* 7. Dividers */
+.lp-divider{display:flex;align-items:center;gap:16px;max-width:1180px;margin:20px auto;padding:0 56px 56px}
+.lp-dvl{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(124,58,237,.3),transparent)}
+.lp-dvlbl{font-family:monospace;font-size:9px;color:rgba(124,58,237,.42);letter-spacing:.16em;white-space:nowrap}
+
+/* Steps */
+.lp-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative;max-width:860px;margin:0 auto}
+.lp-steps::before{content:'';position:absolute;top:27px;left:calc(16.7%);right:calc(16.7%);height:1px;background:linear-gradient(90deg,#7c3aed,#60a5fa);opacity:.25}
+.lp-step{text-align:center;padding:0 24px;position:relative}
+.lp-stn{width:54px;height:54px;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 18px;font-family:monospace;font-size:14px;font-weight:700;color:#a78bfa;position:relative;z-index:2;transition:all .3s}
+.lp-step:hover .lp-stn{background:rgba(124,58,237,.22);border-color:#a78bfa;box-shadow:0 0 22px rgba(124,58,237,.35)}
+.lp-stt{font-size:16px;font-weight:700;color:#fff;margin-bottom:8px;letter-spacing:-.02em}
+.lp-std{font-size:12px;color:rgba(255,255,255,.37);line-height:1.72}
+
+/* Pricing */
+.lp-pgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:720px;margin:0 auto}
+.lp-pc{padding:27px;background:rgba(255,255,255,.022);border:1px solid rgba(255,255,255,.07);border-radius:16px;position:relative;transition:transform .28s,box-shadow .28s,border-color .28s}
+.lp-pc:hover{transform:translateY(-4px);box-shadow:0 20px 46px rgba(0,0,0,.44)}
+.lp-pc-feat{border-color:rgba(124,58,237,.28);background:linear-gradient(155deg,rgba(124,58,237,.06),rgba(37,99,235,.04));box-shadow:0 0 38px rgba(124,58,237,.07)}
+.lp-pc-feat:hover{border-color:rgba(124,58,237,.5)!important;box-shadow:0 24px 54px rgba(0,0,0,.5),0 0 58px rgba(124,58,237,.12)!important}
+.lp-pcbadge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);font-family:monospace;font-size:9px;font-weight:700;padding:3px 14px;background:linear-gradient(90deg,#7c3aed,#2563eb);color:#fff;border-radius:20px;white-space:nowrap}
+.lp-pcname{font-family:monospace;font-size:10px;font-weight:700;color:rgba(255,255,255,.35);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.lp-pcprice{font-size:40px;font-weight:900;color:#fff;letter-spacing:-.04em;margin-bottom:4px}.lp-pcprice span{font-size:13px;font-weight:400;color:rgba(255,255,255,.3)}
+.lp-pccycle{font-family:monospace;font-size:9px;color:rgba(255,255,255,.28);margin-bottom:18px}
+.lp-pclist{list-style:none;margin-bottom:20px;display:flex;flex-direction:column;gap:8px}
+.lp-pclist li{font-size:12px;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:8px}
+.lp-pclist li::before{content:'✓';color:#34d399;font-weight:700;font-family:monospace;font-size:10px;flex-shrink:0}
+.lp-pcbtn{width:100%;padding:11px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .18s;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#fff}
+.lp-pcbtn:hover{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.09)}
+.lp-pcbtn-p{background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;box-shadow:0 4px 16px rgba(124,58,237,.3)}
+.lp-pcbtn-p:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(124,58,237,.5)}
+
+/* Testimonial */
+.lp-tcard{padding:24px;background:rgba(255,255,255,.024);border:1px solid rgba(255,255,255,.07);border-radius:14px;transition:border-color .25s}.lp-tcard:hover{border-color:rgba(124,58,237,.2)}
+.lp-tstars{color:#f59e0b;font-size:13px;letter-spacing:2px;margin-bottom:10px}
+.lp-ttxt{font-size:13px;color:rgba(255,255,255,.54);line-height:1.75;margin-bottom:14px;font-style:italic}
+.lp-tauth{display:flex;align-items:center;gap:10px}
+.lp-tav{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;font-family:monospace;flex-shrink:0}
+.lp-tname{font-size:12px;font-weight:700;color:#fff}
+.lp-trole{font-family:monospace;font-size:9px;color:rgba(255,255,255,.3)}
+
+/* CTA section */
+.lp-cta-sec{position:relative;z-index:10;padding:120px 56px;text-align:center;overflow:hidden}
+.lp-cta-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:700px;height:400px;background:radial-gradient(ellipse,rgba(124,58,237,.18),transparent 65%);animation:lp-cg 5s ease-in-out infinite;pointer-events:none}
+@keyframes lp-cg{0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}}
+.lp-cta-inner{max-width:640px;margin:0 auto;position:relative;z-index:1}
+.lp-cta-h{font-size:clamp(42px,7vw,74px);font-weight:800;color:#fff;letter-spacing:-.04em;line-height:1.02;margin:13px 0 18px}
+
+/* Footer */
+.lp-footer{position:relative;z-index:10;padding:26px 56px;border-top:1px solid rgba(255,255,255,.05);display:flex;align-items:center;justify-content:space-between}
+.lp-fl{font-family:monospace;font-size:10px;color:rgba(255,255,255,.25)}
+.lp-flinks{display:flex;gap:20px}.lp-flinks a{font-family:monospace;font-size:10px;color:rgba(255,255,255,.25);text-decoration:none;transition:color .2s}.lp-flinks a:hover{color:#fff}
+
+/* 4. Scroll reveal */
+.lp-rv{opacity:0;transform:translateY(24px);transition:opacity .72s ease,transform .72s ease;transition-delay:var(--rd,0s)}
+.lp-vis{opacity:1!important;transform:translateY(0)!important}
+
+/* Responsive */
+@media(max-width:900px){
+  #lp-nav{padding:13px 18px}.lp-nav-links{display:none}
+  .lp-hero{grid-template-columns:1fr;padding:96px 18px 56px}.lp-hero-r{display:none}
+  .lp-stats{width:100%;flex-wrap:wrap}.lp-stat{flex:1 1 calc(50% - 1px);min-width:90px}
+  .lp-fgrid{grid-template-columns:1fr}
+  .lp-steps{grid-template-columns:1fr;gap:26px}.lp-steps::before{display:none}
+  .lp-sec{padding:68px 18px}.lp-pgrid{grid-template-columns:1fr;max-width:380px}
+  .lp-cta-sec{padding:72px 18px}.lp-footer{flex-direction:column;gap:12px;text-align:center;padding:20px 18px}
+  .lp-divider{padding:0 18px 42px}
+}
+
 </style>
 
 <script>
@@ -788,613 +989,233 @@ if('serviceWorker' in navigator){
      VIEW 1: LANDING PAGE
 ══════════════════════════════════════════ -->
 <div id="view-landing" class="view active">
-<nav>
-  <a class="nbrand" href="#"><div class="nlogo">NX</div><span class="nname">NEXUS</span></a>
-  <div class="nlinks">
-    <a class="nlink" href="#features">Features</a>
-    <a class="nlink" href="#how-it-works">How It Works</a>
-    <a class="nlink" href="#pricing">Pricing</a>
+
+<!-- LAYER 1: Fullscreen WebGL 3D orb — position:fixed, behind everything -->
+<canvas id="lp-canvas" style="position:fixed;inset:0;z-index:1;pointer-events:none"></canvas>
+
+<!-- LAYER 2: CSS floating particles -->
+<div id="lp-particles" style="position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden"></div>
+
+<!-- LAYER 3: Custom cursor -->
+<div id="lp-c1"></div>
+<div id="lp-c2"></div>
+
+<!-- NAV -->
+<nav id="lp-nav">
+  <a class="lp-logo" href="#">
+    <div class="lp-logo-mark">NX</div>
+    <span class="lp-logo-name">NEXUS</span>
+  </a>
+  <div class="lp-nav-links">
+    <a href="#lp-features" class="lp-nlink">Features</a>
+    <a href="#lp-how" class="lp-nlink">How it works</a>
+    <a href="#lp-pricing" class="lp-nlink">Pricing</a>
   </div>
-  <div class="nright">
-    <div class="user-pill" id="userPill" onclick="goDash()">
+  <div class="lp-nav-right">
+    <div class="user-pill" id="userPill" onclick="goDash()" style="display:none">
       <div class="u-av" id="uAv">U</div>
       <span class="u-name" id="uName">User</span>
-      <span class="u-credits" id="uCredits">5 credits</span>
+      <span class="u-credits" id="uCredits">5</span>
     </div>
-    <button class="nsignin" id="navSignin" onclick="openAuth()">Sign In</button>
-    <button class="ncta" onclick="openAuth()">Start Free →</button>
-    <div class="nav-theme" onclick="toggleTheme()" title="Toggle theme">🌓</div>
+    <button class="lp-btn-ghost" id="navSignin" onclick="openAuth()">Sign In</button>
+    <button class="lp-btn-pri" onclick="openAuth()">
+      Start Free <span class="lp-arrow">&#8594;</span>
+      <span class="lp-shine"></span>
+    </button>
   </div>
 </nav>
 
-<section class="hero">
-  <!-- LEFT SIDE -->
-  <div>
-    <div class="heye"><div class="hdot"></div>AI DATA ANALYST · FREE TO START</div>
-    <h1>Turn your data into<br/><span class="hgr">decisions. Instantly.</span></h1>
-    <p class="hsub">Upload CSV, Excel or paste data. Get McKinsey-level analysis — revenue insights, anomaly detection, forecasts and priority actions in seconds.</p>
-    <div class="hero-searchbox">
-      <div class="hsb-label">What do you want to analyze?</div>
-      <div class="hsb-wrap">
-        <input class="hsb-inp" id="heroInp" placeholder="e.g. 'analyze my P&amp;L', 'sales forecast', 'find anomalies'…" onkeydown="if(event.key==='Enter')heroSearch()"/>
-        <button class="hsb-btn" onclick="heroSearch()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          Analyze
-        </button>
-      </div>
-      <div class="hsb-chips">
-        <span class="hsb-chip" onclick="chipSearch('Analyze P&L and profitability')">P&amp;L Analysis</span>
-        <span class="hsb-chip" onclick="chipSearch('Sales pipeline and revenue forecast')">Sales Forecast</span>
-        <span class="hsb-chip" onclick="chipSearch('Find all anomalies and outliers')">Anomaly Detection</span>
-        <span class="hsb-chip" onclick="chipSearch('Marketing CAC and LTV analysis')">Marketing ROI</span>
-        <span class="hsb-chip" onclick="chipSearch('Financial ratios and risk assessment')">Financial Risk</span>
-      </div>
-      <div class="hero-btns-fallback" id="heroFallback">
-        <button class="bpri" onclick="openAuth()">Get Started Free →</button>
-        <a class="bsec" href="#features">See Features</a>
-      </div>
+<!-- HERO -->
+<section class="lp-hero" id="lp-hero">
+  <!-- Grid overlay -->
+  <div class="lp-grid-bg"></div>
+  <!-- Light beams -->
+  <div class="lp-beams" aria-hidden="true">
+    <div class="lp-beam" style="--d:0s;--t:26%;--w:60%;--c:rgba(124,58,237,.55)"></div>
+    <div class="lp-beam" style="--d:2s;--t:50%;--w:42%;--c:rgba(96,165,250,.45)"></div>
+    <div class="lp-beam" style="--d:3.8s;--t:70%;--w:50%;--c:rgba(52,211,153,.35)"></div>
+    <div class="lp-beam" style="--d:5.5s;--t:38%;--w:34%;--c:rgba(244,114,182,.3)"></div>
+  </div>
+
+  <!-- Left: copy -->
+  <div class="lp-hero-l">
+    <div class="lp-eyebrow">
+      <span class="lp-eyebrow-dot"></span>
+      AI DATA ANALYST &middot; BUILT FOR INDIA &middot; FREE TO START
     </div>
-    <div class="hstats">
-      <div class="hst"><div class="hsv">13+</div><div class="hsl">AI Modules</div></div>
-      <div class="hst"><div class="hsv">30+</div><div class="hsl">Finance Ratios</div></div>
-      <div class="hst"><div class="hsv">7</div><div class="hsl">Export Formats</div></div>
-      <div class="hst"><div class="hsv">Free</div><div class="hsl">To Start</div></div>
+    <h1 class="lp-h1">
+      <span class="lp-hl lp-hl1">ANALYZE</span>
+      <span class="lp-hl lp-hl2">YOUR DATA</span>
+      <span class="lp-hl lp-hl3">INSTANTLY<span class="lp-hash"> #</span></span>
+    </h1>
+    <p class="lp-sub">Upload your Excel or CSV. Ask anything. Get <strong>professional charts, profit insights,</strong> and specific actions &mdash; in 30 seconds.</p>
+    <div class="lp-btns">
+      <button class="lp-cta" onclick="openAuth()">
+        <span>Get Started Free</span>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <span class="lp-cta-shine"></span>
+        <span class="lp-cta-glow"></span>
+      </button>
+      <button class="lp-cta-ghost" onclick="document.getElementById('lp-how').scrollIntoView({behavior:'smooth'})">
+        See How It Works
+      </button>
+    </div>
+    <!-- Stats row -->
+    <div class="lp-stats">
+      <div class="lp-stat" style="--ac:#34d399"><div class="lp-sv">30s</div><div class="lp-sl">Avg analysis</div><span class="lp-sg"></span></div>
+      <div class="lp-stat-sep"></div>
+      <div class="lp-stat" style="--ac:#60a5fa"><div class="lp-sv">&#8377;0</div><div class="lp-sl">To start</div><span class="lp-sg"></span></div>
+      <div class="lp-stat-sep"></div>
+      <div class="lp-stat" style="--ac:#a78bfa"><div class="lp-sv">13+</div><div class="lp-sl">AI modules</div><span class="lp-sg"></span></div>
+      <div class="lp-stat-sep"></div>
+      <div class="lp-stat" style="--ac:#f472b6"><div class="lp-sv">India</div><div class="lp-sl">Built for &#8377;</div><span class="lp-sg"></span></div>
     </div>
   </div>
-  <!-- RIGHT SIDE — Live Dashboard Mock -->
-  <div class="hero-mock-wrap">
-    <div class="hero-mock">
-      <div class="mock-bar">
-        <div class="mock-bar-dot"></div>
-        <div class="mock-bar-title">NEXUS ANALYSIS RUNNING...</div>
-        <div style="font-family:var(--fm);font-size:8px;color:#2a3545">llama-3.3-70B</div>
+
+  <!-- Right: live dashboard mockup -->
+  <div class="lp-hero-r">
+    <div class="lp-mock">
+      <div class="lp-mock-halo"></div>
+      <div class="lp-mock-top">
+        <div class="lp-mdots"><span style="background:#ff5f57"></span><span style="background:#ffbd2e"></span><span style="background:#28c940"></span></div>
+        <span class="lp-mtitle">NEXUS AI &middot; Analysis complete</span>
+        <span class="lp-mlive">&#9679; LIVE</span>
       </div>
-      <div class="mock-kpis">
-        <div class="mock-kpi" style="border-color:#34d399">
-          <div class="mock-kpi-lbl">Revenue</div>
-          <div class="mock-kpi-val">₹91.7L</div>
-          <div class="mock-kpi-delta" style="color:#34d399">▲ 12.4%</div>
-        </div>
-        <div class="mock-kpi" style="border-color:#60a5fa">
-          <div class="mock-kpi-lbl">Margin</div>
-          <div class="mock-kpi-val">34.4%</div>
-          <div class="mock-kpi-delta" style="color:#60a5fa">▲ +6pp</div>
-        </div>
-        <div class="mock-kpi" style="border-color:#a78bfa">
-          <div class="mock-kpi-lbl">Top Region</div>
-          <div class="mock-kpi-val">West</div>
-          <div class="mock-kpi-delta" style="color:#a78bfa">30.4%</div>
+      <div class="lp-mkpis">
+        <div class="lp-mkpi" style="--bc:#34d399"><div class="lp-mkl">Monthly Sales</div><div class="lp-mkv">&#8377;4.2L</div><div class="lp-mkd" style="color:#34d399">&#9650; 8.3%</div></div>
+        <div class="lp-mkpi" style="--bc:#60a5fa"><div class="lp-mkl">Growth</div><div class="lp-mkv">+23%</div><div class="lp-mkd" style="color:#60a5fa">vs last month</div></div>
+        <div class="lp-mkpi" style="--bc:#a78bfa"><div class="lp-mkl">Anomalies</div><div class="lp-mkv">3 found</div><div class="lp-mkd" style="color:#f87171">action needed</div></div>
+      </div>
+      <div class="lp-mchart">
+        <div class="lp-mchart-lbl">Revenue &mdash; 6 months</div>
+        <div class="lp-bars" id="lp-bars">
+          <div class="lp-bar" style="--h:52%;--c:#7c3aed" data-v="&#8377;3.1L"></div>
+          <div class="lp-bar" style="--h:68%;--c:#7c3aed" data-v="&#8377;3.8L"></div>
+          <div class="lp-bar" style="--h:58%;--c:#7c3aed" data-v="&#8377;3.4L"></div>
+          <div class="lp-bar" style="--h:76%;--c:#7c3aed" data-v="&#8377;4.0L"></div>
+          <div class="lp-bar" style="--h:71%;--c:#7c3aed" data-v="&#8377;3.9L"></div>
+          <div class="lp-bar lp-bar-hi" style="--h:90%;--c:#34d399" data-v="&#8377;4.2L"></div>
         </div>
       </div>
-      <div class="mock-verdict">◆ Electronics drives 45% of revenue. Pharma margin 50% — expand immediately. West underperforming vs North potential by ₹8.2L.</div>
-      <div class="mock-chart-label">Revenue by Category</div>
-      <div class="mock-bars-list">
-        <div class="mock-bar-row"><div class="mock-bar-name">Electronics</div><div class="mock-bar-track"><div class="mock-bar-fill" style="width:85%;background:#a78bfa"></div></div><div class="mock-bar-pct">45%</div></div>
-        <div class="mock-bar-row"><div class="mock-bar-name">FMCG</div><div class="mock-bar-track"><div class="mock-bar-fill" style="width:52%;background:#34d399"></div></div><div class="mock-bar-pct">25%</div></div>
-        <div class="mock-bar-row"><div class="mock-bar-name">Pharma</div><div class="mock-bar-track"><div class="mock-bar-fill" style="width:29%;background:#60a5fa"></div></div><div class="mock-bar-pct">14%</div></div>
-        <div class="mock-bar-row"><div class="mock-bar-name">Apparel</div><div class="mock-bar-track"><div class="mock-bar-fill" style="width:18%;background:#f59e0b"></div></div><div class="mock-bar-pct">9%</div></div>
-        <div class="mock-bar-row"><div class="mock-bar-name">Furniture</div><div class="mock-bar-track"><div class="mock-bar-fill" style="width:14%;background:#f87171"></div></div><div class="mock-bar-pct">7%</div></div>
-      </div>
+      <div class="lp-mverdict">&#9670; March sales up &#8377;34K from February. Product B showing unusual drop &mdash; investigate stock. Top city: Jaipur driving 31% of revenue.</div>
     </div>
   </div>
 </section>
 
-<div class="free-strip">
-  <div class="fstrip-box">
-    <div class="fstrip-left">
-      <div class="fstrip-badge">FREE · 5 CREDITS</div>
-      <div class="fstrip-text">Sign in with Google and get <strong>5 complete free analyses</strong> — full charts, KPIs, PDF export. No card required.</div>
-    </div>
-    <button class="fstrip-btn" onclick="openAuth()">Get Started Free</button>
+<!-- TICKER -->
+<div class="lp-ticker-wrap">
+  <div class="lp-ticker">
+    <span>P&amp;L Analysis</span><span class="lp-dot">&middot;</span><span>Revenue Trends</span><span class="lp-dot">&middot;</span><span>Anomaly Detection</span><span class="lp-dot">&middot;</span><span>Demand Forecast</span><span class="lp-dot">&middot;</span><span>Churn Prediction</span><span class="lp-dot">&middot;</span><span>DuPont ROE</span><span class="lp-dot">&middot;</span><span>Monte Carlo</span><span class="lp-dot">&middot;</span><span>India Benchmarks</span><span class="lp-dot">&middot;</span><span>GST Analysis</span><span class="lp-dot">&middot;</span><span>CAC &amp; LTV</span><span class="lp-dot">&middot;</span><span>BCG Matrix</span><span class="lp-dot">&middot;</span><span>Six Sigma</span><span class="lp-dot">&middot;</span><span>PDF Export</span><span class="lp-dot">&middot;</span>
+    <span>P&amp;L Analysis</span><span class="lp-dot">&middot;</span><span>Revenue Trends</span><span class="lp-dot">&middot;</span><span>Anomaly Detection</span><span class="lp-dot">&middot;</span><span>Demand Forecast</span><span class="lp-dot">&middot;</span><span>Churn Prediction</span><span class="lp-dot">&middot;</span><span>DuPont ROE</span><span class="lp-dot">&middot;</span><span>Monte Carlo</span><span class="lp-dot">&middot;</span><span>India Benchmarks</span><span class="lp-dot">&middot;</span>
   </div>
 </div>
 
-<section class="sec" id="features">
-  <div class="skick">// CAPABILITIES</div>
-  <h2 class="sh">Everything your business needs</h2>
-  <p class="ssub">From basic P&amp;L to machine learning predictions — professional analysis in one tool</p>
-  <div class="fgrid">
-    <div class="fcard"><div class="fci">📊</div><div class="fct">Financial Analysis</div><div class="fcd">Complete P&amp;L breakdown, DuPont ROE, Altman Z-Score bankruptcy risk, DCF valuation, 30+ financial ratios with industry benchmarks.</div><div class="ftags"><span class="ft">P&amp;L</span><span class="ft">DCF</span><span class="ft">Altman Z</span><span class="ft">30+ Ratios</span></div></div>
-    <div class="fcard"><div class="fci">📈</div><div class="fct">Sales Intelligence</div><div class="fcd">Revenue trends, pipeline funnel, win/loss rates, customer LTV, CAGR, multi-period forecasting with confidence intervals.</div><div class="ftags"><span class="ft">Pipeline</span><span class="ft">Forecast</span><span class="ft">LTV</span><span class="ft">Win Rate</span></div></div>
-    <div class="fcard"><div class="fci">🔬</div><div class="fct">ML &amp; Prediction</div><div class="fcd">Churn prediction, demand forecasting, customer segmentation, anomaly detection, feature importance — no coding required.</div><div class="ftags"><span class="ft">Churn</span><span class="ft">Clustering</span><span class="ft">Anomaly</span></div></div>
-    <div class="fcard"><div class="fci">⚙️</div><div class="fct">Operations Audit</div><div class="fcd">OEE breakdown, OTIF performance, inventory turns, Six Sigma DPMO, lean waste analysis, bottleneck identification.</div><div class="ftags"><span class="ft">OEE</span><span class="ft">OTIF</span><span class="ft">Six Sigma</span></div></div>
-    <div class="fcard"><div class="fci">🎯</div><div class="fct">Marketing ROI</div><div class="fcd">CAC per channel, LTV:CAC ratio, ROAS ranking, multi-touch attribution, D1/D7/D30 cohort retention.</div><div class="ftags"><span class="ft">CAC</span><span class="ft">ROAS</span><span class="ft">Cohorts</span></div></div>
-    <div class="fcard"><div class="fci">📄</div><div class="fct">7 Export Formats</div><div class="fcd">PDF, Excel, TXT, CSV, JSON, Markdown (Notion/Obsidian), or individual chart PNGs — all in one click.</div><div class="ftags"><span class="ft">PDF</span><span class="ft">Excel</span><span class="ft">WhatsApp</span><span class="ft">7 Formats</span></div></div>
+<!-- FEATURES -->
+<section class="lp-sec lp-rv" id="lp-features">
+  <div class="lp-sh-wrap">
+    <div class="lp-kicker">// CAPABILITIES</div>
+    <h2 class="lp-sh">Everything your <span class="lp-sho">business needs</span></h2>
+    <p class="lp-ssub">From basic P&amp;L to ML predictions &mdash; professional analysis that used to cost &#8377;15,000, now free.</p>
+  </div>
+  <div class="lp-fgrid">
+    <div class="lp-fc lp-fc-g lp-rv" style="--rd:0s"><div class="lp-fcg"></div><div class="lp-fci" style="--fi:rgba(52,211,153,.14);--fb:rgba(52,211,153,.22)">&#128202;</div><div class="lp-fcn">Financial Analysis</div><div class="lp-fcd">Complete P&amp;L breakdown, DuPont ROE, Altman Z-Score, DCF valuation, 30+ financial ratios with India benchmarks.</div><span class="lp-fct" style="--ft:#34d399;--fb2:rgba(52,211,153,.12)">CFO GRADE</span></div>
+    <div class="lp-fc lp-fc-b lp-rv" style="--rd:.09s"><div class="lp-fcg"></div><div class="lp-fci" style="--fi:rgba(96,165,250,.14);--fb:rgba(96,165,250,.22)">&#128200;</div><div class="lp-fcn">Sales Intelligence</div><div class="lp-fcd">Revenue trends, pipeline analysis, customer LTV, CAGR, multi-period forecasting with confidence intervals. All in &#8377; format.</div><span class="lp-fct" style="--ft:#60a5fa;--fb2:rgba(96,165,250,.12)">FORECAST</span></div>
+    <div class="lp-fc lp-fc-p lp-rv" style="--rd:.18s"><div class="lp-fcg"></div><div class="lp-fci" style="--fi:rgba(244,114,182,.14);--fb:rgba(244,114,182,.22)">&#128302;</div><div class="lp-fcn">ML &amp; Prediction</div><div class="lp-fcd">Churn prediction, demand forecasting, segmentation, anomaly detection, feature importance &mdash; no coding required.</div><span class="lp-fct" style="--ft:#f472b6;--fb2:rgba(244,114,182,.12)">AI MODEL</span></div>
+    <div class="lp-fc lp-rv" style="--rd:.27s"><div class="lp-fcg"></div><div class="lp-fci" style="--fi:rgba(167,139,250,.14);--fb:rgba(167,139,250,.22)">&#9881;&#65039;</div><div class="lp-fcn">Operations Audit</div><div class="lp-fcd">OEE breakdown, OTIF performance, inventory turns, Six Sigma DPMO, lean waste analysis.</div><span class="lp-fct" style="--ft:#a78bfa;--fb2:rgba(167,139,250,.12)">OPERATIONS</span></div>
+    <div class="lp-fc lp-rv" style="--rd:.36s"><div class="lp-fcg"></div><div class="lp-fci" style="--fi:rgba(245,158,11,.14);--fb:rgba(245,158,11,.22)">&#127919;</div><div class="lp-fcn">Marketing ROI</div><div class="lp-fcd">CAC per channel, LTV:CAC ratio, ROAS ranking, multi-touch attribution, D1/D7/D30 cohort retention.</div><span class="lp-fct" style="--ft:#f59e0b;--fb2:rgba(245,158,11,.12)">GROWTH</span></div>
+    <div class="lp-fc lp-rv" style="--rd:.45s"><div class="lp-fcg"></div><div class="lp-fci" style="--fi:rgba(248,113,113,.14);--fb:rgba(248,113,113,.22)">&#128196;</div><div class="lp-fcn">7 Export Formats</div><div class="lp-fcd">PDF with charts, Excel workbook, TXT, CSV, JSON, Markdown for Notion, individual chart PNGs &mdash; one click.</div><span class="lp-fct" style="--ft:#f87171;--fb2:rgba(248,113,113,.12)">EXPORT</span></div>
   </div>
 </section>
 
-<section class="sec" id="pricing" style="padding-top:0">
-  <div class="skick">// PRICING</div>
-  <h2 class="sh">Simple, honest pricing</h2>
-  <p class="ssub">Start free. Upgrade when you need more. 50% launch discount.</p>
-  <div class="pgrid">
-    <div class="pcard"><div class="pname">Starter</div><div class="pwas">₹599/mo</div><div class="pprice">₹299<span>/mo</span></div><div class="psave">50% OFF</div><div class="pcycle">Billed monthly · Cancel anytime</div><ul class="pfeats"><li>20 analyses per month</li><li>All 13 analysis modules</li><li>PDF &amp; Excel export</li><li>All file upload formats</li><li>Email support</li></ul><button class="pbtn" onclick="openPay('starter')">Get Started</button></div>
-    <div class="pcard feat"><div class="pbadge">MOST POPULAR</div><div class="pname">Professional</div><div class="pwas">₹1,199/mo</div><div class="pprice">₹599<span>/mo</span></div><div class="psave">50% OFF</div><div class="pcycle">Monthly · Save 20% annually</div><ul class="pfeats"><li>Unlimited analyses</li><li>All 13 modules + Advanced Mode</li><li>All 7 export formats</li><li>Google Sheets live connector</li><li>World Bank &amp; currency data</li><li>Voice input</li><li>Priority WhatsApp support</li></ul><button class="pbtn" onclick="openPay('professional')">Get Started</button></div>
-    <div class="pcard"><div class="pname">Enterprise</div><div class="pwas">₹1,599/mo</div><div class="pprice">₹799<span>/mo</span></div><div class="psave">50% OFF</div><div class="pcycle">Monthly · Volume discounts</div><ul class="pfeats"><li>Everything in Professional</li><li>Custom analysis templates</li><li>Dedicated onboarding call</li><li>Custom branding option</li><li>Priority WhatsApp support</li></ul><button class="pbtn" onclick="openPay('enterprise')">Contact Us</button></div>
-  </div>
-  <div class="pnotice">
-    <div class="pntxt"><strong>How to pay right now:</strong> Choose a plan and pay directly to our UPI ID. Accepted on Google Pay, PhonePe, Paytm, and all UPI apps. Send your UTR/Transaction ID and we activate within 1 hour.<div class="urow"><span class="utag">✓ Google Pay</span><span class="utag">✓ PhonePe</span><span class="utag">✓ Paytm</span><span class="rztag">⏳ Razorpay Auto-Pay — Coming Soon</span></div></div>
-    <div class="upi-direct"><div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em">Pay directly to UPI ID</div><div class="upi-id-big" id="upiPublic" onclick="copyUPIPublic()">—</div><div style="font-family:var(--fm);font-size:9px;color:var(--mt);margin-top:2px">Tap to copy · Open Google Pay / PhonePe</div></div><button class="upi-copy-btn" onclick="copyUPIPublic()">📋 Copy UPI</button></div>
-  </div>
-</section>
+<!-- DIVIDER -->
+<div class="lp-divider lp-rv">
+  <div class="lp-dvl"></div>
+  <span class="lp-dvlbl">// HOW IT WORKS</span>
+  <div class="lp-dvl"></div>
+</div>
 
-<section class="sec" style="padding-top:40px">
-  <div class="skick">// REVIEWS</div><h2 class="sh">What businesses say</h2><p class="ssub">Real results from real owners</p>
-  <div class="tgrid">
-    <div class="tcard"><div class="tstars">★★★★★</div><div class="ttxt">"Uploaded 2 years of sales data. Got full analysis with charts and clear action points in under a minute. Saved me ₹40,000 I would have spent on a consultant."</div><div class="tauth"><div class="tav">RK</div><div><div class="tname">Rahul Kumar</div><div class="trole">FOUNDER · E-COMMERCE</div></div></div></div>
-    <div class="tcard"><div class="tstars">★★★★★</div><div class="ttxt">"Finance module gave me Altman Z-Score and DuPont ROE breakdown. My CA was impressed — this is what you would normally pay ₹15,000 to get done."</div><div class="tauth"><div class="tav">SP</div><div><div class="tname">Shreya Patel</div><div class="trole">CFO · MANUFACTURING</div></div></div></div>
-    <div class="tcard"><div class="tstars">★★★★★</div><div class="ttxt">"Connected my Google Sheet and got a supply chain audit in 30 seconds. Found ₹12 lakh in excess inventory I did not even know about."</div><div class="tauth"><div class="tav">AM</div><div><div class="tname">Arun Mehta</div><div class="trole">OPERATIONS · RETAIL CHAIN</div></div></div></div>
+<!-- HOW IT WORKS -->
+<section class="lp-sec lp-rv" id="lp-how">
+  <div class="lp-sh-wrap">
+    <div class="lp-kicker">// PROCESS</div>
+    <h2 class="lp-sh">Three steps. <span class="lp-sho">That&rsquo;s it.</span></h2>
+  </div>
+  <div class="lp-steps">
+    <div class="lp-step lp-rv" style="--rd:0s"><div class="lp-stn">01</div><div class="lp-stc"></div><div class="lp-stt">Upload your data</div><div class="lp-std">CSV, Excel, JSON, Google Sheets, or paste numbers directly. NEXUS handles any format instantly.</div></div>
+    <div class="lp-step lp-rv" style="--rd:.12s"><div class="lp-stn">02</div><div class="lp-stc"></div><div class="lp-stt">Ask anything</div><div class="lp-std">"Find anomalies." "Forecast next quarter." "Why did profits drop?" Natural language &mdash; no SQL, no formulas.</div></div>
+    <div class="lp-step lp-rv" style="--rd:.24s"><div class="lp-stn">03</div><div class="lp-stt">Get your report</div><div class="lp-std">Charts, KPIs, India benchmarks, anomalies, and 5 priority actions. Export to PDF, Excel, or WhatsApp.</div></div>
   </div>
 </section>
 
-<!-- ══ INTERACTIVE FLOWCHART SECTION ══ -->
-<section class="sec" id="how-it-works" style="padding-top:0;padding-bottom:0">
-  <div class="skick">// HOW IT WORKS</div>
-  <h2 class="sh">Inside the NEXUS Intelligence Engine</h2>
-  <p class="ssub">See exactly how your data flows through 13 specialist AI modules to produce actionable insights</p>
-  <div id="nexus-flowchart"></div>
-</section>
-<style>
-/* ── FLOWCHART STYLES ── */
-#nexus-flowchart{max-width:1100px;margin:0 auto;padding:0 0 60px;font-family:'IBM Plex Mono',monospace}
-.fc-container{display:grid;gap:0}
-/* Step rows */
-.fc-step{display:flex;align-items:stretch;gap:0;position:relative;margin-bottom:0}
-.fc-step-num{width:36px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;padding-top:18px}
-.fc-step-circle{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#2563eb);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0;box-shadow:0 0 14px rgba(124,58,237,.4);z-index:2;position:relative}
-.fc-step-line{width:2px;background:linear-gradient(to bottom,rgba(124,58,237,.4),rgba(37,99,235,.2));flex:1;margin-top:4px}
-.fc-step-body{flex:1;padding:14px 0 14px 16px}
-.fc-node{background:var(--s1);border:1px solid var(--br);border-radius:12px;padding:14px 18px;transition:all .22s;cursor:default;position:relative;overflow:hidden}
-.fc-node::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(124,58,237,.04),transparent);opacity:0;transition:opacity .2s}
-.fc-node:hover{border-color:rgba(167,139,250,.3);transform:translateX(4px);box-shadow:0 6px 24px rgba(0,0,0,.28)}
-.fc-node:hover::before{opacity:1}
-.fc-node-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.fc-node-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
-.fc-node-title{font-size:13px;font-weight:800;color:var(--hd);font-family:'Epilogue',sans-serif}
-.fc-node-sub{font-size:10px;color:var(--mt);margin-left:40px;line-height:1.65}
-.fc-node-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px;margin-left:40px}
-.fc-tag{font-size:8px;padding:2px 8px;border-radius:20px;font-weight:600}
-/* Branch nodes (modules row) */
-.fc-branch{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0 8px 16px}
-.fc-branch-node{background:var(--s1);border:1px solid var(--br);border-radius:10px;padding:10px 12px;transition:all .2s;cursor:default;position:relative}
-.fc-branch-node:hover{border-color:rgba(167,139,250,.3);transform:translateY(-2px);box-shadow:0 6px 18px rgba(0,0,0,.25)}
-.fc-branch-icon{font-size:16px;margin-bottom:5px}
-.fc-branch-title{font-size:10px;font-weight:800;color:var(--hd);margin-bottom:2px;font-family:'Epilogue',sans-serif}
-.fc-branch-desc{font-size:8px;color:var(--mt);line-height:1.5}
-.fc-branch-tag{display:inline-block;font-size:7px;padding:1px 6px;border-radius:10px;margin-top:5px;font-weight:600}
-/* Connector arrows */
-.fc-arrow{text-align:center;color:rgba(124,58,237,.4);font-size:18px;line-height:1;margin:0 0 0 52px}
-/* Output grid */
-.fc-output-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0 0 16px}
-.fc-out-node{background:var(--s1);border:1px solid var(--br);border-radius:10px;padding:10px 12px;transition:all .2s}
-.fc-out-node:hover{border-color:rgba(52,211,153,.3);transform:translateY(-2px)}
-.fc-out-icon{font-size:15px;margin-bottom:4px}
-.fc-out-title{font-size:10px;font-weight:800;color:var(--hd);font-family:'Epilogue',sans-serif;margin-bottom:2px}
-.fc-out-desc{font-size:8px;color:var(--mt);line-height:1.5}
-
-/* ══ HERO MOCK CARD ══ */
-
-
-.mock-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#111;border-radius:7px;margin-bottom:14px}
-.mock-bar-dot{width:7px;height:7px;border-radius:50%;background:#34d399;animation:hpulse 1.5s infinite;flex-shrink:0}
-.mock-bar-title{font-family:var(--fm);font-size:9px;color:#34d399;letter-spacing:.06em}
-.mock-kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:12px}
-.mock-kpi{padding:10px 8px;background:#111;border-radius:8px;border-left:2px solid}
-.mock-kpi-lbl{font-family:var(--fm);font-size:7px;color:#3a4555;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
-.mock-kpi-val{font-family:var(--fm);font-size:17px;font-weight:700;color:#f0f4f8;line-height:1;margin-bottom:2px}
-.mock-kpi-delta{font-family:var(--fm);font-size:8px}
-.mock-verdict{font-size:9px;color:#a78bfa;padding:9px 11px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.14);border-radius:7px;margin-bottom:12px;font-family:var(--fm);line-height:1.6}
-.mock-chart-label{font-family:var(--fm);font-size:8px;color:#3a4555;text-transform:uppercase;letter-spacing:.1em;margin-bottom:7px}
-.mock-bars-list{display:flex;flex-direction:column;gap:5px}
-.mock-bar-row{display:flex;align-items:center;gap:8px}
-.mock-bar-name{font-family:var(--fm);font-size:8px;color:#4a5568;width:72px;flex-shrink:0;text-align:right}
-.mock-bar-track{flex:1;height:6px;background:#161616;border-radius:3px;overflow:hidden}
-.mock-bar-fill{height:100%;border-radius:3px;opacity:.85}
-.mock-bar-pct{font-family:var(--fm);font-size:8px;color:#4a5568;width:28px;flex-shrink:0}
-
-
-/* ══ DATASET UPLOAD CARD (Julius-style) ══ */
-.dataset-card{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:8px 14px;overflow:hidden;animation:slideDown .3s ease;flex-shrink:0}
-@keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
-.dc-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.05)}
-.dc-icon{width:32px;height:32px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
-.dc-title{font-family:var(--fm);font-size:11px;font-weight:700;color:#f0f4f8}
-.dc-sub{font-family:var(--fm);font-size:8px;color:#3a4555;margin-top:2px}
-.dc-x{margin-left:auto;cursor:pointer;color:#2a3545;font-size:15px;padding:4px 6px;transition:color .15s;line-height:1}
-.dc-x:hover{color:#f87171}
-.dc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 14px}
-.dc-stat{text-align:center;padding:10px 6px;background:#111;border-radius:8px;border:1px solid rgba(255,255,255,.04)}
-.dc-sv{font-family:var(--fm);font-size:19px;font-weight:700;line-height:1}
-.dc-sl{font-family:var(--fm);font-size:7px;color:#3a4555;text-transform:uppercase;letter-spacing:.1em;margin-top:3px}
-.dc-sec{font-family:var(--fm);font-size:8px;color:#2a3545;text-transform:uppercase;letter-spacing:.1em;padding:0 14px 5px}
-.dc-sugs{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 12px}
-.dc-sug{font-size:10px;padding:7px 14px;background:#111;border:1px solid rgba(255,255,255,.06);border-radius:20px;color:#7a8a9a;cursor:pointer;font-family:var(--fh);touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-height:36px;display:inline-flex;align-items:center}
-.dc-sug:hover,.dc-sug:active,.dc-sug:focus{border-color:rgba(167,139,250,.3);color:#a78bfa;background:rgba(167,139,250,.05)}
-.dc-tbl-wrap{overflow-x:auto;margin:0 14px 10px;border-radius:8px;border:1px solid rgba(255,255,255,.05);max-height:110px;overflow-y:auto}
-.dc-tbl{width:100%;border-collapse:collapse;font-family:var(--fm);font-size:9px}
-.dc-tbl th{background:rgba(124,58,237,.1);color:#a78bfa;padding:5px 10px;text-align:left;font-size:8px;font-weight:700;border-bottom:1px solid rgba(124,58,237,.15);white-space:nowrap}
-.dc-tbl td{padding:4px 10px;color:#4a5568;border-bottom:1px solid rgba(255,255,255,.03);white-space:nowrap}
-.dc-q{padding:0 14px 12px}
-.dc-q-row{display:flex;justify-content:space-between;font-family:var(--fm);font-size:8px;color:#2a3545;margin-bottom:4px}
-.dc-q-bar{height:4px;background:#161616;border-radius:2px;overflow:hidden}
-.dc-q-fill{height:100%;background:linear-gradient(90deg,#34d399,#60a5fa);border-radius:2px;transition:width .8s ease}
-
-/* ══ CHART SWITCHER TABS ══ */
-.chart-type-tabs{display:flex;gap:3px}
-.ct{font-family:var(--fm);font-size:8px;padding:2px 8px;background:#161616;border:1px solid rgba(255,255,255,.07);border-radius:4px;cursor:pointer;color:#4a5568;transition:all .15s;user-select:none}
-.ct:hover,.ct.on{border-color:rgba(167,139,250,.3);color:#a78bfa;background:rgba(167,139,250,.06)}
-.chart-lbl{font-family:var(--fm);font-size:9px;font-weight:700;color:#5a6a7a;letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,.05)}
-.chart-save-btn{cursor:pointer;font-size:9px;transition:all .15s;padding:2px 8px;border:1px solid rgba(255,255,255,.06);border-radius:4px;color:#3a4555}
-.chart-save-btn:hover{color:#a78bfa;border-color:rgba(167,139,250,.3)}
-
-/* ════════════════════════════════════════════════
-   NEXUS v9 — COMPLETE MOBILE + PWA CSS
-   Fixes: safe-area, toolbar scroll, inputs 16px,
-   sidebar overlay, qk-grid, font sizes, touch targets
-   ════════════════════════════════════════════════ */
-
-/* Fix all tiny fonts globally on mobile */
-@media(max-width:680px){
-  /* TOOLBAR — horizontally scrollable, no wrap */
-  .toolbar{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none;padding-bottom:6px}
-  .toolbar::-webkit-scrollbar{display:none}
-  .tb{flex-shrink:0;padding:6px 10px;font-size:10px;min-height:34px;min-width:44px}
-  .tb-sep{flex-shrink:0}
-
-  /* INPUT ZONE — safe-area for iPhone home bar */
-  .inp-zone{padding-bottom:max(10px, env(safe-area-inset-bottom));padding-left:10px;padding-right:10px}
-  
-  /* INPUT — 16px prevents iOS zoom */
-  #userinput{font-size:16px !important}
-  .hsb-inp{font-size:16px !important}
-  .minp{font-size:16px !important}
-  .conn-inp{font-size:16px !important}
-  .calc-inp{font-size:16px !important}
-  .search-inp{font-size:16px !important}
-
-  /* SUGGESTION CHIPS — horizontal scroll */
-  .inp-suggestions{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none;padding-bottom:4px}
-  .inp-suggestions::-webkit-scrollbar{display:none}
-  .sug-chip{flex-shrink:0;font-size:12px;padding:7px 14px}
-
-  /* WELCOME QK GRID — 2 col on mobile */
-  .qk-grid{grid-template-columns:1fr 1fr !important}
-  .qk{padding:10px;min-height:54px}
-  .qk h4{font-size:11px}
-  .qk p{font-size:10px}
-
-  /* CHAT BUBBLES */
-  .mrow{padding:8px 10px;gap:8px}
-  .bub{font-size:13px;padding:11px 13px;max-width:100%}
-  .av{width:26px;height:26px;font-size:9px;flex-shrink:0}
-
-  /* TOPBAR */
-  .top-title{display:none}
-  .topbar{padding:6px 10px;gap:5px}
-
-  /* SIDEBAR OVERLAY MODE */
-  .side{position:fixed;top:0;left:0;bottom:0;width:260px;z-index:200;transition:transform .25s ease;transform:translateX(0)}
-  .side.shut{transform:translateX(-100%);width:260px}
-  #sideOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;backdrop-filter:blur(2px)}
-  #sideOverlay.show{display:block}
-
-  /* SEND BUTTON bigger on mobile */
-  #sendbtn{width:42px;height:42px;border-radius:10px}
-
-  /* CHIPS in topbar */
-  .chip{font-size:8px;padding:2px 6px}
-  
-  /* MODALS */
-  .mbox{width:96% !important;padding:22px 16px !important;max-height:88vh}
-  .ov{padding:10px}
-
-  /* KPI GRID */
-  .kpi-grid{grid-template-columns:1fr 1fr !important}
-  .kpi-card{min-width:0}
-  .kpi-value{font-size:18px}
-
-  /* CHART */
-  .chart-card canvas{max-height:180px}
-  .chart-card{padding:10px}
-
-  /* WELCOME */
-  .welcome{padding:10px 12px}
-  .w-title{font-size:16px}
-  .w-sub{font-size:12px}
-  
-  /* USERBAR */
-  .userbar{font-size:10px;padding:4px 10px}
-  
-  /* DATASET CARD */
-  .dc-stats{grid-template-columns:repeat(2,1fr)}
-  .dc-tbl-wrap{max-height:80px}
-  
-  /* HERO (landing) */
-  nav{padding:10px 16px}
-  .nlinks{display:none}
-  h1{font-size:30px !important}
-  .hsub{font-size:14px}
-  .hero{padding:44px 16px 32px !important;gap:24px !important}
-  .hstats{flex-direction:column}
-  .hst{border-right:none;border-bottom:1px solid var(--br)}
-  .hst:last-child{border-bottom:none}
-  .hsb-wrap{border-radius:10px}
-  .hsb-btn{padding:8px 14px;font-size:12px}
-  
-  /* SECTION PADDING */
-  .sec{padding:36px 14px}
-  .fgrid,.pgrid,.tgrid{grid-template-columns:1fr}
-  .fstrip-box{flex-direction:column;text-align:center;gap:12px}
-  .ctabox{padding:24px 16px}
-  footer{flex-direction:column;gap:8px;text-align:center;padding:18px 14px}
-  .free-strip{padding:0 14px 24px}
-  
-  /* BOTTOM MOBILE NAV */
-  .mob-nav{display:flex !important}
-}
-
-/* ══ MOBILE BOTTOM NAVIGATION ══ */
-.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#050505;border-top:1px solid rgba(255,255,255,.07);z-index:150;padding-bottom:env(safe-area-inset-bottom)}
-.mob-nav-inner{display:flex;justify-content:space-around;padding:6px 0 4px}
-.mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 10px;color:#3a4555;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:52px;flex:1}
-.mob-nav-btn.active{color:#a78bfa}
-.mob-nav-btn span:first-child{font-size:18px;line-height:1}
-.mob-nav-btn span:last-child{font-size:8px;font-family:var(--fm);font-weight:600;letter-spacing:.04em}
-
-/* ══ SIDEBAR OVERLAY ══ */
-#sideOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;backdrop-filter:blur(2px);-webkit-tap-highlight-color:transparent}
-#sideOverlay.show{display:block}
-
-/* ══ SAFE AREA for inp-zone (always, not just mobile) ══ */
-.inp-zone{padding-bottom:max(8px, calc(env(safe-area-inset-bottom) + 6px))}
-
-/* ══ TABLET 681-860px ══ */
-@media(min-width:681px) and (max-width:860px){
-  .toolbar{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none}
-  .toolbar::-webkit-scrollbar{display:none}
-  .tb{flex-shrink:0}
-  h1{font-size:40px}
-  .hero{grid-template-columns:1fr !important;gap:28px !important;padding:60px 32px 44px !important}
-  .hero-mock-wrap{display:none !important}
-  .fgrid{grid-template-columns:repeat(2,1fr)}
-  .pgrid{grid-template-columns:repeat(2,1fr)}
-  .qk-grid{grid-template-columns:repeat(2,1fr) !important}
-  .side{width:220px}
-  .mbox{width:90% !important;max-width:440px}
-}
-
-/* ══ LANDSCAPE PHONE ══ */
-@media(max-height:500px) and (orientation:landscape){
-  .inp-zone{padding-top:4px;padding-bottom:4px}
-  .inp-suggestions{display:none}
-  .chat{min-height:200px}
-  .mbox{max-height:95vh;overflow-y:auto}
-}
-
-/* ══ PWA INSTALL BANNER ══ */
-.pwa-banner{display:none;position:fixed;bottom:calc(env(safe-area-inset-bottom) + 10px);left:10px;right:10px;background:#0d0d0d;border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:12px 14px;z-index:998;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.6)}
-.pwa-banner.show{display:flex}
-.pwa-banner-ico{font-size:26px;flex-shrink:0}
-.pwa-banner-txt{flex:1}
-.pwa-banner-title{font-family:var(--fm);font-size:11px;font-weight:700;color:#f0f4f8;margin-bottom:2px}
-.pwa-banner-sub{font-family:var(--fm);font-size:9px;color:#4a5568;line-height:1.4}
-.pwa-banner-btn{padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:nowrap}
-.pwa-banner-x{color:#2a3545;font-size:16px;cursor:pointer;touch-action:manipulation;padding:4px;flex-shrink:0}
-
-/* ══ DARK SCROLLBARS ══ */
-::-webkit-scrollbar{width:4px;height:4px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#1a1a1a;border-radius:2px}
-::-webkit-scrollbar-thumb:hover{background:#252525}
-
-/* ══ FOCUS VISIBLE ══ */
-:focus-visible{outline:2px solid rgba(124,58,237,.5);outline-offset:2px}
-button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
-
-</style>
-<script>
-(function(){
-  const fc = document.getElementById('nexus-flowchart');
-  fc.innerHTML = `
-  <div class="fc-container">
-
-    <!-- STEP 1: INPUT -->
-    <div class="fc-step">
-      <div class="fc-step-num"><div class="fc-step-circle">1</div><div class="fc-step-line"></div></div>
-      <div class="fc-step-body">
-        <div class="fc-node" style="border-color:rgba(96,165,250,.3)">
-          <div class="fc-node-head">
-            <div class="fc-node-icon" style="background:rgba(96,165,250,.12)">📥</div>
-            <div class="fc-node-title">DATA INPUT — 5 Sources</div>
-          </div>
-          <div class="fc-node-sub">Upload your data in any format, or connect live sources directly</div>
-          <div class="fc-node-tags">
-            <span class="fc-tag" style="background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.2)">📄 CSV / TXT / TSV</span>
-            <span class="fc-tag" style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)">📊 Excel .xlsx / .xls</span>
-            <span class="fc-tag" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)">{ } JSON</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">🔗 Google Sheets (public)</span>
-            <span class="fc-tag" style="background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2)">🌐 Public URL (JSON/CSV)</span>
-            <span class="fc-tag" style="background:rgba(96,165,250,.1);color:#60a5fa;border:1px solid rgba(96,165,250,.2)">🌍 World Bank API (free)</span>
-            <span class="fc-tag" style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)">💱 Live Currency Rates</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.1);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">💬 Paste raw text/data</span>
-          </div>
-        </div>
-      </div>
+<!-- PRICING -->
+<section class="lp-sec lp-rv" id="lp-pricing">
+  <div class="lp-sh-wrap">
+    <div class="lp-kicker">// PRICING</div>
+    <h2 class="lp-sh">Simple, honest <span class="lp-sho">pricing.</span></h2>
+    <p class="lp-ssub">Start free. Upgrade when ready. No tricks.</p>
+  </div>
+  <div class="lp-pgrid">
+    <div class="lp-pc lp-rv">
+      <div class="lp-pcname">Free</div>
+      <div class="lp-pcprice">&#8377;0</div>
+      <div class="lp-pccycle">Forever free &middot; No card required</div>
+      <ul class="lp-pclist"><li>5 analyses per month</li><li>All 13 analysis modules</li><li>PDF export</li><li>CSV and Excel upload</li><li>Email support</li></ul>
+      <button class="lp-pcbtn" onclick="openAuth()">Start Free &rarr;</button>
     </div>
-
-    <div class="fc-arrow">↓</div>
-
-    <!-- STEP 2: AUTO PROFILING -->
-    <div class="fc-step">
-      <div class="fc-step-num"><div class="fc-step-circle">2</div><div class="fc-step-line"></div></div>
-      <div class="fc-step-body">
-        <div class="fc-node" style="border-color:rgba(245,158,11,.3)">
-          <div class="fc-node-head">
-            <div class="fc-node-icon" style="background:rgba(245,158,11,.12)">⚙️</div>
-            <div class="fc-node-title">AUTOMATIC DATA PROFILING ENGINE</div>
-          </div>
-          <div class="fc-node-sub">Instantly runs in your browser — no data ever sent to storage</div>
-          <div class="fc-node-tags">
-            <span class="fc-tag" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)">Schema detection (types, nulls)</span>
-            <span class="fc-tag" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)">Outlier detection (IQR)</span>
-            <span class="fc-tag" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)">Missing value % per column</span>
-            <span class="fc-tag" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)">Min / Max / Avg / Median</span>
-            <span class="fc-tag" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)">Negative value flags</span>
-            <span class="fc-tag" style="background:rgba(245,158,11,.1);color:#f59e0b;border:1px solid rgba(245,158,11,.2)">Cardinality (unique values)</span>
-          </div>
-        </div>
-      </div>
+    <div class="lp-pc lp-pc-feat lp-rv" style="--rd:.1s">
+      <div class="lp-pcbadge">RECOMMENDED</div>
+      <div class="lp-pcname">Pro</div>
+      <div class="lp-pcprice">&#8377;299<span>/month</span></div>
+      <div class="lp-pccycle">Cancel anytime &middot; UPI accepted</div>
+      <ul class="lp-pclist"><li>Unlimited analyses</li><li>All 13 modules + Advanced Mode</li><li>All 7 export formats</li><li>Google Sheets connector</li><li>Priority WhatsApp support</li></ul>
+      <button class="lp-pcbtn lp-pcbtn-p" onclick="openPay('professional')">Upgrade to Pro</button>
     </div>
-
-    <div class="fc-arrow">↓</div>
-
-    <!-- STEP 3: MODULE SELECTION -->
-    <div class="fc-step">
-      <div class="fc-step-num"><div class="fc-step-circle">3</div><div class="fc-step-line"></div></div>
-      <div class="fc-step-body">
-        <div class="fc-node" style="border-color:rgba(167,139,250,.3)">
-          <div class="fc-node-head">
-            <div class="fc-node-icon" style="background:rgba(167,139,250,.12)">🧩</div>
-            <div class="fc-node-title">13 SPECIALIST AI MODULES — Pick Your Analysis Lens</div>
-          </div>
-          <div class="fc-node-sub">Each module injects specialist prompts into the AI — you get domain-expert analysis, not generic answers</div>
-        </div>
-        <div class="fc-branch">
-          <div class="fc-branch-node" style="border-color:rgba(52,211,153,.2)">
-            <div class="fc-branch-icon">⚡</div>
-            <div class="fc-branch-title">Universal</div>
-            <div class="fc-branch-desc">Auto-detects data type. Best for first analysis</div>
-            <span class="fc-branch-tag" style="background:rgba(52,211,153,.1);color:#34d399">DEFAULT</span>
-          </div>
-          <div class="fc-branch-node" style="border-color:rgba(96,165,250,.2)">
-            <div class="fc-branch-icon">◈</div>
-            <div class="fc-branch-title">Finance</div>
-            <div class="fc-branch-desc">P&L, DCF, Altman Z-Score, DuPont ROE, WACC, 30+ ratios</div>
-            <span class="fc-branch-tag" style="background:rgba(96,165,250,.1);color:#60a5fa">CFO GRADE</span>
-          </div>
-          <div class="fc-branch-node" style="border-color:rgba(167,139,250,.2)">
-            <div class="fc-branch-icon">◐</div>
-            <div class="fc-branch-title">Sales & Mktg</div>
-            <div class="fc-branch-desc">CAC, LTV, ROAS, pipeline funnel, cohort retention D1/D7/D30</div>
-            <span class="fc-branch-tag" style="background:rgba(167,139,250,.1);color:#a78bfa">GROWTH</span>
-          </div>
-          <div class="fc-branch-node" style="border-color:rgba(248,113,113,.2)">
-            <div class="fc-branch-icon">◉</div>
-            <div class="fc-branch-title">ML & Predict</div>
-            <div class="fc-branch-desc">Churn prediction, demand forecast, clustering, feature importance</div>
-            <span class="fc-branch-tag" style="background:rgba(248,113,113,.1);color:#f87171">AI MODEL</span>
-          </div>
-          <div class="fc-branch-node">
-            <div class="fc-branch-icon">∑</div>
-            <div class="fc-branch-title">Statistics</div>
-            <div class="fc-branch-desc">Hypothesis tests, regression, correlation matrix, normality</div>
-          </div>
-          <div class="fc-branch-node">
-            <div class="fc-branch-icon">⊗</div>
-            <div class="fc-branch-title">Operations</div>
-            <div class="fc-branch-desc">OEE, OTIF, Six Sigma DPMO, EOQ, bottleneck analysis</div>
-          </div>
-          <div class="fc-branch-node">
-            <div class="fc-branch-icon">◇</div>
-            <div class="fc-branch-title">Risk</div>
-            <div class="fc-branch-desc">Monte Carlo, stress testing, HHI, 3-scenario analysis</div>
-          </div>
-          <div class="fc-branch-node">
-            <div class="fc-branch-icon">◑</div>
-            <div class="fc-branch-title">SaaS/Tech</div>
-            <div class="fc-branch-desc">MRR/ARR, NRR, Rule of 40, magic number, unit economics</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="fc-arrow">↓</div>
-
-    <!-- STEP 4: AI ENGINE -->
-    <div class="fc-step">
-      <div class="fc-step-num"><div class="fc-step-circle">4</div><div class="fc-step-line"></div></div>
-      <div class="fc-step-body">
-        <div class="fc-node" style="border-color:rgba(167,139,250,.4);background:linear-gradient(135deg,rgba(124,58,237,.05),rgba(37,99,235,.03))">
-          <div class="fc-node-head">
-            <div class="fc-node-icon" style="background:linear-gradient(135deg,rgba(124,58,237,.2),rgba(37,99,235,.15))">🤖</div>
-            <div class="fc-node-title">NEXUS AI ENGINE — Groq LLM (llama-3.3-70B)</div>
-          </div>
-          <div class="fc-node-sub">Your profiled data + module specialist prompt → AI performs 9-layer analysis simultaneously</div>
-          <div class="fc-node-tags">
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 1: Data Profiling</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 2: Descriptive Stats</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 3: Inferential Analysis</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 4: Diagnostic (Pareto/5-Why)</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 5: Predictive Forecast</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 6: Prescriptive Actions</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 7: Finance Ratios</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 8: Risk Scenarios</span>
-            <span class="fc-tag" style="background:rgba(167,139,250,.12);color:#a78bfa;border:1px solid rgba(167,139,250,.2)">Layer 9: NEXUS Verdict</span>
-            <span class="fc-tag" style="background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)">⚡ Advanced Mode: Monte Carlo + ML</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="fc-arrow">↓</div>
-
-    <!-- STEP 5: OUTPUTS -->
-    <div class="fc-step">
-      <div class="fc-step-num"><div class="fc-step-circle">5</div><div class="fc-step-line" style="opacity:0"></div></div>
-      <div class="fc-step-body">
-        <div class="fc-node" style="border-color:rgba(52,211,153,.3)">
-          <div class="fc-node-head">
-            <div class="fc-node-icon" style="background:rgba(52,211,153,.12)">📤</div>
-            <div class="fc-node-title">STRUCTURED OUTPUTS — Charts, KPIs, Tables & Reports</div>
-          </div>
-          <div class="fc-node-sub">Every analysis auto-generates interactive charts and KPI cards. Export in 7 formats instantly</div>
-        </div>
-        <div class="fc-output-grid">
-          <div class="fc-out-node" style="border-color:rgba(167,139,250,.2)">
-            <div class="fc-out-icon">📊</div>
-            <div class="fc-out-title">Interactive Charts</div>
-            <div class="fc-out-desc">Bar, Line, Pie, Radar, Area — auto-generated from AI response. Download as PNG</div>
-          </div>
-          <div class="fc-out-node" style="border-color:rgba(52,211,153,.2)">
-            <div class="fc-out-icon">🎯</div>
-            <div class="fc-out-title">KPI Cards</div>
-            <div class="fc-out-desc">Auto-extracted metrics with ▲▼ trend indicators. Real numbers from your data</div>
-          </div>
-          <div class="fc-out-node" style="border-color:rgba(96,165,250,.2)">
-            <div class="fc-out-icon">📋</div>
-            <div class="fc-out-title">Data Tables</div>
-            <div class="fc-out-desc">Markdown tables auto-rendered. Financial ratios, cohort data, comparisons</div>
-          </div>
-          <div class="fc-out-node" style="border-color:rgba(248,113,113,.2)">
-            <div class="fc-out-icon">📄</div>
-            <div class="fc-out-title">PDF Report</div>
-            <div class="fc-out-desc">Multi-page branded PDF. Charts embedded. Download in one click</div>
-          </div>
-          <div class="fc-out-node" style="border-color:rgba(52,211,153,.2)">
-            <div class="fc-out-icon">📊</div>
-            <div class="fc-out-title">Excel Workbook</div>
-            <div class="fc-out-desc">Tables + full analysis + source data in separate sheets. .xlsx format</div>
-          </div>
-          <div class="fc-out-node" style="border-color:rgba(245,158,11,.2)">
-            <div class="fc-out-icon">💬</div>
-            <div class="fc-out-title">WhatsApp / Email</div>
-            <div class="fc-out-desc">Share verdict summary instantly. Markdown for Notion/Obsidian also available</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>`;
-})();
-</script>
-
-<section class="sec" style="padding-top:0;padding-bottom:72px">
-  <div class="ctabox"><h2>Start analyzing today</h2><p>Sign in with Google and get 5 free analyses instantly. No card. No setup. Just results.</p><button class="bpri" onclick="openAuth()">Get 5 Free Credits →</button></div>
+  </div>
 </section>
 
-<footer>
-  <div class="fleft">© 2025 NEXUS AI · Built with Claude AI · Your data stays private</div>
-  <div class="flinks"><a class="flink" href="#">Privacy</a><a class="flink" href="#">Terms</a><a class="flink" href="/cdn-cgi/l/email-protection#58303d34343718363d202d2b3931763136">Contact</a></div>
+<!-- REVIEWS -->
+<section class="lp-sec lp-rv">
+  <div class="lp-sh-wrap">
+    <div class="lp-kicker">// EARLY ACCESS</div>
+    <h2 class="lp-sh">Be one of the <span class="lp-sho">first 100 users.</span></h2>
+  </div>
+  <div style="max-width:520px;margin:0 auto">
+    <div class="lp-tcard">
+      <div class="lp-tstars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+      <div class="lp-ttxt">&ldquo;No fake reviews yet &mdash; we just launched. Try it free and tell us what you think. First 5 analyses are on us.&rdquo;</div>
+      <div class="lp-tauth">
+        <div class="lp-tav">NX</div>
+        <div><div class="lp-tname">NEXUS Team</div><div class="lp-trole">LAUNCHED MARCH 2026 &middot; INDIA</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="lp-cta-sec lp-rv">
+  <div class="lp-cta-glow"></div>
+  <div class="lp-cta-inner">
+    <div class="lp-kicker">// GET STARTED</div>
+    <h2 class="lp-cta-h">Start analyzing<br/><span class="lp-sho">today.</span></h2>
+    <p class="lp-ssub" style="margin-bottom:32px">Sign in with Google. Upload your first file. Get 5 free analyses &mdash; no card required.</p>
+    <button class="lp-cta lp-cta-lg" onclick="openAuth()">
+      <span>Get 5 Free Analyses</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <span class="lp-cta-shine"></span>
+      <span class="lp-cta-glow"></span>
+    </button>
+    <div style="margin-top:16px;font-family:monospace;font-size:10px;color:rgba(255,255,255,.3)">Free forever &middot; &#8377;299/mo to go unlimited</div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="lp-footer">
+  <div class="lp-fl">&#169; 2026 NEXUS AI &middot; India &middot; Your data is never stored</div>
+  <div class="lp-flinks">
+    <a href="#" onclick="openOv('privacyOv');return false;">Privacy</a>
+    <a href="#" onclick="openOv('termsOv');return false;">Terms</a>
+    <a href="mailto:hello@onliraxter.workers.dev">Contact</a>
+  </div>
 </footer>
 </div><!-- /view-landing -->
 
@@ -1504,11 +1325,9 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
   <button class="tb" onclick="shareWhatsApp()">💬 WA</button>
   <button class="tb" onclick="copyReport()">⎘ Copy</button>
   <button class="tb" style="color:#34d399;border-color:rgba(52,211,153,.18)" id="compareModeBtn" onclick="toggleCompareMode()">⚖️ Compare</button>
-  <button class="tb" style="color:#f59e0b;border-color:rgba(245,158,11,.18)" onclick="openWhatIf()">🔢 What-If</button>
-  <button class="tb" style="color:#34d399;border-color:rgba(52,211,153,.18)" id="compareModeBtn" onclick="toggleCompareMode()">⚖️ Compare</button>
+  <button class="tb" style="color:#f59e0b;border-color:rgba(245,158,11,.18)" onclick="openWhatIf()">🎲 What-If</button>
   <button class="tb" style="color:#60a5fa;border-color:rgba(96,165,250,.18)" onclick="exportAuditTrail()">📋 Audit</button>
   <button class="tb" style="color:#34d399;border-color:rgba(52,211,153,.18)" onclick="downloadCleanedCSV()">🧹 Clean CSV</button>
-  <button class="tb" onclick="exportAuditTrail()">📋 Audit</button>
   <div class="tb-sep"></div>
   <button class="tb" onclick="clearMem()">🗑️ Clear</button>
 </div>
@@ -1665,7 +1484,7 @@ let MEM = JSON.parse(localStorage.getItem('nexus_mem')||'{"sessions":[]}');
 let appInited = false;
 
 // Populate UPI on page
-document.getElementById('upiPublic').textContent = UPI_ID;
+const _upiPub=document.getElementById('upiPublic');if(_upiPub)_upiPub.textContent=UPI_ID;
 document.getElementById('upiDisplay').textContent = UPI_ID;
 
 // ── VIEW MANAGEMENT ──
@@ -1801,10 +1620,77 @@ function chipSearch(q){document.getElementById('heroInp').value=q;heroSearch();}
 
 // ── PAYMENT ──
 let curPlan='starter';
-function openPay(p){if(!S.user){openAuth();return;}curPlan=p||'starter';selPlan(curPlan);openOv('payOv');}
+function openPay(p){
+  if(!S.user){openAuth();return;}
+  curPlan=p||'starter';
+  // Try Razorpay if key is set
+  const rzpKey=localStorage.getItem('nx_cp_rzp_key')||'';
+  if(rzpKey&&rzpKey.startsWith('rzp_')&&typeof openRazorpay==='function'){
+    openRazorpay(curPlan);return;
+  }
+  selPlan(curPlan);openOv('payOv');
+}
 function selPlan(p){curPlan=p;document.querySelectorAll('.psel').forEach(e=>e.classList.remove('on'));const el=document.getElementById('ps-'+p);if(el)el.classList.add('on');}
 function copyUPI(){navigator.clipboard.writeText(UPI_ID).then(()=>toast('UPI ID copied!'));}
 function copyUPIPublic(){navigator.clipboard.writeText(UPI_ID).then(()=>toast('UPI ID copied!'));}
+// ── RAZORPAY PAYMENT ──
+function openRazorpay(plan){
+  const RZP_KEY = localStorage.getItem('nx_cp_rzp_key') || '';
+  if(!RZP_KEY || !RZP_KEY.startsWith('rzp_')) {
+    // Razorpay key not set — fall back to UPI manual
+    openPay(plan);
+    return;
+  }
+  const amounts = {starter:29900, professional:59900, enterprise:79900, pro:29900};
+  const names = {starter:'Starter Plan', professional:'Pro Plan', enterprise:'Enterprise Plan', pro:'Pro Plan'};
+  const options = {
+    key: RZP_KEY,
+    amount: amounts[plan] || 29900,
+    currency: 'INR',
+    name: 'NEXUS AI',
+    description: names[plan] || 'NEXUS Pro',
+    image: '',
+    handler: async function(response){
+      try {
+        if(BACKEND_LIVE) {
+          const data = await api('/api/payment/razorpay/verify', {body:{
+            razorpay_payment_id: response.razorpay_payment_id,
+            plan: plan
+          }});
+          if(data.success) {
+            saveSession(data.token || sessionStorage.getItem('nx_tok'), data.user || S.user);
+            closeOv('payOv');
+            toast('✓ Payment successful! Plan activated.');
+            setTimeout(async()=>{
+              try{const u=await api('/api/user/me');if(u){S.credits=u.credits===-1?Infinity:u.credits;S.plan=u.plan;updateDashCredits();}}catch(e){}
+            },1500);
+          }
+        } else {
+          closeOv('payOv');
+          toast('Payment received! Activating within 1 hour.');
+        }
+      } catch(e) { toast('Payment done — activating within 1 hour'); closeOv('payOv'); }
+    },
+    prefill: { name: S.user?.name || '', email: S.user?.email || '' },
+    theme: { color: '#7c3aed' },
+    modal: { ondismiss: function(){ toast('Payment cancelled'); } }
+  };
+  try {
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  } catch(e) {
+    // Razorpay SDK not loaded — load it dynamically
+    const s = document.createElement('script');
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    s.onload = function(){
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    };
+    s.onerror = function(){ openPay(plan); };
+    document.head.appendChild(s);
+  }
+}
+
 async function submitPay(){const name=document.getElementById('payName').value.trim();const email=document.getElementById('payEmail').value.trim();const utr=document.getElementById('payUTR').value.trim();const phone=document.getElementById('payPhone').value.trim();const err=document.getElementById('payErr');if(!name){err.textContent='Enter your name';return;}if(!email.includes('@')){err.textContent='Enter valid email';return;}if(utr.length<6){err.textContent='Enter UTR / Transaction ID from your UPI app';return;}err.textContent='';const btn=document.getElementById('paySubmitBtn');btn.disabled=true;btn.textContent='Submitting…';try{if(BACKEND_LIVE)await api('/api/payment-request',{body:{plan:curPlan,utr,phone,name,email}});closeOv('payOv');toast('Payment submitted! We will activate within 1 hour.');}catch(e){err.textContent=e.message;}finally{btn.disabled=false;btn.textContent='Submit Payment →';}}
 function emailNotify(){const email=document.getElementById('authEmail').value.trim();if(!email.includes('@')){setAuthErr('Enter valid email');return;}if(BACKEND_LIVE)fetch(BACKEND+'/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});closeOv('authOv');toast('Got it! We will email '+email+' when ready.');}
 
@@ -1821,7 +1707,7 @@ function initApp(){
   // Set brand
   const isAdmin=S.credits===Infinity;
   document.getElementById('dashBrandSub').textContent=isAdmin?'AI ANALYST · ADMIN':'AI ANALYST';
-  document.getElementById('dashVer').textContent=isAdmin?'v6.0 · ADMIN · GEMINI PRO':'v6.0 · GEMINI PRO · '+((S.plan||'FREE').toUpperCase());
+  document.getElementById('dashVer').textContent=isAdmin?'v11 · ADMIN':'v11 · '+((S.plan||'FREE').toUpperCase());
   updateDashCredits();
   const ta=document.getElementById('userinput');
   ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';document.getElementById('sendbtn').disabled=!ta.value.trim();});
@@ -2079,7 +1965,13 @@ async function sendMsg(){
       updateDashCredits();
       if (BACKEND_LIVE) api('/api/user/refund-credit', { method: 'POST' }).catch(() => {});
     }
-    addBub('assistant', '⚠️ Error — credit refunded.\n\n' + e.message);
+    let errMsg=e.message||'Something went wrong';
+    if(errMsg.includes('quota')||errMsg.includes('429'))errMsg='AI quota reached — please try again in 1 minute.';
+    else if(errMsg.includes('timeout')||errMsg.includes('AbortError'))errMsg='Request timed out. Try a smaller file or simpler question.';
+    else if(errMsg.includes('401')||errMsg.includes('Unauthorized'))errMsg='Session expired — please refresh and sign in again.';
+    else if(errMsg.includes('500'))errMsg='Server error. Please try again.';
+    else if(errMsg.includes('No AI'))errMsg='AI not connected — check your internet and reload.';
+    addBub('assistant','⚠️ '+errMsg+'\n\nYour credit has been refunded.');
   }
 
   document.getElementById('sendbtn').disabled = false;
@@ -2094,20 +1986,188 @@ function addBub(role,content,scroll,returnBub){const chat=document.getElementByI
   }
   if(returnBub) return bub;
 }
-function addTyp(){const chat=document.getElementById('chat');const id='t'+Date.now();const r=document.createElement('div');r.className='mrow';r.id=id;r.innerHTML='<div class="av ai">NX</div><div class="bub ai"><div class="dots"><span></span><span></span><span></span></div></div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;return id;}
+function addTyp(){
+  const chat=document.getElementById('chat');
+  const id='t'+Date.now();
+  const r=document.createElement('div');
+  r.className='mrow';r.id=id;
+
+  const phases=['Reading your data…','Running statistical analysis…','Detecting anomalies…','Generating charts…','Building insights…','Finalizing report…'];
+  let pi=0;
+
+  r.innerHTML=`<div class="av ai">NX</div><div class="bub ai nx-analyzing-bub">
+    <div class="nx-orb-wrap">
+      <div class="nx-orb-scene">
+        <canvas class="nx-orb-canvas" id="orb-${id}" width="72" height="72"></canvas>
+      </div>
+      <div class="nx-orb-info">
+        <div class="nx-orb-title">NEXUS is analyzing</div>
+        <div class="nx-orb-phase" id="phase-${id}">${phases[0]}</div>
+        <div class="nx-orb-bar"><div class="nx-orb-bar-fill" id="bar-${id}"></div></div>
+      </div>
+    </div>
+  </div>`;
+
+  chat.appendChild(r);
+  chat.scrollTop=chat.scrollHeight;
+
+  // Animate phase text
+  const phaseEl=document.getElementById('phase-'+id);
+  const barEl=document.getElementById('bar-'+id);
+  const phaseTimer=setInterval(()=>{
+    pi=(pi+1)%phases.length;
+    if(phaseEl)phaseEl.textContent=phases[pi];
+    if(barEl)barEl.style.width=Math.min(90,(pi+1)*(90/phases.length))+'%';
+  },1400);
+  r._phaseTimer=phaseTimer;
+
+  // 3D Orb with WebGL
+  const canvas=document.getElementById('orb-'+id);
+  if(canvas&&canvas.getContext){
+    try{ startOrb(canvas); }catch(e){}
+  }
+
+  return id;
+}
+function removeTyp(id){
+  const el=document.getElementById(id);
+  if(el){if(el._phaseTimer)clearInterval(el._phaseTimer);el.remove();}
+}
+
+// ── 3D ORB RENDERER ──
+function startOrb(canvas){
+  const gl=canvas.getContext('webgl',{antialias:true,alpha:true});
+  if(!gl)return;
+  gl.clearColor(0,0,0,0);
+
+  const vsrc=`attribute vec3 aP;attribute vec3 aN;uniform mat4 uMV;uniform mat4 uP;uniform float uT;
+varying vec3 vN;varying vec3 vP;varying float vD;
+void main(){
+  float noise=sin(aP.x*4.+uT)*0.08+sin(aP.y*3.+uT*1.3)*0.07+sin(aP.z*5.+uT*0.9)*0.06;
+  vec3 disp=aP+aN*noise;
+  vN=aN;vP=disp;vD=noise;
+  gl_Position=uP*uMV*vec4(disp,1.);
+}`;
+  const fsrc=`precision mediump float;
+varying vec3 vN;varying vec3 vP;varying float vD;
+uniform float uT;
+void main(){
+  vec3 light=normalize(vec3(0.5,1.,0.8));
+  float d=max(dot(normalize(vN),light),0.);
+  float rim=1.-max(dot(normalize(-vP),normalize(vN)),0.);
+  rim=pow(rim,2.5);
+  vec3 c1=vec3(0.48,0.22,0.98);
+  vec3 c2=vec3(0.13,0.53,0.96);
+  vec3 c3=vec3(0.2,0.85,0.62);
+  float t=sin(uT*0.4+vP.y*2.)*0.5+0.5;
+  float t2=cos(uT*0.3+vP.x*2.)*0.5+0.5;
+  vec3 col=mix(mix(c1,c2,t),c3,t2*0.4);
+  col=col*(0.4+d*0.6)+vec3(rim*0.6);
+  col+=vec3(vD*0.3);
+  gl_FragColor=vec4(col,0.92);
+}`;
+
+  function mkShader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,mkShader(gl.VERTEX_SHADER,vsrc));
+  gl.attachShader(prog,mkShader(gl.FRAGMENT_SHADER,fsrc));
+  gl.linkProgram(prog);gl.useProgram(prog);
+
+  // Generate sphere geometry
+  const res=32;const verts=[];const norms=[];const idx=[];
+  for(let lat=0;lat<=res;lat++){
+    const theta=lat*Math.PI/res;
+    for(let lon=0;lon<=res;lon++){
+      const phi=lon*2*Math.PI/res;
+      const x=Math.sin(theta)*Math.cos(phi);
+      const y=Math.cos(theta);
+      const z=Math.sin(theta)*Math.sin(phi);
+      verts.push(x,y,z);norms.push(x,y,z);
+    }
+  }
+  for(let lat=0;lat<res;lat++){
+    for(let lon=0;lon<res;lon++){
+      const a=lat*(res+1)+lon;
+      idx.push(a,a+1,a+res+1,a+1,a+res+2,a+res+1);
+    }
+  }
+
+  const vBuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vBuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);
+  const nBuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,nBuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(norms),gl.STATIC_DRAW);
+  const iBuf=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuf);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),gl.STATIC_DRAW);
+
+  const aP=gl.getAttribLocation(prog,'aP');
+  const aN=gl.getAttribLocation(prog,'aN');
+  const uMV=gl.getUniformLocation(prog,'uMV');
+  const uP_=gl.getUniformLocation(prog,'uP');
+  const uT=gl.getUniformLocation(prog,'uT');
+
+  function mat4Perspective(fov,aspect,near,far){
+    const f=1/Math.tan(fov/2);const r=1/(near-far);
+    return[f/aspect,0,0,0, 0,f,0,0, 0,0,(near+far)*r,-1, 0,0,2*near*far*r,0];
+  }
+  function mat4LookAt(t){
+    const c=Math.cos(t),s=Math.sin(t);
+    return[c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,-2.2,1];
+  }
+
+  const proj=mat4Perspective(0.8,1,0.1,10);
+  let raf,startT=Date.now();
+
+  function draw(){
+    raf=requestAnimationFrame(draw);
+    const t=(Date.now()-startT)/1000;
+    gl.viewport(0,0,72,72);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+
+    const mv=mat4LookAt(t*0.4);
+    gl.uniformMatrix4fv(uMV,false,mv);
+    gl.uniformMatrix4fv(uP_,false,proj);
+    gl.uniform1f(uT,t);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER,vBuf);
+    gl.enableVertexAttribArray(aP);gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,nBuf);
+    gl.enableVertexAttribArray(aN);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuf);
+    gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0);
+  }
+  draw();
+
+  // Stop when element removed
+  const observer=new MutationObserver(()=>{
+    if(!document.contains(canvas)){cancelAnimationFrame(raf);gl.getExtension('WEBGL_lose_context')?.loseContext();observer.disconnect();}
+  });
+  observer.observe(document.body,{childList:true,subtree:true});
+}
 function removeTyp(id){const el=document.getElementById(id);if(el)el.remove();}
 function copyBub(btn){navigator.clipboard.writeText(btn.closest('.bub').innerText.replace(/⎘ Copy.*$/s,'').trim()).then(()=>toast('✅ Copied!')).catch(()=>{});}
 function renderContent(text){const pc=[];text=text.replace(/\[CHART:([\w]+)\|(.*?)\|([\s\S]*?)\]/g,(m,type,title,json)=>{try{const data=JSON.parse(json);const id='c'+(++S.cCount);pc.push({id,type,title,data});return`<div class="chart-card" id="${id}"><div class="chart-lbl"><span>${esc(title)}</span><div style="display:flex;align-items:center;gap:4px"><div class="chart-type-tabs"><span class="ct on" data-t="bar" onclick="swChType('${id}','bar',this)">Bar</span><span class="ct" data-t="line" onclick="swChType('${id}','line',this)">Line</span><span class="ct" data-t="doughnut" onclick="swChType('${id}','doughnut',this)">Pie</span></div><span class="chart-save-btn" onclick="saveOneChart('${id}')">⬇</span></div></div><canvas></canvas></div>`;}catch(e){return '';}});const kpis=[];text=text.replace(/\[KPI:(.*?)\|(.*?)\|(.*?)\|(up|down|neutral)\]/g,(m,lbl,val,delta,dir)=>{kpis.push(`<div class="kpi-card"><div class="kpi-label">${esc(lbl)}</div><div class="kpi-value">${esc(val)}</div><div class="kpi-delta ${dir}">${dir==='up'?'▲':dir==='down'?'▼':'─'} ${esc(delta)}</div></div>`);return '';});const lines=text.split('\n');let html=kpis.length?`<div class="kpi-grid">${kpis.join('')}</div>`:'';let i=0;while(i<lines.length){const l=lines[i];if(/^[═━]{2,}/.test(l)){html+=`<div class="sec-div"><span>${l.replace(/[═━]/g,'').trim()||'─'}</span></div>`;}else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){html+=`<div class="verdict-box">◆ NEXUS VERDICT</div>`;}else if(/^▶/.test(l)){html+=`<div class="layer-hdr"><span class="layer-arrow">▶</span><span>${fmt(l.replace(/^▶\s*/,''))}</span></div>`;}else if(/^\*\*[^*]+:\*\*$/.test(l.trim())||/^## /.test(l)){html+=`<div class="sub-hdr">${fmt(l.replace(/^\*\*/,'').replace(/\*\*$/,'').replace(/^## /,''))}</div>`;}else if(l.trimStart().startsWith('|')){const rows=[l];while(i+1<lines.length&&lines[i+1].trimStart().startsWith('|')){i++;rows.push(lines[i]);}const dr=rows.filter(r=>!/^\|[\s\-─|]+\|$/.test(r.trim()));html+='<div class="tbl-wrap"><table><tbody>'+dr.map((r,ri)=>{const cells=r.split('|').filter(c=>c.trim()!=='');return`<tr class="${ri===0?'hdr-row':''}">${cells.map(c=>`<${ri===0?'th':'td'}>${fmt(c.trim())}</${ri===0?'th':'td'}>`).join('')}</tr>`;}).join('')+'</tbody></table></div>';}else if(/^[-•*] /.test(l)){html+='<ul class="ml">';while(i<lines.length&&/^[-•*] /.test(lines[i])){html+=`<li>${fmt(lines[i].slice(2))}</li>`;i++;}html+='</ul>';continue;}else if(/^\d+\. /.test(l)){html+='<ol class="ml ol">';while(i<lines.length&&/^\d+\. /.test(lines[i])){html+=`<li>${fmt(lines[i].replace(/^\d+\.\s*/,''))}</li>`;i++;}html+='</ol>';continue;}else if(l.trim()===''){html+='<div class="sp"></div>';}else{html+=`<p class="mp">${fmt(l)}</p>`;}i++;}window._pc=(window._pc||[]).concat(pc);return html;}
 function saveOneChart(id){const c=document.querySelector('#'+id+' canvas');if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+id+'.png';a.click();}
 function renderCharts(container){if(!window._pc||!window._pc.length)return;const toR=[...window._pc];window._pc=[];toR.forEach(({id,type,title,data})=>{const card=container.querySelector('#'+id);if(!card)return;const canvas=card.querySelector('canvas');if(!canvas||!data.length)return;const keys=Object.keys(data[0]).filter(k=>k!=='name');const labels=data.map(d=>d.name);let ct='bar';if(type==='line'||type==='area')ct='line';if(type==='pie'||type==='donut')ct='doughnut';if(type==='radar')ct='radar';const tip={backgroundColor:S.theme==='dark'?'#0d0f14':'#fff',borderColor:'rgba(167,139,250,.3)',borderWidth:1,titleColor:'#a0aec0',bodyColor:'#c8d0e0',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}};const ds=keys.map((k,i)=>({label:k,data:data.map(d=>d[k]),backgroundColor:COLORS.map(c=>c+'55'),borderColor:COLORS[i%COLORS.length],borderWidth:2,pointRadius:3,fill:type==='area',tension:.4,borderRadius:ct==='bar'?4:0}));const pd={labels,datasets:[{data:data.map(d=>d[keys[0]]),backgroundColor:COLORS,borderWidth:0,hoverOffset:6}]};new Chart(canvas,{type:ct,data:ct==='doughnut'?pd:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:true,animation:{duration:700},plugins:{legend:{labels:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:10,family:'IBM Plex Mono'}}},tooltip:tip},scales:ct!=='doughnut'&&ct!=='radar'?{x:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}},y:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}}}:undefined,cutout:type==='donut'?'58%':undefined}});});}
 
-function showWelcome(){document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v11 · JS-VERIFIED ANALYSIS</div><h1 class="w-h1">Ready to <em>analyze.</em></h1><p class="w-sub">JS-verified accuracy · Streaming · What-If Simulator · Compare Mode · Depth Levels</p><div class="feat-grid">${[['📊','Finance','P&L, DCF, ratios'],['📈','Sales','Revenue, forecast'],['🔬','ML','Churn, anomalies'],['⚙️','Ops','OEE, OTIF'],['🎯','Marketing','CAC, LTV, ROAS'],['🌍','World Bank','GDP, inflation'],['💱','Currency','Live FX rates'],['🔗','Sheets','Import public sheet'],['📄','PDF','Full report'],['📊','Excel','Tables + data'],['📝','TXT','Plain text'],['📋','CSV','Data export'],['{ }','JSON','Structured'],['📓','MD','Notion/Obsidian'],['🖼️','Charts','PNG images'],['🎤','Voice','Speak questions'],['🔢','Calc','Formula engine'],['📌','Pin','Bookmark insights'],['🔎','Search','Find in history'],['💬','WA','Share verdict']].map(([i,t,d])=>`<div class="feat"><div class="feat-ic">${i}</div><div class="feat-t">${t}</div><div class="feat-d">${d}</div></div>`).join('')}</div><div class="qk-grid"><div class="qk" onclick="swTab('conn')"><div class="qk-t">🔗 Connect Source</div><div class="qk-d">Sheets, World Bank, currency</div></div><div class="qk" onclick="document.getElementById('fileinput').click()"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="toggleAdv()"><div class="qk-t">⚡ Advanced Mode</div><div class="qk-d">Monte Carlo, ML, time-series</div></div><div class="qk" onclick="swTab('tools')"><div class="qk-t">💾 Save Options</div><div class="qk-d">7 formats to your device</div></div></div></div>`;}
+function showWelcome(){
+  const isFirst = !localStorage.getItem('nx_visited');
+  if(isFirst) localStorage.setItem('nx_visited','1');
+  const sCSV = `Month,Revenue,Expenses,Profit,Units\nJan 2025,285000,198000,87000,142\nFeb 2025,312000,201000,111000,156\nMar 2025,298000,195000,103000,149\nApr 2025,334000,210000,124000,167\nMay 2025,289000,203000,86000,144\nJun 2025,356000,218000,138000,178`;
+  window.loadSampleData = function(){
+    const rows=sCSV.split('\n').map(r=>r.split(','));
+    processArr(rows,'Sample Business P&L.csv');
+    setTimeout(()=>setSugAndSend('Analyze this 6-month P&L completely — revenue trends, profit margins, best and worst months, 3 specific actions to improve profitability. Generate 3 charts.'),400);
+  };
+  const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Uses 1 credit · ~30 seconds</span></div>` : '';
+  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v11 · AI DATA ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSug('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSug('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
+}
 
 // ── FILE UPLOAD ──
 function loadFile(e){
   const f=e.target.files[0];if(!f)return;
   // File size limit: 10MB
-  if(f.size > 10 * 1024 * 1024){ toast('❌ File too large (max 10MB)'); e.target.value=''; return; }
+  if(f.size > 10 * 1024 * 1024){ toast('❌ File too large (max 10MB). Try splitting into smaller files.'); e.target.value=''; return; }
+  if(f.size > 5 * 1024 * 1024){ toast('⚠️ Large file — analyzing first 2000 rows for speed'); }
   S.fileName=f.name;
   const ext=f.name.split('.').pop().toLowerCase();if(['xlsx','xls'].includes(ext)){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name);}catch(e){toast('Error reading Excel');}};r.readAsBinaryString(f);}else{const r=new FileReader();r.onload=ev=>{const txt=ev.target.result;if(ext==='json'){try{S.fileData='JSON: '+f.name+'\n'+JSON.stringify(JSON.parse(txt),null,2).slice(0,9000);S.csv=null;showFOk(f.name,null);}catch(e){toast('Invalid JSON');}}else processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(/[,\t;]/)),f.name);};r.readAsText(f);}e.target.value='';}
 function processArr(rows,fname,isSecond){
@@ -2519,10 +2579,60 @@ function saveAsTXT(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!m
 function saveAsCSV(){if(!S.csv)return toast('No data loaded');dlBlob([S.csv.hdrs.join(','),...S.csv.data.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(','))].join('\n'),'NEXUS-Data-'+Date.now()+'.csv','text/csv');toast('✅ CSV saved!');}
 function saveMarkdown(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');let md='# NEXUS v6 Analysis Report\n\n**Generated:** '+new Date().toLocaleString()+'\n\n---\n\n';msgs.forEach((m,i)=>{md+='## Analysis '+(i+1)+'\n\n'+m.content.replace(/═+/g,'---').replace(/▶ /g,'### ')+'\n\n---\n\n';});dlBlob(md,'NEXUS-Report-'+Date.now()+'.md','text/markdown');toast('✅ Markdown saved!');}
 async function saveChartImages(){const canvases=document.querySelectorAll('.chart-card canvas');if(!canvases.length)return toast('No charts');canvases.forEach((c,i)=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+(i+1)+'.png';a.click();});toast('✅ '+canvases.length+' chart(s) saved!');}
-async function exportPDF(){const el=document.querySelector('.bub.ai:last-of-type');if(!el)return toast('No analysis');toast('Generating PDF…');try{const {jsPDF}=window.jspdf;const pdf=new jsPDF({orientation:'p',unit:'mm',format:'a4'});const W=pdf.internal.pageSize.getWidth();pdf.setFillColor(8,9,13);pdf.rect(0,0,W,300,'F');pdf.setFontSize(13);pdf.setTextColor(167,139,250);pdf.text('NEXUS v6 — Analysis Report',W/2,11,{align:'center'});pdf.setFontSize(8);pdf.setTextColor(86,96,112);pdf.text(new Date().toLocaleString(),W/2,16,{align:'center'});const canvas=await html2canvas(el,{backgroundColor:'#0c0e15',scale:1.4,useCORS:true});const imgData=canvas.toDataURL('image/png');const imgH=(canvas.height*(W-20))/canvas.width;let y=20,pH=pdf.internal.pageSize.getHeight()-10;if(imgH<=pH-y){pdf.addImage(imgData,'PNG',10,y,W-20,imgH);}else{let sY=0,slH=((pH-y)*canvas.width)/(W-20);while(sY<canvas.height){const sc=document.createElement('canvas');sc.width=canvas.width;sc.height=Math.min(slH,canvas.height-sY);sc.getContext('2d').drawImage(canvas,0,sY,canvas.width,sc.height,0,0,canvas.width,sc.height);pdf.addImage(sc.toDataURL('image/png'),'PNG',10,y,W-20,(sc.height*(W-20))/canvas.width);sY+=sc.height;if(sY<canvas.height){pdf.addPage();pdf.setFillColor(8,9,13);pdf.rect(0,0,W,300,'F');y=10;}}}pdf.save('NEXUS-Report-'+Date.now()+'.pdf');toast('✅ PDF saved!');}catch(e){toast('PDF failed — try Save as TXT');}}
+async function exportPDF(){
+  const messages=document.querySelectorAll('.bub.ai');
+  if(!messages.length)return toast('No analysis to export');
+  toast('Generating PDF with charts…');
+  try{
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF({orientation:'p',unit:'mm',format:'a4'});
+    const W=pdf.internal.pageSize.getWidth();
+    const PH=pdf.internal.pageSize.getHeight();
+    pdf.setFillColor(8,9,13);pdf.rect(0,0,W,PH,'F');
+    pdf.setFontSize(14);pdf.setTextColor(167,139,250);
+    pdf.text('NEXUS — AI Analysis Report',W/2,13,{align:'center'});
+    pdf.setFontSize(8);pdf.setTextColor(86,96,112);
+    pdf.text(new Date().toLocaleString(),W/2,18,{align:'center'});
+    if(S.fileName){pdf.setFontSize(9);pdf.setTextColor(52,211,153);pdf.text('Dataset: '+S.fileName,W/2,23,{align:'center'});}
+    let y=28;
+    const lastMsg=messages[messages.length-1];
+    const msgCanvas=await html2canvas(lastMsg,{backgroundColor:'#090909',scale:1.6,useCORS:true,allowTaint:true,logging:false});
+    const imgData=msgCanvas.toDataURL('image/png');
+    const imgW=W-16;
+    const imgH=(msgCanvas.height*imgW)/msgCanvas.width;
+    if(imgH<=PH-y-10){pdf.addImage(imgData,'PNG',8,y,imgW,imgH);}
+    else{let sY=0;const slH=((PH-y-10)*msgCanvas.width)/imgW;
+      while(sY<msgCanvas.height){
+        const sc=document.createElement('canvas');sc.width=msgCanvas.width;sc.height=Math.min(slH,msgCanvas.height-sY);
+        const ctx=sc.getContext('2d');ctx.fillStyle='#090909';ctx.fillRect(0,0,sc.width,sc.height);
+        ctx.drawImage(msgCanvas,0,sY,msgCanvas.width,sc.height,0,0,msgCanvas.width,sc.height);
+        pdf.addImage(sc.toDataURL('image/png'),'PNG',8,y,imgW,(sc.height*imgW)/msgCanvas.width);
+        sY+=sc.height;if(sY<msgCanvas.height){pdf.addPage();pdf.setFillColor(8,9,13);pdf.rect(0,0,W,PH,'F');y=10;}
+      }
+    }
+    pdf.setFontSize(7);pdf.setTextColor(42,53,69);
+    pdf.text('Generated by NEXUS AI · Your data was not stored',W/2,PH-5,{align:'center'});
+    pdf.save('NEXUS-Report-'+new Date().toISOString().slice(0,10)+'.pdf');
+    toast('✅ PDF with charts saved!');
+  }catch(e){console.error(e);toast('⚠️ PDF failed — try Save as TXT instead');}
+}
 function exportExcel(){if(!S.messages.filter(m=>m.role==='assistant').length)return toast('No analysis');try{const wb=XLSX.utils.book_new();const last=S.messages.filter(m=>m.role==='assistant').slice(-1)[0].content;const rows=[];last.split('\n').forEach(l=>{if(l.trimStart().startsWith('|')&&!/^\|[\s\-|]+\|$/.test(l.trim()))rows.push(l.split('|').filter(c=>c.trim()).map(c=>c.trim()));});if(rows.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Tables');const full=[['NEXUS v6 Report — '+new Date().toLocaleString()],[]];S.messages.filter(m=>m.role==='assistant').forEach((m,i)=>{full.push(['ANALYSIS '+(i+1)]);m.content.split('\n').forEach(l=>full.push([l]));full.push([]);});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(full),'Full Report');if(S.csv)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([S.csv.hdrs,...S.csv.data]),'Source Data');XLSX.writeFile(wb,'NEXUS-'+Date.now()+'.xlsx');toast('✅ Excel saved!');}catch(e){toast('Excel failed');}}
-function copyReport(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('Nothing to copy');navigator.clipboard.writeText('NEXUS v6 Report\n'+new Date().toLocaleString()+'\n'+'═'.repeat(50)+'\n\n'+msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(50)+'\n\n')).then(()=>toast('✅ Copied!')).catch(()=>toast('Failed'));}
-function shareWhatsApp(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');const last=msgs[msgs.length-1].content;const verdict=last.match(/◆ NEXUS VERDICT[\s\S]*?(?:\n\n|$)/)?.[0]||last.slice(0,600);window.open('https://wa.me/?text='+encodeURIComponent('*NEXUS AI Analysis Report*\n'+new Date().toLocaleDateString()+'\n\n'+verdict+'\n\n_Generated by NEXUS v6_'),'_blank');}
+function copyReport(){
+  const msgs=S.messages.filter(m=>m.role==='assistant');
+  if(!msgs.length)return toast('Nothing to copy');
+  const header='NEXUS AI Analysis Report\n'+new Date().toLocaleString()+(S.fileName?'\nDataset: '+S.fileName:'')+'\n'+'━'.repeat(44)+'\n\n';
+  const body=msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(36)+'\n\n');
+  const footer='\n\n'+'━'.repeat(44)+'\nGenerated by NEXUS AI · nexus.onliraxter.workers.dev';
+  navigator.clipboard.writeText(header+body+footer).then(()=>toast('✅ Full report copied!')).catch(()=>toast('Copy failed — try PDF export'));
+}
+function shareWhatsApp(){
+  const msgs=S.messages.filter(m=>m.role==='assistant');
+  if(!msgs.length)return toast('No analysis to share');
+  const last=msgs[msgs.length-1].content;
+  const verdict=last.match(/◆ NEXUS VERDICT[\s\S]*?(?:\n\n|$)/)?.[0]||last.slice(0,500);
+  const text='*NEXUS AI Analysis*\n'+new Date().toLocaleDateString('en-IN')+(S.fileName?'\nDataset: '+S.fileName:'')+'\n\n'+verdict.trim()+'\n\n_Full analysis: nexus.onliraxter.workers.dev_';
+  window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
+}
 function shareEmail(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');window.location.href=`mailto:?subject=NEXUS AI Analysis — ${new Date().toLocaleDateString()}&body=${encodeURIComponent(msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n---\n\n').slice(0,2000))}`;}
 
 // ── MISC DASHBOARD FEATURES ──
@@ -2957,19 +3067,593 @@ else document.querySelector("script[src*='accounts.google.com']")?.addEventListe
   </div>
 </div>
 
-<input type="file" id="fileinput" style="display:none" onchange="loadFile(event)" accept=".csv,.xlsx,.xls,.json,.txt"/>
 
-<!-- NEXUS v11: WHAT-IF SIMULATOR MODAL -->
-<div id="whatIfOv" onclick="if(event.target===this)this.style.display='none'">
-  <div class="wi-box">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div class="wi-title">🔢 What-If Simulator</div>
-      <span style="cursor:pointer;color:#3a4555;font-size:18px;line-height:1" onclick="document.getElementById('whatIfOv').style.display='none'">✕</span>
-    </div>
-    <div id="whatIfBody"><p style="font-family:var(--fm);font-size:11px;color:#3a4555">Upload a file first to use the simulator.</p></div>
+<!-- PRIVACY MODAL -->
+<div class="ov" id="privacyOv">
+  <div class="mbox" style="max-width:520px">
+    <button class="mx" onclick="closeOv('privacyOv')">✕</button>
+    <h3>Privacy Policy</h3>
+    <p style="font-size:12px;color:var(--mt);line-height:1.8;margin-top:10px">
+      <strong style="color:var(--hd)">Your data never leaves your browser for storage.</strong><br><br>
+      When you upload a file, it is processed locally in your browser and sent directly to the AI model for analysis. We do not store your data on any server.<br><br>
+      <strong style="color:var(--hd)">What we store:</strong> Only your Google account name, email, and credit balance — on Cloudflare KV. No file contents, no analysis results.<br><br>
+      <strong style="color:var(--hd)">Third parties:</strong> Analysis goes to Groq API. Google OAuth for login. No other third parties receive your data.<br><br>
+      Questions? Email hello@onliraxter.workers.dev
+    </p>
   </div>
 </div>
-<!-- COMPARE MODE: second file input -->
-<input type="file" id="fileinput2" accept=".csv,.txt,.tsv,.json,.xlsx,.xls" style="display:none" onchange="loadFile2(event)"/>
+
+<!-- TERMS MODAL -->
+<div class="ov" id="termsOv">
+  <div class="mbox" style="max-width:520px">
+    <button class="mx" onclick="closeOv('termsOv')">✕</button>
+    <h3>Terms of Service</h3>
+    <p style="font-size:12px;color:var(--mt);line-height:1.8;margin-top:10px">
+      <strong style="color:var(--hd)">Free Plan:</strong> 5 analyses per account. One account per person.<br><br>
+      <strong style="color:var(--hd)">Paid Plans:</strong> Credits are non-refundable after activation. Cancel anytime.<br><br>
+      <strong style="color:var(--hd)">Acceptable Use:</strong> Do not upload sensitive personal data of others or classified information.<br><br>
+      <strong style="color:var(--hd)">Accuracy:</strong> AI analysis is for decision support, not professional financial advice. Verify critical numbers with a qualified professional.<br><br>
+      By using NEXUS, you agree to these terms.
+    </p>
+  </div>
+</div>
+
+<style>
+/* ════ NEXUS 3D ORB LOADER ════ */
+.nx-analyzing-bub{padding:12px 16px!important;background:#070710!important;border:1px solid rgba(124,58,237,.3)!important;border-left:3px solid #7c3aed!important;min-width:260px}
+.nx-orb-wrap{display:flex;align-items:center;gap:14px}
+.nx-orb-scene{flex-shrink:0;position:relative;width:72px;height:72px}
+.nx-orb-canvas{border-radius:50%;display:block}
+.nx-orb-scene::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.2) 0%,transparent 70%);animation:nx-pulse 2s ease-in-out infinite;pointer-events:none}
+@keyframes nx-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+.nx-orb-info{flex:1;min-width:0}
+.nx-orb-title{font-family:var(--fm);font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.nx-orb-phase{font-family:var(--fm);font-size:11px;color:#c4b5fd;margin-bottom:8px;min-height:16px}
+.nx-orb-bar{height:3px;background:rgba(124,58,237,.15);border-radius:2px;overflow:hidden}
+.nx-orb-bar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#34d399);border-radius:2px;width:10%;transition:width 1.2s ease;box-shadow:0 0 8px rgba(124,58,237,.5)}
+
+/* ════ NEXUS FINAL PATCH — All remaining 34 fixes ════ */
+
+/* FIX 17: chart-modal CSS (was missing — modal existed but no styles) */
+.chart-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.chart-modal.show{display:flex}
+.chart-modal-inner{background:#0a0a0a;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;max-width:800px;width:100%;max-height:90vh;overflow:auto;position:relative}
+.chart-modal-close{position:absolute;top:12px;right:14px;background:var(--s3);border:1px solid var(--br);border-radius:6px;color:var(--mt);font-size:11px;padding:4px 10px;cursor:pointer}
+.chart-modal-close:hover{color:var(--r);border-color:rgba(248,113,113,.3)}
+
+/* FIX 18: msg-acts always visible on last message + hover */
+.msg-acts{opacity:0;transition:opacity .18s}
+.mrow:hover .msg-acts{opacity:1}
+.mrow:last-child .msg-acts,.mrow:last-of-type .msg-acts{opacity:1}
+
+/* FIX 19: Credit badge color levels */
+.chip-cr.cr-low{background:rgba(245,158,11,.1)!important;border-color:rgba(245,158,11,.25)!important;color:var(--o)!important}
+.chip-cr.cr-zero{background:rgba(248,113,113,.1)!important;border-color:rgba(248,113,113,.25)!important;color:var(--r)!important}
+
+/* FIX 20: Better input focus ring */
+.inp-wrap:focus-within{border-color:rgba(124,58,237,.45);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
+
+/* FIX 21: Streaming cursor */
+.streaming-cursor{display:inline-block;width:2px;height:14px;background:var(--v);margin-left:2px;animation:sc-blink .65s steps(1) infinite;vertical-align:middle}
+@keyframes sc-blink{50%{opacity:0}}
+
+/* FIX 22: History item truncation */
+.hist-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
+
+/* FIX 23: Modal close button bigger tap target on mobile */
+.mx{min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px}
+.mx:hover{background:var(--s3)}
+
+/* FIX 24: Table row hover */
+tr:hover td{background:rgba(167,139,250,.04)!important}
+
+/* FIX 25: Sample item hover */
+.samp-item:hover{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2)}
+
+/* FIX 26: verdict-box better styling */
+.verdict-box{font-size:12px;line-height:1.75;padding:14px 18px}
+
+/* FIX 27: Landing page stats mobile */
+@media(max-width:480px){.hsv{font-size:16px}.hsl{font-size:9px}.hst{padding:12px 8px}}
+
+/* FIX 28: Smooth panel scroll */
+.panel{scroll-behavior:smooth}
+
+/* FIX 29: Chart min height */
+.chart-card canvas{min-height:160px}
+
+/* FIX 30: Module hover */
+.mod-item:hover .mod-lbl{color:var(--v)}
+
+/* FIX 31: Better placeholder */
+#userinput::placeholder{color:var(--mt);opacity:.4;font-size:13px}
+
+/* FIX 32: Touch manipulation everywhere */
+button,.qk,.mod-item,.samp-item,.tb,.hist-item,.dc-sug{touch-action:manipulation}
+
+/* FIX 33: Landing free strip mobile */
+@media(max-width:480px){.fstrip-left{flex-direction:column;gap:6px}}
+
+/* FIX 34: Keyboard hint visible */
+.inp-hint{opacity:.35;letter-spacing:.01em}
+
+/* FIX 35: Confidence card grid mobile */
+@media(max-width:480px){.conf-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* FIX 36: Welcome screen sample button */
+.sample-run-btn{padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.sample-run-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+/* FIX 37: Toolbar overflow on small screens better */
+@media(max-width:860px){
+  .toolbar{gap:2px}
+  .tb{font-size:9px;padding:4px 7px}
+}
+</style>
+
+<script>
+// ════ NEXUS FINAL PATCH — Runtime fixes 38-50 ════
+
+// FIX 38: Add privacyOv + termsOv to click-outside close
+['authOv','payOv','privacyOv','termsOv'].forEach(id=>{
+  const el=document.getElementById(id);
+  if(el) el.addEventListener('click',function(e){if(e.target===this)closeOv(id);});
+});
+
+// FIX 39: Escape key closes all modals
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    ['authOv','payOv','privacyOv','termsOv'].forEach(id=>closeOv(id));
+    const wi=document.getElementById('whatIfOv');
+    if(wi)wi.style.display='none';
+  }
+  // FIX 40: Ctrl+K / Cmd+K focuses input
+  if((e.ctrlKey||e.metaKey)&&e.key==='k'){
+    e.preventDefault();
+    const ta=document.getElementById('userinput');
+    if(ta){ta.focus();ta.select();}
+  }
+});
+
+// FIX 41: Credit badge color update
+const _origUDC=window.updateDashCredits;
+window.updateDashCredits=function(){
+  if(_origUDC)_origUDC();
+  const chip=document.getElementById('crchip');
+  if(!chip)return;
+  chip.classList.remove('cr-low','cr-zero');
+  if(S.credits===Infinity){chip.textContent='∞ credits';return;}
+  chip.textContent=S.credits+' cr';
+  if(S.credits<=1)chip.classList.add('cr-zero');
+  else if(S.credits<=3)chip.classList.add('cr-low');
+};
+
+// FIX 42: Auto-save theme preference
+const _savedTheme=localStorage.getItem('nx_theme');
+if(_savedTheme&&_savedTheme!==document.documentElement.getAttribute('data-theme')){
+  document.documentElement.setAttribute('data-theme',_savedTheme);
+  if(typeof S!=='undefined')S.theme=_savedTheme;
+}
+const _origToggleTheme=window.toggleTheme;
+window.toggleTheme=function(){
+  if(_origToggleTheme)_origToggleTheme();
+  localStorage.setItem('nx_theme',S.theme);
+};
+
+// FIX 43: Paste CSV detection in textarea
+document.addEventListener('paste',function(e){
+  const ta=document.getElementById('userinput');
+  if(document.activeElement!==ta)return;
+  const txt=e.clipboardData.getData('text');
+  if(!txt)return;
+  const lines=txt.trim().split('\n');
+  if(lines.length>3&&lines[0].includes(',')&&lines[1].includes(',')){
+    e.preventDefault();
+    const rows=lines.map(r=>r.split(','));
+    if(typeof processArr==='function'){
+      processArr(rows,'Pasted Data');
+      ta.value='Analyze this data completely with charts';
+      ta.dispatchEvent(new Event('input'));
+      toast('📋 CSV data detected! Press Enter to analyze.');
+    }
+  }
+});
+
+// FIX 44: Add India-specific samples
+setTimeout(function(){
+  if(typeof SAMPS==='undefined')return;
+  const already=SAMPS.some(s=>s.cat&&s.cat.includes('India'));
+  if(already)return;
+  SAMPS.push({
+    cat:'🇮🇳 India Business',
+    items:[
+      {l:'D2C Brand P&L',t:'Analyze this Indian D2C brand:\nRevenue (₹L): Apr:8.2 May:9.1 Jun:11.4 Jul:10.8 Aug:12.3 Sep:15.6 Oct:22.1 Nov:38.4 Dec:28.9\nAd Spend (₹L): Apr:2.1 May:2.3 Jun:2.8 Jul:2.9 Aug:3.1 Sep:3.8 Oct:5.2 Nov:8.1 Dec:6.2\nReturns%: Apr:8 May:9 Jun:11 Jul:10 Aug:9 Sep:12 Oct:14 Nov:18 Dec:15\nCOD%: Apr:62 May:60 Jun:58 Jul:55 Aug:54 Sep:52 Oct:48 Nov:45 Dec:43'},
+      {l:'GST Monthly Summary',t:'Month,Taxable_Sales,CGST,SGST,IGST,ITC_Claimed,Net_Liability\nApr,1240000,111600,111600,62000,198000,87200\nMay,1380000,124200,124200,69000,201000,116400\nJun,1520000,136800,136800,76000,218000,131600\nJul,1290000,116100,116100,64500,195000,101700\nAug,1650000,148500,148500,82500,224000,155500\nSep,1890000,170100,170100,94500,241000,193700'}
+    ]
+  });
+  if(typeof renderSamps==='function')renderSamps();
+},800);
+
+// FIX 45: Better page title and meta for SEO
+document.title='NEXUS — AI Data Analyst for Indian Business | Free';
+
+// FIX 46: Clean New Analysis function
+window.startNewAnalysis=function(){
+  if(typeof S!=='undefined'){
+    S.messages=[];S.fileData=null;S.fileName=null;S.csv=null;S.csv2=null;
+    S.verifiedFacts=null;S.factsSummary='';S.anomalyFacts='';S.confidenceData=null;
+  }
+  const ids=['csvPrev','anomBanner','fileok'];
+  ids.forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});
+  const ta=document.getElementById('userinput');
+  if(ta){ta.value='';ta.style.height='auto';}
+  const sb=document.getElementById('sendbtn');
+  if(sb)sb.disabled=true;
+  if(typeof showWelcome==='function')showWelcome();
+  toast('✓ New analysis started');
+};
+
+// FIX 47: Slow connection warning
+if(navigator.connection){
+  const t=navigator.connection.effectiveType;
+  if(t==='2g'||t==='slow-2g')setTimeout(()=>toast('⚠️ Slow connection — analysis may take longer'),3000);
+}
+
+// FIX 48: Show filename in topbar when loaded
+const _origShowFOk=window.showFOk;
+if(_origShowFOk){
+  window.showFOk=function(fname,info){
+    _origShowFOk(fname,info);
+    const chip=document.getElementById('modchip');
+    if(chip&&fname){
+      const short=fname.length>16?fname.slice(0,13)+'…':fname;
+      chip.setAttribute('data-file',short);
+    }
+  };
+}
+
+// FIX 49: Auto-scroll to latest response
+const _origRC=window.renderCharts;
+if(_origRC){
+  window.renderCharts=function(container){
+    _origRC(container);
+    setTimeout(()=>{
+      const chat=document.getElementById('chat');
+      if(chat)chat.scrollTop=chat.scrollHeight;
+    },250);
+  };
+}
+
+// FIX 50: Console confirmation
+console.log('%cNEXUS v11 — All 50 fixes loaded ✓','color:#34d399;font-family:monospace;font-weight:bold;font-size:13px');
+
+
+// ═══════════════════════════════════════════════
+// NEXUS LANDING v4 — All 10 effects, no CDN
+// ═══════════════════════════════════════════════
+(function(){
+'use strict';
+
+// ── Cursor ──
+const c1=document.getElementById('lp-c1');
+const c2=document.getElementById('lp-c2');
+let mx=0,my=0,cx=0,cy=0;
+if(c1&&c2){
+  document.addEventListener('mousemove',function(e){
+    mx=e.clientX;my=e.clientY;
+    c1.style.left=mx+'px';c1.style.top=my+'px';
+  },{passive:true});
+  (function tick(){
+    cx+=(mx-cx)*.13;cy+=(my-cy)*.13;
+    c2.style.left=cx+'px';c2.style.top=cy+'px';
+    requestAnimationFrame(tick);
+  })();
+  document.addEventListener('mouseover',function(e){
+    if(e.target&&e.target.matches('button,a,.lp-fc,.lp-stat,.lp-pc')){
+      c2.style.width='54px';c2.style.height='54px';c2.style.borderColor='#a78bfa';
+    }
+  });
+  document.addEventListener('mouseout',function(e){
+    if(e.target&&e.target.matches('button,a,.lp-fc,.lp-stat,.lp-pc')){
+      c2.style.width='36px';c2.style.height='36px';c2.style.borderColor='rgba(167,139,250,.4)';
+    }
+  });
+}
+
+// ── Nav scroll ──
+var nav=document.getElementById('lp-nav');
+window.addEventListener('scroll',function(){
+  if(nav)nav.classList.toggle('lp-scrolled',window.scrollY>55);
+},{passive:true});
+
+// ── Scroll reveal ──
+var rIO=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting)e.target.classList.add('lp-vis');});
+},{threshold:.09,rootMargin:'0px 0px -28px 0px'});
+document.querySelectorAll('.lp-rv').forEach(function(el){rIO.observe(el);});
+
+// ── Animate bars ──
+function animBars(id){
+  var bars=document.querySelectorAll('#'+id+' .lp-bar');
+  if(!bars.length)return;
+  var heights=[52,68,58,76,71,90];
+  bars.forEach(function(b,i){
+    b.style.height='0%';
+    setTimeout(function(){b.style.height=heights[i]+'%';},280+i*105);
+  });
+}
+var bIO=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){if(e.isIntersecting){animBars(e.target.id);bIO.unobserve(e.target);}});
+},{threshold:.3});
+['lp-bars'].forEach(function(id){var el=document.getElementById(id);if(el)bIO.observe(el);});
+setTimeout(function(){animBars('lp-bars');},700);
+
+// ── Card glow tracking ──
+document.querySelectorAll('.lp-fc').forEach(function(card){
+  card.addEventListener('mousemove',function(e){
+    var r=card.getBoundingClientRect();
+    var g=card.querySelector('.lp-fcg');
+    if(g){g.style.left=(e.clientX-r.left)+'px';g.style.top=(e.clientY-r.top)+'px';}
+  });
+});
+
+// ── 5. Floating particles ──
+function initParticles(){
+  var container=document.getElementById('lp-particles');
+  if(!container)return;
+  var colors=['rgba(167,139,250,.55)','rgba(96,165,250,.5)','rgba(52,211,153,.45)','rgba(244,114,182,.4)'];
+  for(var i=0;i<55;i++){
+    var p=document.createElement('div');
+    var size=Math.random()*2.4+.8;
+    var x=Math.random()*100;
+    var y=Math.random()*100;
+    var dur=Math.random()*18+10;
+    var delay=Math.random()*-20;
+    var col=colors[i%colors.length];
+    var dx=(Math.random()*60-30).toFixed(1);
+    var dy=(Math.random()*60-30).toFixed(1);
+    p.style.cssText='position:absolute;width:'+size+'px;height:'+size+'px;border-radius:50%;background:'+col+';left:'+x+'%;top:'+y+'%;box-shadow:0 0 '+(size*3)+'px '+col+';animation:lp-pfloat '+dur+'s '+delay+'s ease-in-out infinite alternate';
+    p.style.setProperty('--dx',dx+'px');
+    p.style.setProperty('--dy',dy+'px');
+    container.appendChild(p);
+  }
+  var s=document.createElement('style');
+  s.textContent='@keyframes lp-pfloat{from{transform:translate(0,0) scale(1);opacity:.35}to{transform:translate(var(--dx),var(--dy)) scale(1.3);opacity:.85}}';
+  document.head.appendChild(s);
+}
+
+// ── 1. WebGL 3D — Self-contained, no CDN, works file:// ──
+function initWebGL(){
+  var canvas=document.getElementById('lp-canvas');
+  if(!canvas)return;
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+
+  var gl=canvas.getContext('webgl',{antialias:true,alpha:true,premultipliedAlpha:false});
+  if(!gl){canvas.style.display='none';return;}
+
+  window.addEventListener('resize',function(){
+    canvas.width=window.innerWidth;canvas.height=window.innerHeight;
+    gl.viewport(0,0,canvas.width,canvas.height);
+  },{passive:true});
+
+  // ══ VERTEX SHADER — handles both torus knots AND morphing sphere ══
+  var VS=[
+    'attribute vec3 aP;attribute vec3 aN;',
+    'uniform mat4 uMVP;uniform float uT;uniform float uMorph;',
+    'varying vec3 vN;varying vec3 vP;',
+    'void main(){',
+    '  float n=sin(aP.x*3.8+uT*1.1)*0.12+cos(aP.y*2.9+uT*.8)*0.1+sin(aP.z*4.5+uT*1.4)*0.08;',
+    '  vec3 d=aP*(1.0+n*uMorph);',
+    '  vN=aN;vP=d;',
+    '  gl_Position=uMVP*vec4(d,1.0);',
+    '}'
+  ].join('\n');
+
+  // ══ FRAGMENT SHADER — purple/blue/teal gradient, metallic rim ══
+  var FS=[
+    'precision mediump float;',
+    'varying vec3 vN;varying vec3 vP;',
+    'uniform float uT;uniform vec3 uCol1;uniform vec3 uCol2;uniform vec3 uCol3;',
+    'void main(){',
+    '  vec3 L=normalize(vec3(0.5,1.0,0.8));',
+    '  float d=max(dot(normalize(vN),L),0.0);',
+    '  float rim=pow(1.0-max(dot(normalize(-vP),normalize(vN)),0.0),2.5)*0.9;',
+    '  float t=sin(uT*.32+vP.y*1.8)*.5+.5;',
+    '  float t2=cos(uT*.26+vP.x*1.8)*.5+.5;',
+    '  vec3 col=mix(mix(uCol1,uCol2,t),uCol3,t2*.4);',
+    '  col=col*(0.22+d*.78)+vec3(rim*0.7);',
+    '  gl_FragColor=vec4(col,0.88);',
+    '}'
+  ].join('\n');
+
+  function mkS(t,s){var sh=gl.createShader(t);gl.shaderSource(sh,s);gl.compileShader(sh);if(!gl.getShaderParameter(sh,gl.COMPILE_STATUS))return null;return sh;}
+  var prog=gl.createProgram();
+  var v=mkS(gl.VERTEX_SHADER,VS),f=mkS(gl.FRAGMENT_SHADER,FS);
+  if(!v||!f)return;
+  gl.attachShader(prog,v);gl.attachShader(prog,f);gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS))return;
+  gl.useProgram(prog);
+
+  var aP=gl.getAttribLocation(prog,'aP');
+  var aN2=gl.getAttribLocation(prog,'aN');
+  var uMVP=gl.getUniformLocation(prog,'uMVP');
+  var uT=gl.getUniformLocation(prog,'uT');
+  var uMorph=gl.getUniformLocation(prog,'uMorph');
+  var uCol1=gl.getUniformLocation(prog,'uCol1');
+  var uCol2=gl.getUniformLocation(prog,'uCol2');
+  var uCol3=gl.getUniformLocation(prog,'uCol3');
+
+  // ══ MATRIX MATH (inline, no library) ══
+  function m4(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);}
+  function mul(a,b){var r=m4();for(var i=0;i<4;i++)for(var j=0;j<4;j++){var s=0;for(var k=0;k<4;k++)s+=a[i+k*4]*b[k+j*4];r[i+j*4]=s;}return r;}
+  function persp(fov,asp,n,f){var ff=1/Math.tan(fov/2),r2=1/(n-f),m=m4();m[0]=ff/asp;m[5]=ff;m[10]=(n+f)*r2;m[11]=-1;m[14]=2*n*f*r2;m[15]=0;return m;}
+  function rotX(a){var c=Math.cos(a),s=Math.sin(a),m=m4();m[5]=c;m[6]=s;m[9]=-s;m[10]=c;return m;}
+  function rotY(a){var c=Math.cos(a),s=Math.sin(a),m=m4();m[0]=c;m[2]=-s;m[8]=s;m[10]=c;return m;}
+  function rotZ(a){var c=Math.cos(a),s=Math.sin(a),m=m4();m[0]=c;m[1]=s;m[4]=-s;m[5]=c;return m;}
+  function tr(x,y,z){var m=m4();m[12]=x;m[13]=y;m[14]=z;return m;}
+  function sc(x,y,z){var m=m4();m[0]=x;m[5]=y;m[10]=z;return m;}
+
+  // ══ GEOMETRY BUILDERS ══
+
+  // Torus knot geometry — pure math, no Three.js
+  function buildTorusKnot(R,r,tubeSeg,radSeg,p,q){
+    var verts=[],norms=[],idx=[];
+    function pt(u){
+      var cu=Math.cos(u),su=Math.sin(u);
+      var qpu=q*u/p;
+      var r1=R+r*Math.cos(q*u);
+      return [r1*Math.cos(u),r1*Math.sin(u),r*Math.sin(q*u)];
+    }
+    for(var i=0;i<=tubeSeg;i++){
+      var u=i/tubeSeg*p*2*Math.PI;
+      var P=pt(u);
+      var T=pt(u+0.01);
+      // Tangent
+      var tx=T[0]-P[0],ty=T[1]-P[1],tz=T[2]-P[2];
+      var tl=Math.sqrt(tx*tx+ty*ty+tz*tz)||1;
+      tx/=tl;ty/=tl;tz/=tl;
+      // Normal (simplified Frenet)
+      var nx=-ty,ny=tx,nz=0;
+      var nl=Math.sqrt(nx*nx+ny*ny+nz*nz)||1;
+      nx/=nl;ny/=nl;nz/=nl;
+      // Binormal
+      var bx=ty*nz-tz*ny,by=tz*nx-tx*nz,bz=tx*ny-ty*nx;
+      var bl=Math.sqrt(bx*bx+by*by+bz*bz)||1;
+      bx/=bl;by/=bl;bz/=bl;
+      for(var j=0;j<=radSeg;j++){
+        var v=j/radSeg*2*Math.PI;
+        var cv=Math.cos(v),sv=Math.sin(v);
+        var ox=P[0]+(cv*nx+sv*bx)*r;
+        var oy=P[1]+(cv*ny+sv*by)*r;
+        var oz=P[2]+(cv*nz+sv*bz)*r;
+        verts.push(ox,oy,oz);
+        // Normal = point on tube - center of tube cross-section
+        var nmx=ox-P[0],nmy=oy-P[1],nmz=oz-P[2];
+        var nml=Math.sqrt(nmx*nmx+nmy*nmy+nmz*nmz)||1;
+        norms.push(nmx/nml,nmy/nml,nmz/nml);
+      }
+    }
+    for(var i=0;i<tubeSeg;i++){
+      for(var j=0;j<radSeg;j++){
+        var a=(radSeg+1)*i+j;
+        var b=(radSeg+1)*(i+1)+j;
+        idx.push(a,b,a+1,b,b+1,a+1);
+      }
+    }
+    return {verts:new Float32Array(verts),norms:new Float32Array(norms),idx:new Uint16Array(idx)};
+  }
+
+  // Sphere geometry
+  function buildSphere(res){
+    var verts=[],norms=[],idx=[];
+    for(var la=0;la<=res;la++){
+      var th=la*Math.PI/res;
+      for(var lo=0;lo<=res;lo++){
+        var ph=lo*2*Math.PI/res;
+        var x=Math.sin(th)*Math.cos(ph),y=Math.cos(th),z=Math.sin(th)*Math.sin(ph);
+        verts.push(x,y,z);norms.push(x,y,z);
+      }
+    }
+    for(var la=0;la<res;la++)for(var lo=0;lo<res;lo++){
+      var a=la*(res+1)+lo;
+      idx.push(a,a+1,a+res+1,a+1,a+res+2,a+res+1);
+    }
+    return {verts:new Float32Array(verts),norms:new Float32Array(norms),idx:new Uint16Array(idx)};
+  }
+
+  // ══ BUILD OBJECTS ══
+  function mkBuf(geo){
+    var vB=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vB);gl.bufferData(gl.ARRAY_BUFFER,geo.verts,gl.STATIC_DRAW);
+    var nB=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,nB);gl.bufferData(gl.ARRAY_BUFFER,geo.norms,gl.STATIC_DRAW);
+    var iB=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iB);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,geo.idx,gl.STATIC_DRAW);
+    return {vB:vB,nB:nB,iB:iB,len:geo.idx.length};
+  }
+
+  // 3 torus knots + 1 sphere
+  var objects=[
+    // Torus knots (3,2), (5,3), (4,3) — same as original Three.js file
+    {buf:mkBuf(buildTorusKnot(0.8,0.18,80,12,3,2)), pos:[1.8,0,-0.5], rx:0.5,ry:0,rz:0.3, sx:[0.004,0.003,0.002], col1:[0.55,0.1,0.98],col2:[0.1,0.45,0.98],col3:[0.1,0.85,0.6], morph:0},
+    {buf:mkBuf(buildTorusKnot(0.55,0.13,64,10,5,3)), pos:[2.4,0.6,-0.8], rx:0,ry:0.5,rz:1, sx:[0.003,0.005,0.001], col1:[0.48,0.08,0.92],col2:[0.2,0.6,0.95],col3:[0.15,0.9,0.55], morph:0},
+    {buf:mkBuf(buildTorusKnot(0.4,0.1,56,8,4,2)),   pos:[1.5,-0.8,-0.3], rx:1,ry:0.2,rz:0.4, sx:[0.005,0.002,0.003], col1:[0.6,0.15,0.95],col2:[0.08,0.52,0.97],col3:[0.2,0.82,0.5], morph:0},
+    // Morphing sphere (center-ish, behind everything)
+    {buf:mkBuf(buildSphere(36)), pos:[0,0,-2.5], rx:0,ry:0,rz:0, sx:[0.002,0.003,0.001], col1:[0.5,0.18,0.97],col2:[0.1,0.5,0.97],col3:[0.14,0.88,0.58], morph:0.18}
+  ];
+
+  // ══ DRAW CALL ══
+  function drawObj(obj,proj,mxv,myv,t2){
+    obj.rx+=obj.sx[0];obj.ry+=obj.sx[1];obj.rz+=obj.sx[2];
+    // Float y
+    obj.pos[1]+=Math.sin(t2+obj.pos[0])*0.001;
+
+    var asp=canvas.width/canvas.height;
+    var trans=tr(obj.pos[0],obj.pos[1],obj.pos[2]);
+    var rx2=rotX(obj.rx+myv*0.12);
+    var ry2=rotY(obj.ry+mxv*0.12);
+    var rz2=rotZ(obj.rz);
+    var mvp=mul(proj,mul(trans,mul(ry2,mul(rx2,rz2))));
+
+    gl.uniformMatrix4fv(uMVP,false,mvp);
+    gl.uniform1f(uMorph,obj.morph);
+    gl.uniform3f(uCol1,obj.col1[0],obj.col1[1],obj.col1[2]);
+    gl.uniform3f(uCol2,obj.col2[0],obj.col2[1],obj.col2[2]);
+    gl.uniform3f(uCol3,obj.col3[0],obj.col3[1],obj.col3[2]);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER,obj.buf.vB);
+    gl.enableVertexAttribArray(aP);gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,obj.buf.nB);
+    gl.enableVertexAttribArray(aN2);gl.vertexAttribPointer(aN2,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,obj.buf.iB);
+    gl.drawElements(gl.TRIANGLES,obj.buf.len,gl.UNSIGNED_SHORT,0);
+  }
+
+  var mxv=0,myv=0;
+  document.addEventListener('mousemove',function(e){
+    mxv=(e.clientX/window.innerWidth-.5)*2;
+    myv=-(e.clientY/window.innerHeight-.5)*2;
+  },{passive:true});
+
+  var t=0,raf=0;
+  function isLandingActive(){
+    var lv=document.getElementById('view-landing');
+    return lv&&(lv.classList.contains('active')||lv.style.display!=='none');
+  }
+
+  function draw(){
+    raf=requestAnimationFrame(draw);
+    if(!isLandingActive())return;
+    t+=0.007;
+
+    var asp=canvas.width/canvas.height;
+    var proj=persp(0.75,asp,0.1,20);
+
+    gl.clearColor(0,0,0,0);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    gl.uniform1f(uT,t);
+
+    for(var i=0;i<objects.length;i++){
+      drawObj(objects[i],proj,mxv,myv,t);
+    }
+  }
+  draw();
+}
+
+// ── Init on DOM ready ──
+function onReady(){
+  initParticles();
+  initWebGL();
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',onReady);
+}else{
+  onReady();
+}
+
+})();
+
+</script>
 </body>
 </html>
