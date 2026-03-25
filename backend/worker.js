@@ -10,7 +10,9 @@
 const ORIGIN_WHITELIST = [
   "https://nexus.onliraxter.workers.dev",
   "https://nexus-data-analyst-web.pages.dev",
-  "https://*.nexus-data-analyst-web.pages.dev", // Support branch previews
+  "https://*.nexus-data-analyst-web.pages.dev",
+  "https://nexus-project.pages.dev",
+  "https://*.nexus-project.pages.dev",
   "https://nexus-backend-clean.onliraxter.workers.dev",
   "http://localhost:*",
   "http://127.0.0.1:*",

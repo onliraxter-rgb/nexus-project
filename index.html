@@ -1444,8 +1444,7 @@ const _GOOGLE_ID_DEFAULT = "152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.g
 const _UPI_DEFAULT       = "YOUR_UPI_ID@upi";
 
 // Always use latest backend
-localStorage.setItem('nx_cp_backend', _BACKEND_DEFAULT);
-if (!localStorage.getItem('nx_cp_google_id')) localStorage.setItem('nx_cp_google_id', _GOOGLE_ID_DEFAULT);
+localStorage.setItem('nx_cp_google_id', _GOOGLE_ID_DEFAULT);
 
 // Live config
 const BACKEND          = (localStorage.getItem('nx_cp_backend')  || _BACKEND_DEFAULT).replace(/\/$/, '');
