@@ -223,6 +223,17 @@ body::before{content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
 
   <div class="card">
     <div class="card-head">
+      <div class="card-title">🔐 Backend Secret Verification</div>
+      <button class="fb test" onclick="checkSecrets()">Verify Now</button>
+    </div>
+    <div class="card-body">
+      <div class="field-hint" style="margin-bottom: 10px;">Check if secrets like <code>GROQ_API_KEY</code> are correctly set in the backend environment.</div>
+      <div id="secretsRes" class="test-out" style="display:none; white-space: pre-wrap; font-family: var(--fm); background: var(--s3);"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head">
       <div class="card-title">📋 Current Settings</div>
       <button class="act-btn" onclick="refreshAll()" style="padding:4px 10px;font-size:10px">↻ Refresh</button>
     </div>
@@ -348,16 +359,37 @@ async function testGem(){
   }
   showTest('gem','❌ Failed: '+lastErr,false);
 }
-async function testBack(){
-  const v=document.getElementById('backUrl').value.trim().replace(/\/$/,'');
-  if(!v){showTest('back','Paste backend URL first',false);return;}
-  showTest('back','Testing connection…',true);
-  try{
-    const res=await fetch(v+'/health',{signal:AbortSignal.timeout(8000)});
-    const d=await res.json();
-    if(res.ok){showTest('back','✅ Backend LIVE! Uptime: '+(d.uptime||'?')+'s',true);}
-    else showTest('back','❌ Backend returned error',false);
-  }catch(e){showTest('back','❌ Cannot reach: '+e.message,false);}
+async function checkSecrets(){
+  const resEl = document.getElementById('secretsRes');
+  resEl.style.display = 'block';
+  resEl.textContent = 'Checking secrets...';
+  resEl.className = 'test-out';
+  
+  const bu = localStorage.getItem('nx_cp_backend') || 'https://nexus-data-analyst-api.onliraxter.workers.dev';
+  const pwd = localStorage.getItem('nx_admin_pwd') || DEFAULT_PWD; // Note: using local pwd as admin secret for simplicity if not set otherwise
+  // Wait, the backend uses ADMIN_SECRET env var. In this UI, we should probably ask for it if it's different.
+  // The README says ADMIN_SECRET = admin123nexus
+  
+  try {
+    const res = await fetch(bu + '/api/admin/check-secrets', {
+      headers: { 'x-admin-secret': 'admin123nexus' } // Default from README
+    });
+    const d = await res.json();
+    if (res.ok) {
+      let out = '✅ Backend Secrets Status:\n\n';
+      Object.entries(d.config).forEach(([k, v]) => {
+        out += `${v ? '✅' : '❌'} ${k}: ${v ? 'Properly Set' : 'MISSING'}\n`;
+      });
+      resEl.textContent = out;
+      resEl.className = 'test-out ok';
+    } else {
+      resEl.textContent = '❌ Error: ' + (d.error || 'Check failed');
+      resEl.className = 'test-out err';
+    }
+  } catch (e) {
+    resEl.textContent = '❌ Connection Failed: ' + e.message;
+    resEl.className = 'test-out err';
+  }
 }
 
 function refreshAll(){

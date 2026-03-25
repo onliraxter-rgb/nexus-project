@@ -315,6 +315,105 @@ export default {
       return json({ credits: user.credits });
     }
 
+    // ── HELPER: CALL GEMINI (Non-streaming) ─────────────
+    async function callGemini(messages, sys, env) {
+      if (!env.GEMINI_API_KEY) return null;
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${env.GEMINI_API_KEY}`;
+      const contents = messages.map(m => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }]
+      }));
+      
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: sys }] },
+            contents,
+            generationConfig: { maxOutputTokens: 8192, temperature: 0.3 }
+          })
+        });
+        const data = await res.json();
+        if (!res.ok) return null;
+        return {
+          choices: [{
+            message: {
+              content: data.candidates?.[0]?.content?.parts?.map(p => p.text).join('') || ""
+            }
+          }]
+        };
+      } catch(e) { return null; }
+    }
+
+    // ── HELPER: CALL GEMINI STREAM ──────────────────────
+    async function callGeminiStream(messages, sys, env, writer, encoder, origin) {
+      if (!env.GEMINI_API_KEY) {
+        await writer.write(encoder.encode(`data: ${JSON.stringify({ token: "⚠️ Error: Groq exhausted and GEMINI_API_KEY not set in worker secrets." })}\n\n`));
+        await writer.close();
+        return;
+      }
+      
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:streamGenerateContent?key=${env.GEMINI_API_KEY}`;
+      const contents = messages.map(m => ({
+        role: m.role === "assistant" ? "model" : "user",
+        parts: [{ text: m.content }]
+      }));
+
+      try {
+        const res = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: sys }] },
+            contents,
+            generationConfig: { maxOutputTokens: 8192, temperature: 0.3 }
+          })
+        });
+
+        if (!res.ok) {
+          await writer.write(encoder.encode(`data: ${JSON.stringify({ token: "⚠️ Gemini fallback also failed." })}\n\n`));
+          await writer.close();
+          return;
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          
+          // Gemini stream returns a JSON array of objects
+          const parts = buffer.split('}\n{');
+          buffer = parts.pop() || "";
+          
+          for (let part of parts) {
+            if (!part.startsWith('{')) part = '{' + part;
+            if (!part.endsWith('}')) part = part + '}';
+            try {
+              const d = JSON.parse(part);
+              const token = d.candidates?.[0]?.content?.parts?.[0]?.text || "";
+              if (token) await writer.write(encoder.encode(`data: ${JSON.stringify({ token })}\n\n`));
+            } catch(e) {}
+          }
+        }
+        if (buffer) {
+          try {
+            const d = JSON.parse(buffer);
+            const token = d.candidates?.[0]?.content?.parts?.[0]?.text || "";
+            if (token) await writer.write(encoder.encode(`data: ${JSON.stringify({ token })}\n\n`));
+          } catch(e) {}
+        }
+      } catch(e) {
+        await writer.write(encoder.encode(`data: ${JSON.stringify({ token: "⚠️ Fallback Error: " + e.message })}\n\n`));
+      } finally {
+        await writer.close();
+      }
+    }
+
     // ── /api/analyze ──────────────────────────────────────
     if (path === "/api/analyze" && method === "POST") {
       let user = await getUser(request, env);
@@ -359,46 +458,32 @@ export default {
         }
       }
 
-      const SYS_PROMPT = `You are NEXUS v7 — Precision AI Business Analyst.
+      const SYS_PROMPT = `You are NEXUS v11 — Precision AI Business Analyst.
 
 CRITICAL RULES — NEVER BREAK THESE:
-1. NEVER compute totals yourself. Use ONLY the JavaScript-verified numbers labeled "COMPUTED TOTALS" in the data facts.
-2. If a number is not in the verified facts, say "insufficient data" — do not estimate.
-3. Every chart must use actual values from the verified facts, never invented data.
-4. Flag every anomaly with: column name, row number, exact value, and why it's anomalous.
-5. Every financial ratio must show its formula and the exact inputs used.
+1. DATA TRUTH: Use ONLY the numbers labeled "JAVASCRIPT-VERIFIED DATA FACTS". Never compute sums/averages yourself.
+2. NO HALLUCINATION: If a specific column's sum is not in the facts, say "insufficient data" instead of guessing.
+3. CHART TAGS: Every chart MUST use the exact format: [CHART:type|title|[{"name":"Label","val":123}]].
+   - NEVER use "ARTbar", "ARTline", or "[CH:" format.
+   - Values in JSON MUST be raw numbers (no "$", no ",").
+4. MATH PRECISION: All financial ratios must show the exact formula and the verified inputs used.
 
-ANALYSIS STRUCTURE (follow in order):
+ANALYSIS STRUCTURE (MUST FOLLOW):
 ═══ 1. DATA INTEGRITY REPORT ═══
-Use the JavaScript-verified duplicates, formula mismatches, and missing values.
-State them as confirmed facts, not estimates.
+State errors, duplicates, and mismatches from the verified facts as confirmed truths.
 
 ═══ 2. KEY METRICS DASHBOARD ═══
-Use ONLY verified computed totals. Show KPI cards.
-[KPI:Label|Value|Delta|up/down/neutral]
+Use ONLY verified computed totals. Show exactly: [KPI:Label|Value|Delta|up/down/neutral]
 
-═══ 3. STATISTICAL ANALYSIS ═══
-Use min/max/mean/median/std from verified facts.
-Identify distributions. Flag if data is skewed.
+═══ 3. STATISTICAL & BUSINESS ANALYSIS ═══
+Reference min/max/mean/std from verified facts. Deep dive into the requested module (Finance/Sales/etc).
 
-═══ 4. BUSINESS ANALYSIS ═══
-For the specific module requested (Finance/Sales/Risk/etc).
-All calculations must reference verified totals.
-
-═══ 5. ANOMALY DEEP DIVE ═══
-For each anomaly found:
-- Exact location (row, column, value)
-- Statistical context (how many std devs from mean)
-- 3 possible business explanations
-- Recommended action
-
-═══ 6. CHARTS (minimum 3) ═══
-[CHART:bar|Revenue by Category|[{"name":"A","val":1000}]]
-Use actual data from verified facts only.
+═══ 4. CHARTS (Minimum 3) ═══
+[CHART:bar|Title|[{"name":"A","val":100}]]
+Types allowed: bar, line, pie, doughnut.
 
 ◆ NEXUS VERDICT
-Top 5 priority actions with expected business impact.
-Confidence: HIGH/MEDIUM/LOW based on data quality score.`;
+Top 5 priority actions based on verified data risks/opportunities.`;
 
       if (stream) {
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -413,7 +498,25 @@ Confidence: HIGH/MEDIUM/LOW based on data quality score.`;
           })
         });
 
-        if (!groqRes.ok) return err(await groqRes.text(), groqRes.status, normalizedOrigin);
+        if (!groqRes.ok) {
+          const errText = await groqRes.text();
+          if (groqRes.status === 429) {
+            // FALLBACK TO GEMINI
+            const { readable, writable } = new TransformStream();
+            const writer = writable.getWriter();
+            const encoder = new TextEncoder();
+            callGeminiStream(trimmedMessages, SYS_PROMPT, env, writer, encoder, normalizedOrigin);
+            
+            const headers = { "Content-Type": "text/event-stream", "Cache-Control": "no-cache", ...SECURITY_HEADERS };
+            Object.entries(CORS).forEach(([k, v]) => headers[k] = v);
+            if (normalizedOrigin) headers["Access-Control-Allow-Origin"] = normalizedOrigin;
+            return new Response(readable, { headers });
+          }
+          
+          let msg = errText;
+          if (groqRes.status === 401) msg = "AI Provider Unauthorized: Check GROQ_API_KEY in Cloudflare Secrets.";
+          return err(msg, groqRes.status, normalizedOrigin);
+        }
 
         const { readable, writable } = new TransformStream();
         const writer = writable.getWriter();
@@ -479,11 +582,20 @@ Confidence: HIGH/MEDIUM/LOW based on data quality score.`;
         const errText = await groqRes.text();
         errorMsg = errText;
         
-        if (groqRes.status === 429 && attempts < 3) {
+        if (groqRes.status === 429 && attempts < 2) {
           const waitMatch = errText.match(/try again in ([0-9.]+)s/i);
           const waitSecs = waitMatch ? parseFloat(waitMatch[1]) : 2;
           await new Promise(r => setTimeout(r, (waitSecs * 1000) + 100)); // sleep exact seconds
           continue;
+        }
+        
+        // Final attempt failed or was 429 on last try -> Fallback to Gemini
+        if (groqRes.status === 429 || !finalRes) {
+          const gemRes = await callGemini(trimmedMessages, SYS_PROMPT, env);
+          if (gemRes) {
+            finalRes = gemRes;
+            break;
+          }
         }
         break; // Stop on non-429 error or out of retries
       }
@@ -555,8 +667,25 @@ Confidence: HIGH/MEDIUM/LOW based on data quality score.`;
       user.plan    = plan || "pro";
       user.credits = plan === "unlimited" ? -1 : (credits || 100);
       user.active  = true;
-      await saveUser(env, user);
+      await env.NEXUS_KV.put(`user:${email}`, JSON.stringify(user));
       return json({ ok: true, user });
+    }
+
+    // ── /api/admin/check-secrets ──────────────────────────
+    if (path === "/api/admin/check-secrets" && method === "GET") {
+      const secret = request.headers.get("x-admin-secret");
+      if (secret !== env.ADMIN_SECRET) return err("Forbidden", 403);
+      
+      const config = {
+        GROQ_API_KEY: !!env.GROQ_API_KEY,
+        GEMINI_API_KEY: !!env.GEMINI_API_KEY,
+        GOOGLE_CLIENT_ID: !!env.GOOGLE_CLIENT_ID,
+        JWT_SECRET: !!env.JWT_SECRET,
+        ADMIN_SECRET: !!env.ADMIN_SECRET,
+        FREE_CREDITS: !!env.FREE_CREDITS,
+        NEXUS_KV: !!env.NEXUS_KV
+      };
+      return json({ config }, 200, normalizedOrigin);
     }
 
     // ── /api/admin/logs ───────────────────────────────────

@@ -1761,9 +1761,54 @@ After verdict, always add:
 1. [specific question based on what was found]
 2. [specific question based on anomalies or patterns]
 3. [specific question for deeper dive]`;
-const MPRPTS={universal:'',statistics:'\n\n[STATISTICS MODE: Full battery — all central tendency, dispersion, normality tests, full correlation matrix, regression with p-values.]',finance:'\n\n[FINANCE MODE: P&L decomp, DuPont ROE bridge, Altman Z-Score, Piotroski F, DCF sensitivity, WACC, CCC, all 30+ ratios with benchmarks.]',ml:'\n\n[ML MODE: Frame problem, rank features, top 3 models with metrics, forecast with 80/95% CI, anomaly scores.]',operations:'\n\n[OPERATIONS MODE: OEE breakdown, TOC bottleneck, EOQ/safety stock, OTIF root cause, Sigma/DPMO/Cpk.]',marketing:'\n\n[MARKETING MODE: CAC by channel+payback, LTV:CAC, attribution comparison, D1/D7/D30 cohorts, ROAS rank.]',hr:'\n\n[HR MODE: Attrition voluntary/involuntary, flight risk, performance bell curve, compa-ratio, pay gap, eNPS, 9-box.]',risk:'\n\n[RISK MODE: All risk categories, Monte Carlo min/likely/max, HHI, Altman Z, 3-scenario stress test, sensitivity tornado.]',saas:'\n\n[SAAS MODE: MRR/ARR/NRR/GRR, expansion+churn decomp, Rule of 40, magic number, LTV:CAC, unit economics waterfall.]',strategy:'\n\n[STRATEGY MODE: MECE issue tree, BCG, Ansoff, Porter 5 Forces, OKRs, Impact×Effort 2x2, 30-60-90-180 roadmap.]',sql:'\n\n[SQL MODE: Production SQL with CTEs, window functions. Python/pandas. R/tidyverse. DAX measures.]',dashboard:'\n\n[DASHBOARD MODE: KPI hierarchy L1/L2/L3, chart rationale, layout wireframe, star schema DDL, DAX measures.]',realtime:'\n\n[MONITORING MODE: KPI thresholds warn/critical, anomaly rules, alert triggers, escalation matrix.]'};
+const CHART_RULE = '\n\n[CHART RULE: Use ONLY [CHART:type|title|[{"name":"Label","val":123}]] format. Types: bar, line, pie, doughnut. No $ or , inside JSON.]';
+const MPRPTS={universal:CHART_RULE,statistics:'\n\n[STATISTICS MODE: Full battery — all central tendency, dispersion, normality tests, full correlation matrix, regression with p-values.]'+CHART_RULE,finance:'\n\n[FINANCE MODE: P&L decomp, DuPont ROE bridge, Altman Z-Score, Piotroski F, DCF sensitivity, WACC, CCC, all 30+ ratios with benchmarks.]'+CHART_RULE,ml:'\n\n[ML MODE: Frame problem, rank features, top 3 models with metrics, forecast with 80/95% CI, anomaly scores.]'+CHART_RULE,operations:'\n\n[OPERATIONS MODE: OEE breakdown, TOC bottleneck, EOQ/safety stock, OTIF root cause, Sigma/DPMO/Cpk.]'+CHART_RULE,marketing:'\n\n[MARKETING MODE: CAC by channel+payback, LTV:CAC, attribution comparison, D1/D7/D30 cohorts, ROAS rank.]'+CHART_RULE,hr:'\n\n[HR MODE: Attrition voluntary/involuntary, flight risk, performance bell curve, compa-ratio, pay gap, eNPS, 9-box.]'+CHART_RULE,risk:'\n\n[RISK MODE: All risk categories, Monte Carlo min/likely/max, HHI, Altman Z, 3-scenario stress test, sensitivity tornado.]'+CHART_RULE,saas:'\n\n[SAAS MODE: MRR/ARR/NRR/GRR, expansion+churn decomp, Rule of 40, magic number, LTV:CAC, unit economics waterfall.]'+CHART_RULE,strategy:'\n\n[STRATEGY MODE: MECE issue tree, BCG, Ansoff, Porter 5 Forces, OKRs, Impact×Effort 2x2, 30-60-90-180 roadmap.]'+CHART_RULE,sql:'\n\n[SQL MODE: Production SQL with CTEs, window functions. Python/pandas. R/tidyverse. DAX measures.]'+CHART_RULE,dashboard:'\n\n[DASHBOARD MODE: KPI hierarchy L1/L2/L3, chart rationale, layout wireframe, star schema DDL, DAX measures.]'+CHART_RULE,realtime:'\n\n[MONITORING MODE: KPI thresholds warn/critical, anomaly rules, alert triggers, escalation matrix.]'+CHART_RULE};
 const MODS=[{id:'universal',i:'⚡',l:'Universal',d:'Auto-detect & analyze'},{id:'statistics',i:'∑',l:'Statistics',d:'Descriptive + inferential'},{id:'finance',i:'◈',l:'Finance',d:'P&L, DCF, ratios, valuation'},{id:'ml',i:'◉',l:'ML & Predict',d:'Models, features, forecast'},{id:'operations',i:'⊗',l:'Operations',d:'OEE, supply chain, lean'},{id:'marketing',i:'◐',l:'Marketing',d:'CAC, LTV, attribution'},{id:'hr',i:'◎',l:'People',d:'Attrition, equity, eNPS'},{id:'risk',i:'◇',l:'Risk',d:'Monte Carlo, stress, HHI'},{id:'saas',i:'◑',l:'SaaS/Tech',d:'MRR, NRR, Rule of 40'},{id:'strategy',i:'▲',l:'Strategy',d:'BCG, OKRs, roadmap'},{id:'sql',i:'</>',l:'SQL & Code',d:'SQL, Python, DAX, R'},{id:'dashboard',i:'▦',l:'Dashboard',d:'BI blueprint, KPI design'},{id:'realtime',i:'●',l:'Monitoring',d:'Alerts, thresholds, watch'}];
-const SAMPS=[{cat:'💰 Finance',items:[{l:'SaaS P&L 4 Years',t:'Analyze SaaS:\nRevenue: $2.4M Y1, $4.1M Y2, $7.8M Y3, $13.2M Y4\nCOGS: 22%, 20%, 19%, 18%\nR&D: $800K, $1.2M, $1.8M, $2.4M\nS&M: 45%, 42%, 38%, 35%\nG&A: 18%, 15%, 13%, 11%\nCustomers: 120, 285, 640, 1180\nChurn: 8.2%, 6.4%, 5.1%, 4.3%'},{l:'Manufacturing P&L',t:'Revenue $45M | COGS $32.5M | EBITDA $3M | DA $1.8M | Interest $420K | Tax 28%\nAssets $38M | Debt $21M\n5yr Revenue: $28M $33M $38M $42M $45M'}]},{cat:'📊 Sales',items:[{l:'E-Commerce Revenue',t:'Monthly revenue ($K): Jan:820 Feb:740 Mar:890 Apr:950 May:1020 Jun:980 Jul:1150 Aug:1080 Sep:1240 Oct:1680 Nov:2340 Dec:1920\nAOV $67 | Cart abandonment 71% | Returns 12%'},{l:'B2B Pipeline',t:'Prospect 340/$8.2M | Qualified 128/$4.1M | Demo 67/$2.8M | Proposal 41/$2.1M | Won 22/$1.1M'}]},{cat:'🔬 ML',items:[{l:'Churn Analysis',t:'Telecom (7043 customers, 26.5% churn):\nTenure: churned 17.9mo vs 37.6mo\nMonthly charges: churned $74.44 vs $61.27\nContract: M2M 42.7%, 1yr 11.3%, 2yr 2.8%'}]}];
+const SAMPS = [
+  {
+    cat: '💰 Finance & SaaS',
+    items: [
+      { l: 'SaaS P&L 4 Years', t: 'Analyze SaaS:\nRevenue: $2.4M Y1, $4.1M Y2, $7.8M Y3, $13.2M Y4\nCOGS: 22%, 20%, 19%, 18%\nR&D: $800K, $1.2M, $1.8M, $2.4M\nS&M: 45%, 42%, 38%, 35%\nG&A: 18%, 15%, 13%, 11%\nCustomers: 120, 285, 640, 1180\nChurn: 8.2%, 6.4%, 5.1%, 4.3%' },
+      { l: 'Manufacturing P&L', t: 'Revenue $45M | COGS $32.5M | EBITDA $3M | DA $1.8M | Interest $420K | Tax 28%\nAssets $38M | Debt $21M\n5yr Revenue: $28M $33M $38M $42M $45M' },
+      { l: 'Crypto Portfolio', t: 'Assets: BTC (0.5, $31k), ETH (4.2, $9.1k), SOL (120, $14k), USDC ($5k)\nInitial Investment: $42,000\nTimeframe: 18 months\nStaking yield: 4.5% avg' }
+    ]
+  },
+  {
+    cat: '📊 Marketing & Sales',
+    items: [
+      { l: 'E-Comm Ad ROAS', t: 'Campaigns: Meta ($4k, 3.2x), Google ($6.5k, 4.1x), LinkedIn ($2k, 1.8x), TikTok ($3k, 2.5x)\nCAC: $22 avg | LTV: $140 | Payback: 4.5mo' },
+      { l: 'B2B Sales Pipeline', t: 'Leads: 450 (MQL), 120 (SQL), 45 (Demo), 12 (Closed)\nDeal Size: $15k avg | Sales Cycle: 85 days\nWin Rate: 26%' }
+    ]
+  },
+  {
+    cat: '🔬 Stats & ML',
+    items: [
+      { l: 'Customer Churn (ML)', t: 'Users: 10,000\nChurned: 1,450 (14.5%)\nFeatures: Latency >200ms (70% churn), Support tickets >3 (85% churn), Plan: Basic (60% of churn)' },
+      { l: 'Clinical Trial (Stats)', t: 'Control (n=50, mean=14.2, std=2.1)\nExperimental (n=52, mean=11.8, std=1.9)\np-value: 0.042 | Alpha: 0.05\nCohen\'s d: 1.2' }
+    ]
+  },
+  {
+    cat: '⚙️ Ops & People',
+    items: [
+      { l: 'Warehouse OEE', t: 'A-Grade: 92% | P-Grade: 85% | Q-Grade: 98%\nDown-time: 42hrs/mo (Maintenance 12h, Jamming 30h)\nTarget units: 50,000 | Actual: 41,200' },
+      { l: 'Employee Attrition', t: 'Dept: Engineering (12% turnover), Sales (24%), HR (5%), Support (18%)\nAvg Tenure: 2.1 yrs | Satisfaction: 3.4/5\nExit Interview: "Comp" (40%), "Growth" (35%)' }
+    ]
+  },
+  {
+    cat: '🛡️ Risk & Strategy',
+    items: [
+      { l: 'Credit Risk Scoring', t: 'Loan ID 104-X: Score 640, DTI 42%, Delinquencies 2, Income ₹1.2L/mo\nDecision: Reject? Or Higher Interest?' },
+      { l: 'Market Entry Strategy', t: 'Market: India EV Charging\nCompetitors: 4 major, 15 local\nEntry Cost: ₹12Cr | Break-even: 3.5 yrs\nSWOT: Tech leader (+), Local distribution (-)' }
+    ]
+  },
+  {
+    cat: '💻 Code & Monitoring',
+    items: [
+      { l: 'Server Latency (P99)', t: 'US-East: 120ms, EU-West: 145ms, IN-South: 42ms(🔥), SG-1: 90ms\nError Rate: 0.04% | CPU: 72% avg\nAlert threshold: >200ms' },
+      { l: 'SQL Performance', t: 'Query: SELECT * FROM orders WHERE user_id=?\nDuration: 1.2s (no index) vs 0.002s (indexed)\nRows: 1.2M | Scan type: Full Table' }
+    ]
+  }
+];
 const COLORS=['#a78bfa','#34d399','#f59e0b','#60a5fa','#f87171','#fb923c','#2dd4bf','#e879f9'];
 
 function renderMods(){document.getElementById('p-mod').innerHTML=MODS.map(m=>`<div class="mod-item ${m.id===S.mode?'on':''}" id="md-${m.id}" onclick="setMode('${m.id}')"><div class="mod-ico">${m.i}</div><div><div class="mod-lbl">${m.l}</div><div class="mod-desc">${m.d}</div></div></div>`).join('');}
@@ -1789,10 +1834,7 @@ async function sendMsg(){
   let prompt=raw+(MPRPTS[S.mode]||'');
   if(S.adv)prompt+='\n\n[ADVANCED MODE: Monte Carlo, ML feature importance, time series decomp, cluster profiling, 30-60-90-180 roadmap.]';
   if(S.lang!=='english')prompt+=`\n\n[LANGUAGE: Respond entirely in ${S.lang}. Use ₹ for currency. Use lakhs/crores format.]`;
-  const depthMap={1:'\n\n[DEPTH 1 — QUICK: Only top 5 KPIs and 1 chart. Be concise.]',2:'\n\n[DEPTH 2 — SUMMARY: KPIs + top 3 anomalies + 2 charts.]',3:'',4:'\n\n[DEPTH 4 — DEEP: Full stats + regression + correlation analysis + all anomalies.]',5:'\n\n[DEPTH 5 — CFO GRADE: Everything in depth 4 + Monte Carlo ranges + 90-day roadmap + board executive summary.]'};
-  if(S.depth&&S.depth!==3)prompt+=depthMap[S.depth]||'';
-
-  // DEPTH LEVEL
+  // DEPTH LEVEL INSTRUCTIONS
   const depthInstructions={
     1:'\n\n[DEPTH 1 — QUICK: Only top 5 KPIs and 1 chart. Be concise.]',
     2:'\n\n[DEPTH 2 — SUMMARY: KPIs + top 3 anomalies + 2 charts.]',
@@ -1858,6 +1900,7 @@ async function sendMsg(){
 
       // Streaming response
       let bubEl = null;
+      let bubGenerated = false;
 
       const reader=streamRes.body.getReader();
       const decoder=new TextDecoder();
@@ -1883,6 +1926,7 @@ async function sendMsg(){
                 removeTyp(tid);
                 document.getElementById('sendbtn').disabled = false;
                 bubEl = addBub('assistant', '', true, true);
+                bubGenerated = true;
               }
               if (bubEl) bubEl.innerHTML = fullText.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>") + '<span class="streaming-cursor"></span>';
             }
@@ -1935,7 +1979,7 @@ async function sendMsg(){
       throw new Error('No AI configured.');
     }
 
-    if (!document.querySelector('.bub.ai:last-of-type') || !reply.includes(document.querySelector('.bub.ai:last-of-type').innerText)) {
+    if (!bubGenerated) {
       removeTyp(tid);
       document.getElementById('sendbtn').disabled=false;
       addBub('assistant', reply, true);
@@ -1966,13 +2010,24 @@ async function sendMsg(){
       updateDashCredits();
       if (BACKEND_LIVE) api('/api/user/refund-credit', { method: 'POST' }).catch(() => {});
     }
-    let errMsg=e.message||'Something went wrong';
-    if(errMsg.includes('quota')||errMsg.includes('429'))errMsg='AI quota reached — please try again in 1 minute.';
-    else if(errMsg.includes('timeout')||errMsg.includes('AbortError'))errMsg='Request timed out. Try a smaller file or simpler question.';
-    else if(errMsg.includes('401')||errMsg.includes('Unauthorized'))errMsg='Session expired — please refresh and sign in again.';
-    else if(errMsg.includes('500'))errMsg='Server error. Please try again.';
-    else if(errMsg.includes('No AI'))errMsg='AI not connected — check your internet and reload.';
-    addBub('assistant','⚠️ '+errMsg+'\n\nYour credit has been refunded.');
+    let errMsg = e.message || 'Something went wrong';
+    if (errMsg.includes('401') || errMsg.includes('Unauthorized')) {
+      if (errMsg.includes('AI Provider')) {
+        // This is a Groq key issue, specifically caught by our new backend logic
+      } else {
+        errMsg = 'Session expired or invalid — please refresh and sign in again.';
+      }
+    } else if (errMsg.includes('quota') || errMsg.includes('429')) {
+      errMsg = 'AI quota reached — please try again in 1 minute.';
+    } else if (errMsg.includes('timeout') || errMsg.includes('AbortError')) {
+      errMsg = 'Request timed out. Try a smaller file or simpler question.';
+    } else if (errMsg.includes('500')) {
+      errMsg = 'Server error. Please try again.';
+    } else if (errMsg.includes('No AI')) {
+      errMsg = 'AI not connected — check your internet and reload.';
+    }
+    
+    addBub('assistant', '⚠️ ' + errMsg + '\n\nYour credit has been refunded.');
   }
 
   document.getElementById('sendbtn').disabled = false;
@@ -2146,7 +2201,57 @@ void main(){
 }
 function removeTyp(id){const el=document.getElementById(id);if(el)el.remove();}
 function copyBub(btn){navigator.clipboard.writeText(btn.closest('.bub').innerText.replace(/⎘ Copy.*$/s,'').trim()).then(()=>toast('✅ Copied!')).catch(()=>{});}
-function renderContent(text){const pc=[];text=text.replace(/\[CHART:([\w]+)\|(.*?)\|([\s\S]*?)\]/g,(m,type,title,json)=>{try{const data=JSON.parse(json);const id='c'+(++S.cCount);pc.push({id,type,title,data});return`<div class="chart-card" id="${id}"><div class="chart-lbl"><span>${esc(title)}</span><div style="display:flex;align-items:center;gap:4px"><div class="chart-type-tabs"><span class="ct on" data-t="bar" onclick="swChType('${id}','bar',this)">Bar</span><span class="ct" data-t="line" onclick="swChType('${id}','line',this)">Line</span><span class="ct" data-t="doughnut" onclick="swChType('${id}','doughnut',this)">Pie</span></div><span class="chart-save-btn" onclick="saveOneChart('${id}')">⬇</span></div></div><canvas></canvas></div>`;}catch(e){return '';}});const kpis=[];text=text.replace(/\[KPI:(.*?)\|(.*?)\|(.*?)\|(up|down|neutral)\]/g,(m,lbl,val,delta,dir)=>{kpis.push(`<div class="kpi-card"><div class="kpi-label">${esc(lbl)}</div><div class="kpi-value">${esc(val)}</div><div class="kpi-delta ${dir}">${dir==='up'?'▲':dir==='down'?'▼':'─'} ${esc(delta)}</div></div>`);return '';});const lines=text.split('\n');let html=kpis.length?`<div class="kpi-grid">${kpis.join('')}</div>`:'';let i=0;while(i<lines.length){const l=lines[i];if(/^[═━]{2,}/.test(l)){html+=`<div class="sec-div"><span>${l.replace(/[═━]/g,'').trim()||'─'}</span></div>`;}else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){html+=`<div class="verdict-box">◆ NEXUS VERDICT</div>`;}else if(/^▶/.test(l)){html+=`<div class="layer-hdr"><span class="layer-arrow">▶</span><span>${fmt(l.replace(/^▶\s*/,''))}</span></div>`;}else if(/^\*\*[^*]+:\*\*$/.test(l.trim())||/^## /.test(l)){html+=`<div class="sub-hdr">${fmt(l.replace(/^\*\*/,'').replace(/\*\*$/,'').replace(/^## /,''))}</div>`;}else if(l.trimStart().startsWith('|')){const rows=[l];while(i+1<lines.length&&lines[i+1].trimStart().startsWith('|')){i++;rows.push(lines[i]);}const dr=rows.filter(r=>!/^\|[\s\-─|]+\|$/.test(r.trim()));html+='<div class="tbl-wrap"><table><tbody>'+dr.map((r,ri)=>{const cells=r.split('|').filter(c=>c.trim()!=='');return`<tr class="${ri===0?'hdr-row':''}">${cells.map(c=>`<${ri===0?'th':'td'}>${fmt(c.trim())}</${ri===0?'th':'td'}>`).join('')}</tr>`;}).join('')+'</tbody></table></div>';}else if(/^[-•*] /.test(l)){html+='<ul class="ml">';while(i<lines.length&&/^[-•*] /.test(lines[i])){html+=`<li>${fmt(lines[i].slice(2))}</li>`;i++;}html+='</ul>';continue;}else if(/^\d+\. /.test(l)){html+='<ol class="ml ol">';while(i<lines.length&&/^\d+\. /.test(lines[i])){html+=`<li>${fmt(lines[i].replace(/^\d+\.\s*/,''))}</li>`;i++;}html+='</ol>';continue;}else if(l.trim()===''){html+='<div class="sp"></div>';}else{html+=`<p class="mp">${fmt(l)}</p>`;}i++;}window._pc=(window._pc||[]).concat(pc);return html;}
+function renderContent(text){
+  const pc=[];
+  // ULTRA-RESILIENT Chart & KPI Matcher (catches [ART:bar], CHART:line, [CHARTPie], etc.)
+  // 1. Standardize weird AI tags first
+  text = text.replace(/\[?(?:CHART|ART|CH)(bar|line|pie|doughnut|comparison|trend|of)?\]?:?\s*([\w\s]+)?\|/gi, '[CHART:$1|$2|');
+  
+  // 2. Final Parser
+  text=text.replace(/\[CHART:([\w]*)\|(.*?)\|([\s\S]*?)\]/gi,(m,type,title,json)=>{
+    try{
+      let t = type.toLowerCase() || 'bar';
+      if(t.includes('pie')) t='doughnut';
+      if(t.includes('trend')) t='line';
+      
+      // Clean JSON string aggressively
+      let cj = json.trim();
+      if(!cj.startsWith('[')) cj = '[' + cj;
+      if(!cj.endsWith(']')) cj = cj + ']';
+      cj = cj.replace(/(\d+),(\d+)/g, '$1$2').replace(/\$([0-9.]+)/g, '$1').replace(/:(\s*)?(\$)?([0-9.MK]+)/g, (match, s, dollar, val)=>{
+        let v = val.replace(/M/i, '000000').replace(/K/i, '000');
+        return ': ' + (parseFloat(v) || 0);
+      });
+
+      const data=JSON.parse(cj);
+      const id='c'+(++S.cCount);
+      pc.push({id,type:t,title:title||'Analysis Chart',data});
+      return `<div class="chart-card" id="${id}"><div class="chart-lbl"><span>${esc(title||'Analysis Chart')}</span><div style="display:flex;align-items:center;gap:4px"><div class="chart-type-tabs"><span class="ct on" data-t="bar" onclick="swChType('${id}','bar',this)">Bar</span><span class="ct" data-t="line" onclick="swChType('${id}','line',this)">Line</span><span class="ct" data-t="doughnut" onclick="swChType('${id}','doughnut',this)">Pie</span></div><span class="chart-save-btn" onclick="saveOneChart('${id}')">⬇</span></div></div><canvas></canvas></div>`;
+    }catch(e){ return m; }
+  });
+  const kpis=[];
+  text=text.replace(/\[KPI:(.*?)\|(.*?)\|(.*?)\|(up|down|neutral)\]/g,(m,lbl,val,delta,dir)=>{kpis.push(`<div class="kpi-card"><div class="kpi-label">${esc(lbl)}</div><div class="kpi-value">${esc(val)}</div><div class="kpi-delta ${dir}">${dir==='up'?'▲':dir==='down'?'▼':'─'} ${esc(delta)}</div></div>`);return '';});
+  const lines=text.split('\n');let html=kpis.length?`<div class="kpi-grid">${kpis.join('')}</div>`:'';let i=0;
+  while(i<lines.length){
+    const l=lines[i];
+    if(/^[═━]{2,}/.test(l)){html+=`<div class="sec-div"><span>${l.replace(/[═━]/g,'').trim()||'─'}</span></div>`;}
+    else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){html+=`<div class="verdict-box">◆ NEXUS VERDICT</div>`;}
+    else if(/^▶/.test(l)){html+=`<div class="layer-hdr"><span class="layer-arrow">▶</span><span>${fmt(l.replace(/^▶\s*/,''))}</span></div>`;}
+    else if(/^\*\*[^*]+:\*\*$/.test(l.trim())||/^## /.test(l)){html+=`<div class="sub-hdr">${fmt(l.replace(/^\*\*/,'').replace(/\*\*$/,'').replace(/^## /,''))}</div>`;}
+    else if(l.trimStart().startsWith('|')){
+      const rows=[l];while(i+1<lines.length&&lines[i+1].trimStart().startsWith('|')){i++;rows.push(lines[i]);}
+      const dr=rows.filter(r=>!/^\|[\s\-─|]+\|$/.test(r.trim()));
+      html+='<div class="tbl-wrap"><table><tbody>'+dr.map((r,ri)=>{const cells=r.split('|').filter(c=>c.trim()!=='');return`<tr class="${ri===0?'hdr-row':''}">${cells.map(c=>`<${ri===0?'th':'td'}>${fmt(c.trim())}</${ri===0?'th':'td'}>`).join('')}</tr>`;}).join('')+'</tbody></table></div>';
+    }else if(/^[-•*] /.test(l)){
+      html+='<ul class="ml">';while(i<lines.length&&/^[-•*] /.test(lines[i])){html+=`<li>${fmt(lines[i].slice(2))}</li>`;i++;}html+='</ul>';continue;
+    }else if(/^\d+\. /.test(l)){
+      html+='<ol class="ml ol">';while(i<lines.length&&/^\d+\. /.test(lines[i])){html+=`<li>${fmt(lines[i].replace(/^\d+\.\s*/,''))}</li>`;i++;}html+='</ol>';continue;
+    }else if(l.trim()===''){html+='<div class="sp"></div>';}
+    else{html+=`<p class="mp">${fmt(l)}</p>`;}
+    i++;
+  }
+  window._pc=(window._pc||[]).concat(pc);return html;
+}
 function saveOneChart(id){const c=document.querySelector('#'+id+' canvas');if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+id+'.png';a.click();}
 function renderCharts(container){if(!window._pc||!window._pc.length)return;const toR=[...window._pc];window._pc=[];toR.forEach(({id,type,title,data})=>{const card=container.querySelector('#'+id);if(!card)return;const canvas=card.querySelector('canvas');if(!canvas||!data.length)return;const keys=Object.keys(data[0]).filter(k=>k!=='name');const labels=data.map(d=>d.name);let ct='bar';if(type==='line'||type==='area')ct='line';if(type==='pie'||type==='donut')ct='doughnut';if(type==='radar')ct='radar';const tip={backgroundColor:S.theme==='dark'?'#0d0f14':'#fff',borderColor:'rgba(167,139,250,.3)',borderWidth:1,titleColor:'#a0aec0',bodyColor:'#c8d0e0',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}};const ds=keys.map((k,i)=>({label:k,data:data.map(d=>d[k]),backgroundColor:COLORS.map(c=>c+'55'),borderColor:COLORS[i%COLORS.length],borderWidth:2,pointRadius:3,fill:type==='area',tension:.4,borderRadius:ct==='bar'?4:0}));const pd={labels,datasets:[{data:data.map(d=>d[keys[0]]),backgroundColor:COLORS,borderWidth:0,hoverOffset:6}]};new Chart(canvas,{type:ct,data:ct==='doughnut'?pd:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:true,animation:{duration:700},plugins:{legend:{labels:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:10,family:'IBM Plex Mono'}}},tooltip:tip},scales:ct!=='doughnut'&&ct!=='radar'?{x:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}},y:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}}}:undefined,cutout:type==='donut'?'58%':undefined}});});}
 
