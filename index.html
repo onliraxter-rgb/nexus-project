@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
-<meta name="version" content="NEXUS-V3-FORCE-REBUILD-001"/>
+<meta name="version" content="NEXUS-V11-PRODUCTION-001"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -961,6 +961,7 @@ link.href = manifestURL;
 document.head.appendChild(link);
 
 // ── SERVICE WORKER for offline support ──
+/*
 if('serviceWorker' in navigator){
   const swCode = `
     const CACHE = 'nexus-v9';
@@ -980,6 +981,7 @@ if('serviceWorker' in navigator){
   const swURL = URL.createObjectURL(swBlob);
   navigator.serviceWorker.register(swURL, {scope:'/'}).catch(()=>{});
 }
+*/
 </script>
 
 </head>
@@ -1019,7 +1021,7 @@ if('serviceWorker' in navigator){
       <span class="u-credits" id="uCredits">5</span>
     </div>
     <button class="lp-btn-ghost" id="navSignin" onclick="openAuth()">Sign In</button>
-    <button class="lp-btn-pri" onclick="openAuth()">
+    <button class="lp-btn-pri" id="navStartFree" onclick="openAuth()">
       Start Free <span class="lp-arrow">&#8594;</span>
       <span class="lp-shine"></span>
     </button>
@@ -1051,7 +1053,7 @@ if('serviceWorker' in navigator){
     </h1>
     <p class="lp-sub">Upload your Excel or CSV. Ask anything. Get <strong>professional charts, profit insights,</strong> and specific actions &mdash; in 30 seconds.</p>
     <div class="lp-btns">
-      <button class="lp-cta" onclick="openAuth()">
+      <button class="lp-cta" id="heroCta" onclick="openAuth()">
         <span>Get Started Free</span>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         <span class="lp-cta-shine"></span>
@@ -1232,7 +1234,7 @@ if('serviceWorker' in navigator){
     <div class="brand-mark">NX</div>
     <div><div class="brand-name">NEXUS</div><div class="brand-sub" id="dashBrandSub">AI ANALYST</div></div>
    </div>
-   <div class="ver" id="dashVer">v6.0 · READY</div>
+   <div class="ver" id="dashVer">v11 · READY</div>
   </div>
   <div class="tabs">
    <div class="tab on" id="t-mod" onclick="swTab('mod')">MODULES</div>
@@ -1444,7 +1446,8 @@ const _GOOGLE_ID_DEFAULT = "152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.g
 const _UPI_DEFAULT       = "YOUR_UPI_ID@upi";
 
 // Always use latest backend
-localStorage.setItem('nx_cp_google_id', _GOOGLE_ID_DEFAULT);
+localStorage.setItem('nx_cp_backend', _BACKEND_DEFAULT);
+if (!localStorage.getItem('nx_cp_google_id')) localStorage.setItem('nx_cp_google_id', _GOOGLE_ID_DEFAULT);
 
 // Live config
 const BACKEND          = (localStorage.getItem('nx_cp_backend')  || _BACKEND_DEFAULT).replace(/\/$/, '');
@@ -1495,11 +1498,16 @@ function showView(name) {
 }
 function goLanding() { showView('landing'); }
 function goDash() {
-  if (!S.user) { openAuth(); return; }
-  if (S.credits <= 0 && S.credits !== -1) { toast("No credits left — please upgrade", true); openPay('starter'); return; }
+  // OPEN ACCESS — testing phase
+  if (!S.user) {
+    S.user = { name: 'Trial User', email: 'trial@nexus.ai', credits: Infinity, plan: 'unlimited' };
+    S.token = 'guest_token';
+    S.credits = Infinity;
+    S.plan = 'unlimited';
+    updateNavUI();
+  }
   showView('dash');
   if (!appInited) initApp();
-  // Apply pending search query if any
   const sq = sessionStorage.getItem('nx_search_query');
   if (sq) { sessionStorage.removeItem('nx_search_query'); setTimeout(()=>{document.getElementById('userinput').value=sq;sendMsg();},600); }
 }
@@ -1512,6 +1520,7 @@ function toggleTheme() {
 
 // ── AUTH: GOOGLE SIGN-IN ──
 function initGoogleBtn() {
+  if (S.user || S.token === 'guest_token') return;
   if (typeof google === 'undefined') { document.getElementById('gFallback').style.display=''; return; }
   if (!GOOGLE_LIVE) { document.getElementById('gFallback').style.display=''; return; }
   try {
@@ -1573,10 +1582,12 @@ function loadSession(){
           S.plan    = u.plan;
           S.user    = { ...S.user, ...u };
           updateNavUI();
-        }).catch(() => console.warn('Refresh failed'));
+        }).catch(() => {
+          console.warn('Could not refresh user from backend, using cached session.');
+        });
       }
     }
-    // ── OPEN ACCESS MODE (Inject guest if empty) ──
+    // ── OPEN ACCESS MODE — testing phase (remove before launch) ──
     if (!S.user) {
       S.user = { name: 'Trial User', email: 'trial@nexus.ai', credits: Infinity, plan: 'unlimited' };
       S.token = 'guest_token';
@@ -1584,15 +1595,20 @@ function loadSession(){
       S.plan = 'unlimited';
     }
     updateNavUI();
+    if(S.user) closeOv('authOv');
   } catch(e) {
     sessionStorage.removeItem('nx_tok');
     sessionStorage.removeItem('nx_usr');
   }
 }
+
 function updateNavUI(){
   if(!S.user)return;
   document.getElementById('userPill').style.display='flex';
   document.getElementById('navSignin').style.display='none';
+  const sf=document.getElementById('navStartFree'); if(sf)sf.style.display='none';
+  const cta=document.getElementById('heroCta'); if(cta)cta.innerHTML='<span>Go to Dashboard</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+  if(cta)cta.onclick=goDash;
   document.getElementById('uAv').textContent=(S.user.name||'U')[0].toUpperCase();
   document.getElementById('uName').textContent=S.user.name;
   document.getElementById('uCredits').textContent=S.credits===Infinity?'∞ credits':S.credits+' credits';
@@ -1614,24 +1630,17 @@ async function api(path,opts={}){const headers={"Content-Type":"application/json
 
 // ── RATE + CREDITS ──
 function rateOk(){if(Date.now()-RATE.t>3600000){RATE.n=0;RATE.t=Date.now();}return ++RATE.n<=RATE.limit;}
-async function deductCredit(){if(S.credits===Infinity)return true;if(S.credits<=0){toast('No credits left. Please upgrade.');return false;}if(BACKEND_LIVE){const tok=sessionStorage.getItem('nx_tok');try{const res=await fetch(BACKEND+'/api/user/deduct-credit',{method:'POST',headers:{'Content-Type':'application/json','x-nexus-token':tok||''}});const data=await res.json();if(!res.ok){toast(data.error||'No credits left.');return false;}S.credits=data.credits===-1?Infinity:data.credits;}catch(e){S.credits--;console.warn('Backend unreachable, deducting locally');}}else{S.credits--;}updateDashCredits();return true;}
+async function deductCredit(){if(S.credits===Infinity||S.token==='guest_token')return true;if(S.credits<=0){toast('No credits left. Please upgrade.');return false;}if(BACKEND_LIVE){const tok=sessionStorage.getItem('nx_tok');try{const res=await fetch(BACKEND+'/api/user/deduct-credit',{method:'POST',headers:{'Content-Type':'application/json','x-nexus-token':tok||''}});const data=await res.json();if(!res.ok){toast(data.error||'No credits left.');return false;}S.credits=data.credits===-1?Infinity:data.credits;}catch(e){S.credits--;console.warn('Backend unreachable, deducting locally');}}else{S.credits--;}updateDashCredits();return true;}
 function updateDashCredits(){const isInf=S.credits===Infinity;const cr=document.getElementById('crchip');if(cr)cr.textContent=isInf?'∞ Admin':S.credits+' cr';document.getElementById('userbar').style.display='flex';document.getElementById('ubName').textContent=S.user?.name||'—';document.getElementById('ubCredits').textContent=isInf?'Unlimited':S.credits+' credits left';document.getElementById('ubPlan').textContent=S.plan?'· '+S.plan.charAt(0).toUpperCase()+S.plan.slice(1)+' Plan':'';const warn=document.getElementById('creditWarn');if(warn){warn.style.display=(!isInf&&S.credits<=1)?'flex':'none';if(!isInf&&S.credits<=1)document.getElementById('cwTxt').textContent=S.credits===0?'⚠️ No credits — upgrade to continue':'⚠️ Last credit remaining — upgrade now';}}
 
 // ── HERO SEARCH ──
-function heroSearch(){
-  const q=document.getElementById('heroInp').value.trim();
-  if(!q){document.getElementById('heroInp').focus();return;}
-  // ── OPEN ACCESS BYPASS ──
-  sessionStorage.setItem('nx_search_query',q);
-  goDash();
-}
-
+function heroSearch(){const q=document.getElementById('heroInp').value.trim();if(!q){document.getElementById('heroInp').focus();return;}sessionStorage.setItem('nx_search_query',q);goDash();}
 function chipSearch(q){document.getElementById('heroInp').value=q;heroSearch();}
 
 // ── PAYMENT ──
 let curPlan='starter';
 function openPay(p){
-  if(!S.user){openAuth();return;}
+  if(!S.user){toast('Sign in to upgrade your plan');openAuth();return;}
   curPlan=p||'starter';
   // Try Razorpay if key is set
   const rzpKey=localStorage.getItem('nx_cp_rzp_key')||'';
@@ -1705,7 +1714,10 @@ async function submitPay(){const name=document.getElementById('payName').value.t
 function emailNotify(){const email=document.getElementById('authEmail').value.trim();if(!email.includes('@')){setAuthErr('Enter valid email');return;}if(BACKEND_LIVE)fetch(BACKEND+'/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});closeOv('authOv');toast('Got it! We will email '+email+' when ready.');}
 
 // ── MODAL HELPERS ──
-function openAuth(){openOv('authOv');}
+function openAuth(){
+  if(S.user) return;
+  openOv('authOv');
+}
 function openOv(id){document.getElementById(id).classList.add('show');}
 function closeOv(id){document.getElementById(id).classList.remove('show');}
 ['authOv','payOv'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeOv(id);});});
@@ -1727,51 +1739,89 @@ function initApp(){
 }
 
 // ── SYSTEM PROMPT ──
-const SYS=`You are NEXUS v11 — Verified AI Business Analyst for Indian SMEs and enterprises.
+const SYS=`You are NEXUS v11 — Elite AI Business Analyst. You operate at the level of a McKinsey Senior Analyst + Big 4 CFO Advisor combined.
 
-CRITICAL RULES — NEVER BREAK:
-1. NEVER compute totals yourself. ONLY use numbers labeled "NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS". These are computed on ALL rows by JavaScript and are ground truth.
-2. If a number is not in the verified facts, say "not in verified data" — do not estimate.
-3. Every chart must use ONLY values from verified facts. Never invent chart data.
-4. Every anomaly was pre-detected by JavaScript. Treat JAVASCRIPT-VERIFIED ANOMALIES as confirmed facts.
-5. Every financial ratio must show its formula and exact inputs from verified facts.
-6. Format large Indian numbers as: ₹12.3L (lakhs) or ₹1.2Cr (crores). Never write full 7+ digit numbers without formatting.
-7. After analysis, suggest 3 follow-up questions based on what you actually found.
+════ ABSOLUTE RULES — VIOLATION = WRONG ANSWER ════
+1. MATH TRUTH: NEVER compute totals, sums, averages yourself. ONLY use numbers labeled "NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS". These are computed on ALL rows by JavaScript. They are GROUND TRUTH.
+2. NO GUESSING: If a number is not in verified facts, say "not in verified data" — never estimate or approximate.
+3. CHART DATA: Every chart MUST use ONLY values from verified facts. Zero invented data ever.
+4. ANOMALIES ARE CONFIRMED: JavaScript pre-detected all anomalies. Treat every JAVASCRIPT-VERIFIED ANOMALY as an absolute confirmed fact — not a hypothesis.
+5. SHOW FORMULAS: Every financial ratio must show: Formula | Inputs used | Result. Example: "Gross Margin = (Revenue - COGS) / Revenue = (₹45.2L - ₹28.1L) / ₹45.2L = 37.8%"
+6. INDIAN FORMAT: Always write ₹12.3L (lakhs), ₹1.2Cr (crores). Never raw 7-digit numbers.
+7. BE SPECIFIC: Never write vague statements. Every insight must have an exact number, row reference, or formula behind it.
+8. ACTIONABLE VERDICT: Every analysis must end with 5 specific, numbered, actionable steps — not generic advice.
 
-ANALYSIS STRUCTURE:
+════ MANDATORY ANALYSIS STRUCTURE ════
+
 ══ 1. DATA INTEGRITY REPORT ══
-State verified duplicates, formula mismatches, missing values as confirmed facts.
+• State total rows, columns, quality score from verified facts
+• List every duplicate ID with exact row numbers
+• List every formula mismatch with exact difference
+• List missing value counts per column
+• Verdict: CLEAN / MINOR ISSUES / MAJOR ISSUES
 
 ══ 2. KEY METRICS DASHBOARD ══
-Use ONLY verified sums. Format: [KPI:Label|Value|Delta|up/down/neutral]
+Output minimum 5 KPI cards using ONLY verified totals:
+[KPI:Label|Value|Delta|up/down/neutral]
+Example: [KPI:Total Revenue|₹45.2L|+12.4%|up]
 
-══ 3. STATISTICAL ANALYSIS ══
-Use verified min/max/mean/median/std. State distributions. Flag skewness.
+══ 3. STATISTICAL DEEP DIVE ══
+For every numeric column from verified facts:
+• Distribution shape (normal/skewed/bimodal) with evidence
+• Outliers: exact values, row numbers, business significance
+• Correlations: explain every r > 0.6 in plain business terms
 
-══ 4. BUSINESS ANALYSIS ══
-Module-specific deep dive. All calculations from verified totals.
+══ 4. MODULE-SPECIFIC BUSINESS ANALYSIS ══
+Execute the full analysis for the selected module. Be exhaustive.
+Reference verified numbers for every claim. No filler text.
 
-══ 5. ANOMALY DEEP DIVE ══
-For each verified anomaly: exact location + 3 business explanations + action.
+══ 5. ANOMALY ROOT CAUSE ANALYSIS ══
+For each verified anomaly:
+→ Exact location (row, column, value)
+→ 3 possible root causes ranked by likelihood
+→ Recommended investigation action
+→ Estimated business impact in ₹
 
-══ 6. CHARTS (minimum 3) ══
-[CHART:bar|Title|[{"name":"X","val":100}]]
-Use ONLY data from verified facts.
+══ 6. CHARTS — MINIMUM 4 ══
+[CHART:bar|Title|[{"name":"Label","val":123}]]
+Allowed types: bar, line, pie, doughnut
+Charts MUST visualize actual verified data. Include category breakdowns, trends, comparisons.
 
 ══ 7. INDIA BENCHMARK COMPARISON ══
-If industry detected: compare metrics to Indian industry averages.
+If industry detected: compare every key metric to Indian industry benchmark.
+Format: "Your X = Y% vs India benchmark Z%. [ABOVE/BELOW/AT] benchmark by N%."
 
-◆ NEXUS VERDICT
-Top 5 priority actions. Confidence: HIGH/MEDIUM/LOW based on data quality.
+══ 8. FORECAST & PROJECTIONS ══
+If trend data exists: use JS-computed regression to project next 3 periods.
+State R² value and confidence level explicitly.
 
-FOLLOW-UP SUGGESTIONS:
-After verdict, always add:
+◆ NEXUS VERDICT ◆
+Confidence: [HIGH/MEDIUM/LOW] — justified by data quality score and anomaly count
+Top 5 Priority Actions (numbered, specific, with estimated ₹ impact):
+1. [Action] → Expected impact: ₹X over Y months
+2. [Action] → Expected impact: ₹X over Y months
+3-5. [continue]
+
 💡 SUGGESTED NEXT QUESTIONS:
-1. [specific question based on what was found]
-2. [specific question based on anomalies or patterns]
-3. [specific question for deeper dive]`;
-const CHART_RULE = '\n\n[CHART RULE: Use ONLY [CHART:type|title|[{"name":"Label","val":123}]] format. Types: bar, line, pie, doughnut. No $ or , inside JSON.]';
-const MPRPTS={universal:CHART_RULE,statistics:'\n\n[STATISTICS MODE: Full battery — all central tendency, dispersion, normality tests, full correlation matrix, regression with p-values.]'+CHART_RULE,finance:'\n\n[FINANCE MODE: P&L decomp, DuPont ROE bridge, Altman Z-Score, Piotroski F, DCF sensitivity, WACC, CCC, all 30+ ratios with benchmarks.]'+CHART_RULE,ml:'\n\n[ML MODE: Frame problem, rank features, top 3 models with metrics, forecast with 80/95% CI, anomaly scores.]'+CHART_RULE,operations:'\n\n[OPERATIONS MODE: OEE breakdown, TOC bottleneck, EOQ/safety stock, OTIF root cause, Sigma/DPMO/Cpk.]'+CHART_RULE,marketing:'\n\n[MARKETING MODE: CAC by channel+payback, LTV:CAC, attribution comparison, D1/D7/D30 cohorts, ROAS rank.]'+CHART_RULE,hr:'\n\n[HR MODE: Attrition voluntary/involuntary, flight risk, performance bell curve, compa-ratio, pay gap, eNPS, 9-box.]'+CHART_RULE,risk:'\n\n[RISK MODE: All risk categories, Monte Carlo min/likely/max, HHI, Altman Z, 3-scenario stress test, sensitivity tornado.]'+CHART_RULE,saas:'\n\n[SAAS MODE: MRR/ARR/NRR/GRR, expansion+churn decomp, Rule of 40, magic number, LTV:CAC, unit economics waterfall.]'+CHART_RULE,strategy:'\n\n[STRATEGY MODE: MECE issue tree, BCG, Ansoff, Porter 5 Forces, OKRs, Impact×Effort 2x2, 30-60-90-180 roadmap.]'+CHART_RULE,sql:'\n\n[SQL MODE: Production SQL with CTEs, window functions. Python/pandas. R/tidyverse. DAX measures.]'+CHART_RULE,dashboard:'\n\n[DASHBOARD MODE: KPI hierarchy L1/L2/L3, chart rationale, layout wireframe, star schema DDL, DAX measures.]'+CHART_RULE,realtime:'\n\n[MONITORING MODE: KPI thresholds warn/critical, anomaly rules, alert triggers, escalation matrix.]'+CHART_RULE};
+1. [question targeting the biggest anomaly found]
+2. [question for deeper financial/operational drill-down]
+3. [question for forecasting or scenario planning]`;
+const CHART_RULE = '\n\n[CHART RULE: MANDATORY minimum 4 charts. Use ONLY [CHART:type|title|[{"name":"Label","val":123}]] format. Types: bar, line, pie, doughnut. No $ or , inside JSON values. Use actual verified numbers only.]';
+const MPRPTS={
+  universal: CHART_RULE,
+  statistics: '\n\n[STATISTICS MODE — FULL BATTERY REQUIRED:\n• Central tendency: mean, median, mode for ALL numeric columns\n• Dispersion: std dev, variance, IQR, range, CV% for ALL numeric columns\n• Distribution shape: skewness coefficient, kurtosis, normality assessment\n• Full Pearson correlation matrix — explain every r>0.5 pair in business terms\n• Linear regression on top 2 correlated pairs: equation, R², p-value interpretation\n• Outlier analysis: IQR method results per column with exact row numbers\n• Percentile breakdown: P10, P25, P50, P75, P90 for revenue/profit columns\n• Confidence intervals (95%) for mean estimates\n• Trend analysis if time data present: decompose into trend + seasonality\nAll numbers from JAVASCRIPT-VERIFIED facts only.]'+CHART_RULE,
+  finance: '\n\n[FINANCE MODE — COMPLETE CFO-GRADE ANALYSIS:\n• P&L Decomposition: Revenue → Gross Profit → EBITDA → EBIT → EBT → PAT waterfall\n• DuPont ROE Bridge: ROE = Net Margin × Asset Turnover × Equity Multiplier (show each)\n• Altman Z-Score: compute if balance sheet data exists, interpret bankruptcy risk\n• Piotroski F-Score: all 9 criteria if data allows\n• DCF Sensitivity: NPV at 3 discount rates (8%, 12%, 16%)\n• Working Capital: CCC = DIO + DSO - DPO (calculate each component)\n• All 30+ financial ratios: Liquidity (CR, QR, Cash), Solvency (D/E, ICR, DSCR), Profitability (GM, OM, NM, ROA, ROE, ROCE), Efficiency (AT, IT, RT), Market (EPS, P/E if applicable)\n• Industry benchmark comparison for every ratio\n• Red flags: flag any ratio outside healthy range with exact threshold\n• Cash flow implications from every variance\nAll from JAVASCRIPT-VERIFIED totals only.]'+CHART_RULE,
+  ml: '\n\n[ML & PREDICTION MODE — FULL ANALYTICAL PIPELINE:\n• Problem framing: classification vs regression vs clustering — justify with data characteristics\n• Feature importance: rank all numeric columns by predictive value for target variable\n• Feature engineering suggestions: derived ratios, log transforms, binning recommendations\n• Top 3 recommended models with expected accuracy range and why\n• Churn/risk prediction: score each customer/segment 0-100 using available signals\n• Demand forecast: next 6 periods with 80% and 95% confidence intervals (use JS regression)\n• Customer segmentation: RFM or value-based, describe each segment with size and characteristics\n• Anomaly scoring: rank top 10 anomalous records by isolation score\n• Model validation approach: train/test split recommendation, cross-validation strategy\n• Business ROI of implementing each ML recommendation\nUse JS-computed regression R² as ground truth for trend strength.]'+CHART_RULE,
+  operations: '\n\n[OPERATIONS MODE — LEAN SIX SIGMA AUDIT:\n• OEE Decomposition: Availability × Performance × Quality = OEE% (calculate each if data allows)\n• TOC Bottleneck: identify the constraint, calculate impact of resolving it\n• Inventory: EOQ formula, reorder point, safety stock calculation with exact numbers\n• OTIF Analysis: On-Time In-Full %, root cause of failures, supplier ranking\n• Six Sigma: DPMO calculation, Sigma level, Cpk if process data exists\n• Lean Waste: identify all 8 wastes (TIMWOODS) present in data\n• Capacity utilization vs theoretical maximum\n• Lead time analysis: breakdown by stage if available\n• Supplier performance ranking with delay patterns\n• Cost of poor quality (COPQ) estimation\n• 90-day operations improvement roadmap with ₹ savings per initiative\nAll calculations from verified facts.]'+CHART_RULE,
+  marketing: '\n\n[MARKETING & GROWTH MODE — FULL FUNNEL ANALYSIS:\n• CAC per channel: total spend / new customers, rank channels by efficiency\n• LTV calculation: ARPU × Gross Margin % / Churn Rate (show formula + inputs)\n• LTV:CAC ratio per channel — flag any below 3:1 as unsustainable\n• Payback period per channel: CAC / Monthly Contribution Margin\n• ROAS ranking: revenue attributed / ad spend per campaign/channel\n• Multi-touch attribution analysis if channel data present\n• Cohort retention: D1, D7, D30 if time-based data, calculate drop-off %\n• Conversion funnel: calculate conversion rate at each stage with drop-off\n• Marketing efficiency score: composite CAC + ROAS + LTV:CAC\n• Budget reallocation recommendation: shift X from lowest ROAS to highest\n• Growth levers ranked by impact × effort matrix\n• Revenue at risk from churning cohorts\nAll from verified facts.]'+CHART_RULE,
+  hr: '\n\n[PEOPLE ANALYTICS MODE — FULL HR AUDIT:\n• Attrition analysis: voluntary vs involuntary split, by department/tenure/level\n• Flight risk scoring: identify high-risk employees using tenure + performance + comp signals\n• Performance distribution: bell curve analysis, % in each quartile\n• Compensation equity: compa-ratio per role (salary / midpoint), flag outliers >120% or <80%\n• Pay gap analysis: by gender/level/department with statistical significance\n• Headcount efficiency: revenue per employee, cost per employee trends\n• eNPS proxy: if survey data exists, calculate and benchmark\n• 9-Box talent matrix placement if performance + potential data available\n• Succession gaps: identify critical roles with no identified successor\n• Hiring funnel: time-to-fill, cost-per-hire, offer acceptance rate\n• Total rewards optimization: comp vs market, benefits ROI\n• 12-month workforce planning recommendation\nAll from verified facts.]'+CHART_RULE,
+  risk: '\n\n[RISK INTELLIGENCE MODE — ENTERPRISE RISK FRAMEWORK:\n• Risk taxonomy: identify ALL risk types present (credit, operational, market, liquidity, concentration, compliance)\n• Concentration risk: HHI index for customer/supplier/product concentration — flag HHI > 2500\n• Monte Carlo simulation: min/likely/max scenarios for top 3 metrics (use ±1σ, ±2σ from verified std)\n• Altman Z-Score bankruptcy probability if financial data exists\n• Liquidity stress test: days of runway at current burn rate\n• Sensitivity tornado: which variable swings revenue most per 10% change\n• Scenario analysis: 3 scenarios (Base / Bear -30% / Bull +30%) for revenue and profit\n• Supplier/customer risk: flag any single entity >20% of revenue/cost\n• Regulatory exposure: flag if pharma/finance/data columns detected\n• Risk-adjusted return: Sharpe ratio equivalent if investment data present\n• Risk mitigation roadmap: top 5 risks with owner, timeline, cost to mitigate\nAll calculations from verified facts.]'+CHART_RULE,
+  saas: '\n\n[SAAS & TECH METRICS MODE — INVESTOR-GRADE ANALYSIS:\n• MRR/ARR: calculate from subscription data, MoM growth rate\n• NRR (Net Revenue Retention): (Starting MRR + Expansion - Churn - Contraction) / Starting MRR × 100\n• GRR (Gross Revenue Retention): flag if below 85% (danger zone)\n• MRR decomposition: New + Expansion + Reactivation - Churn - Contraction waterfall\n• Rule of 40: Revenue Growth % + EBITDA Margin % (flag if below 40)\n• Magic Number: Net New ARR / S&M Spend previous quarter (flag if below 0.75)\n• CAC Payback Period: months to recover CAC from gross margin\n• LTV:CAC ratio: flag if below 3x\n• Churn cohort analysis: monthly, by plan tier, by acquisition channel\n• Logo churn vs revenue churn: distinguish and explain difference\n• Expansion revenue %: upsell/cross-sell as % of total MRR growth\n• SaaS efficiency score: ARR per FTE, ARR per $ of S&M\n• Investor benchmarks: compare to SaaS median/top quartile for stage\nAll from verified facts.]'+CHART_RULE,
+  strategy: '\n\n[STRATEGY MODE — BOARD-LEVEL ANALYSIS:\n• MECE issue tree: decompose the core business problem into mutually exclusive branches\n• BCG Matrix: plot all products/segments by market growth vs relative share\n• Ansoff Matrix: identify which growth quadrant current strategy occupies + recommendations\n• Porter 5 Forces: assess each force (1-10 threat level) with data-backed evidence\n• SWOT: each point backed by a specific number from verified data\n• OKR recommendations: 3 Objectives with 3 Key Results each, all measurable\n• Impact × Effort 2×2: rank all identified initiatives by impact vs effort\n• Competitive position: where the business sits on cost leadership vs differentiation axis\n• 30-60-90-180 day roadmap: specific milestones with ₹ targets\n• Value creation potential: ₹ value unlockable per strategic initiative\n• Strategic risks: top 3 existential threats with mitigation\nAll strategy recommendations grounded in verified numbers.]'+CHART_RULE,
+  sql: '\n\n[SQL & CODE MODE — PRODUCTION-READY OUTPUT:\n• Write 5 production SQL queries for the most valuable analyses on this dataset\n• Each query: CTE structure, window functions where appropriate, comments explaining logic\n• Include: YoY/MoM comparison, running totals, ranking, outlier detection, cohort analysis\n• Python/pandas equivalent for each SQL query\n• R/tidyverse version for statistical analysis\n• DAX measures for Power BI if the schema suits it\n• Data model recommendation: star schema DDL for this dataset\n• Index recommendations for query performance\n• Data cleaning script: handle the exact missing values and duplicates found in this file\n• Automation suggestion: which queries to schedule daily/weekly/monthly\nAll column names and values taken from actual verified dataset headers.]'+CHART_RULE,
+  dashboard: '\n\n[DASHBOARD DESIGN MODE — BI BLUEPRINT:\n• KPI hierarchy: L1 (CEO view, 3-5 KPIs), L2 (Manager view, 8-12 KPIs), L3 (Analyst view, full detail)\n• Chart type rationale: explain why each chart type is best for each metric\n• Layout wireframe: describe exact grid layout — header, hero KPIs, main charts, detail tables\n• Color coding system: green/amber/red thresholds for every KPI with exact values\n• Drill-down paths: L1 → L2 → L3 navigation design\n• Star schema DDL: fact and dimension tables for this dataset\n• DAX measures: write actual DAX for top 5 KPIs\n• Refresh schedule: which metrics need real-time vs daily vs weekly refresh\n• Mobile vs desktop layout differences\n• Filter panel design: which dimensions to expose as slicers\n• Alert triggers: exact threshold rules for automated notifications\nAll metric targets from verified data baselines.]'+CHART_RULE,
+  realtime: '\n\n[REAL-TIME MONITORING MODE — OPERATIONAL INTELLIGENCE:\n• KPI threshold matrix: WARN and CRITICAL levels for every numeric column (based on verified mean ± std)\n• Anomaly detection rules: exact SQL WHERE conditions to catch each verified anomaly type\n• Alert trigger design: event → condition → notification channel → escalation path\n• Escalation matrix: Tier 1 (auto-resolve) → Tier 2 (ops team) → Tier 3 (management)\n• Monitoring frequency: per KPI — real-time / hourly / daily recommendation with justification\n• Runbook: step-by-step response procedure for each alert type\n• Baseline establishment: control limits (UCL/LCL) using verified mean ± 3σ\n• Seasonal adjustment: flag metrics that need seasonal normalization\n• Dashboard refresh architecture: streaming vs batch recommendation\n• SLA definition: uptime, latency, data freshness targets per metric\n• Cost of downtime: estimate ₹/hour impact for each critical KPI breach\nAll thresholds calculated from verified statistical facts.]'+CHART_RULE
+};
 const MODS=[{id:'universal',i:'⚡',l:'Universal',d:'Auto-detect & analyze'},{id:'statistics',i:'∑',l:'Statistics',d:'Descriptive + inferential'},{id:'finance',i:'◈',l:'Finance',d:'P&L, DCF, ratios, valuation'},{id:'ml',i:'◉',l:'ML & Predict',d:'Models, features, forecast'},{id:'operations',i:'⊗',l:'Operations',d:'OEE, supply chain, lean'},{id:'marketing',i:'◐',l:'Marketing',d:'CAC, LTV, attribution'},{id:'hr',i:'◎',l:'People',d:'Attrition, equity, eNPS'},{id:'risk',i:'◇',l:'Risk',d:'Monte Carlo, stress, HHI'},{id:'saas',i:'◑',l:'SaaS/Tech',d:'MRR, NRR, Rule of 40'},{id:'strategy',i:'▲',l:'Strategy',d:'BCG, OKRs, roadmap'},{id:'sql',i:'</>',l:'SQL & Code',d:'SQL, Python, DAX, R'},{id:'dashboard',i:'▦',l:'Dashboard',d:'BI blueprint, KPI design'},{id:'realtime',i:'●',l:'Monitoring',d:'Alerts, thresholds, watch'}];
 const SAMPS = [
   {
@@ -1864,8 +1914,8 @@ async function sendMsg(){
       // Compact reminder for follow-ups (saves tokens)
       const numKeys=S.verifiedFacts?Object.keys(S.verifiedFacts).filter(k=>S.verifiedFacts[k].type==='numeric'):[];
       if(numKeys.length>0){
-        const reminder=numKeys.slice(0,5).map(k=>`${k}:SUM=${fmtN(S.verifiedFacts[k].sum)}`).join(', ');
-        prompt+=`\n\n[DATA REMINDER: ${reminder}. Use verified facts from initial message only.]`;
+        const reminder=numKeys.slice(0,10).map(k=>`${k}:SUM=${fmtN(S.verifiedFacts[k].sum)},AVG=${fmtN(S.verifiedFacts[k].avg)}`).join(' | ');
+        prompt+=`\n\n[DATA REMINDER — use verified facts from initial message: ${reminder}]`;
       }
     }
   }
@@ -1880,8 +1930,8 @@ async function sendMsg(){
     prompt+='\n\n[COMPARISON MODE — FILE 2 FACTS:\n'+S.factsSummary2.slice(0,3000)+']';
   }
 
-  // Keep last 8 messages (dataset NOT stored in history — saves tokens)
-  if(S.messages.length>8)S.messages=S.messages.slice(-8);
+  // Keep last 12 messages (dataset NOT stored in history — saves tokens)
+  if(S.messages.length>12)S.messages=S.messages.slice(-12);
   S.messages.push({role:'user',content:prompt});
 
   const chat=document.getElementById('chat');
@@ -1901,7 +1951,7 @@ async function sendMsg(){
       const streamRes=await fetch(BACKEND+'/api/analyze',{
         method:'POST',
         headers:{'Content-Type':'application/json','x-nexus-token':tok||'guest'},
-        signal:AbortSignal.timeout(90000),
+        signal:AbortSignal.timeout(120000),
         body:JSON.stringify({messages:S.messages,stream:true,token:tok||'guest'})
       });
 
@@ -2212,9 +2262,12 @@ function removeTyp(id){const el=document.getElementById(id);if(el)el.remove();}
 function copyBub(btn){navigator.clipboard.writeText(btn.closest('.bub').innerText.replace(/⎘ Copy.*$/s,'').trim()).then(()=>toast('✅ Copied!')).catch(()=>{});}
 function renderContent(text){
   const pc=[];
-  // ULTRA-RESILIENT Chart & KPI Matcher (catches [ART:bar], CHART:line, [CHARTPie], etc.)
+  // ULTRA-RESILIENT Chart & KPI Matcher
   // 1. Standardize weird AI tags first
-  text = text.replace(/\[?(?:CHART|ART|CH)(bar|line|pie|doughnut|comparison|trend|of)?\]?:?\s*([\w\s]+)?\|/gi, '[CHART:$1|$2|');
+  text = text.replace(/\[?(?:CHART|ART|CH)(bar|line|pie|doughnut|comparison|trend|of)?\]?:?\s*([\w\s]+)?\|/gi, (m, type, title) => {
+    const t = type || 'bar';
+    return `[CHART:${t}|${title||''}|`;
+  });
   
   // 2. Final Parser
   text=text.replace(/\[CHART:([\w]*)\|(.*?)\|([\s\S]*?)\]/gi,(m,type,title,json)=>{
@@ -2244,7 +2297,7 @@ function renderContent(text){
   while(i<lines.length){
     const l=lines[i];
     if(/^[═━]{2,}/.test(l)){html+=`<div class="sec-div"><span>${l.replace(/[═━]/g,'').trim()||'─'}</span></div>`;}
-    else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){html+=`<div class="verdict-box">◆ NEXUS VERDICT</div>`;}
+    else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){const vt=l.replace(/^◆\s*/,'').trim();html+=`<div class="verdict-box">◆ ${vt||'NEXUS VERDICT'}</div>`;}
     else if(/^▶/.test(l)){html+=`<div class="layer-hdr"><span class="layer-arrow">▶</span><span>${fmt(l.replace(/^▶\s*/,''))}</span></div>`;}
     else if(/^\*\*[^*]+:\*\*$/.test(l.trim())||/^## /.test(l)){html+=`<div class="sub-hdr">${fmt(l.replace(/^\*\*/,'').replace(/\*\*$/,'').replace(/^## /,''))}</div>`;}
     else if(l.trimStart().startsWith('|')){
@@ -2267,13 +2320,13 @@ function renderCharts(container){if(!window._pc||!window._pc.length)return;const
 function showWelcome(){
   const isFirst = !localStorage.getItem('nx_visited');
   if(isFirst) localStorage.setItem('nx_visited','1');
-  const sCSV = `Month,Revenue,Expenses,Profit,Units\nJan 2025,285000,198000,87000,142\nFeb 2025,312000,201000,111000,156\nMar 2025,298000,195000,103000,149\nApr 2025,334000,210000,124000,167\nMay 2025,289000,203000,86000,144\nJun 2025,356000,218000,138000,178`;
+  const sCSV = `Month,Revenue,Expenses,Profit,Units,Region,Category\nJan 2025,285000,198000,87000,142,North,Electronics\nFeb 2025,312000,201000,111000,156,South,Electronics\nMar 2025,298000,195000,103000,149,West,FMCG\nApr 2025,334000,210000,124000,167,East,Electronics\nMay 2025,289000,203000,86000,144,North,Pharma\nJun 2025,356000,218000,138000,178,West,Electronics\nJul 2025,401000,225000,176000,201,South,FMCG\nAug 2025,378000,219000,159000,189,East,Pharma\nSep 2025,412000,231000,181000,206,North,Electronics\nOct 2025,445000,242000,203000,223,West,Electronics\nNov 2025,389000,228000,161000,195,South,FMCG\nDec 2025,467000,251000,216000,234,North,Electronics`;
   window.loadSampleData = function(){
     const rows=sCSV.split('\n').map(r=>r.split(','));
     processArr(rows,'Sample Business P&L.csv');
     setTimeout(()=>setSugAndSend('Analyze this 6-month P&L completely — revenue trends, profit margins, best and worst months, 3 specific actions to improve profitability. Generate 3 charts.'),400);
   };
-  const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Uses 1 credit · ~30 seconds</span></div>` : '';
+  const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Free · ~20 seconds · 12 months of data</span></div>` : '';
   document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v11 · AI DATA ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSug('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSug('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
 }
 
@@ -2282,7 +2335,7 @@ function loadFile(e){
   const f=e.target.files[0];if(!f)return;
   // File size limit: 10MB
   if(f.size > 10 * 1024 * 1024){ toast('❌ File too large (max 10MB). Try splitting into smaller files.'); e.target.value=''; return; }
-  if(f.size > 5 * 1024 * 1024){ toast('⚠️ Large file — analyzing first 2000 rows for speed'); }
+  if(f.size > 5 * 1024 * 1024){ toast('⚠️ Large file detected — JS will analyze ALL rows, AI gets full stats'); }
   S.fileName=f.name;
   const ext=f.name.split('.').pop().toLowerCase();if(['xlsx','xls'].includes(ext)){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name);}catch(e){toast('Error reading Excel');}};r.readAsBinaryString(f);}else{const r=new FileReader();r.onload=ev=>{const txt=ev.target.result;if(ext==='json'){try{S.fileData='JSON: '+f.name+'\n'+JSON.stringify(JSON.parse(txt),null,2).slice(0,9000);S.csv=null;showFOk(f.name,null);}catch(e){toast('Invalid JSON');}}else processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(/[,\t;]/)),f.name);};r.readAsText(f);}e.target.value='';}
 function processArr(rows,fname,isSecond){
@@ -2502,10 +2555,10 @@ NOTE: ALL numbers below are computed by JavaScript on ALL ${data.length} rows. T
   // Store
   if(isSecond){
     S.verifiedFacts2=facts;
-    S.factsSummary2=summary;
+    S.factsSummary2=summary.slice(0,25000);
   } else {
     S.verifiedFacts=facts;
-    S.factsSummary=summary.slice(0,9000); // safe limit
+    S.factsSummary=summary.slice(0,25000); // expanded for 100x analysis depth
     S.duplicates=dups;
     S.formulaMismatches=mismatches;
     S.correlationMatrix=corrMatrix;
@@ -2624,7 +2677,9 @@ function showFOk(fname,info){
   );
 
   const sugs=[];
-  if(numCols>0)sugs.push('📊 Full Analysis with verified numbers');
+  const numColCount=info.hdrs?info.hdrs.filter((_,i)=>info.facts&&info.facts[info.hdrs[i]]&&info.facts[info.hdrs[i]].type==='numeric').length:0;
+  const dateCols=info.hdrs?info.hdrs.filter(h=>/date|month|week|year|time|period/i.test(h)).length:0;
+  if(numColCount>0)sugs.push('📊 Full Analysis with verified numbers');
   if(dateCols>0)sugs.push('📈 Trend & Forecast');
   sugs.push('⚠️ Find All Anomalies');
   sugs.push('📄 Executive Report');
@@ -2686,11 +2741,11 @@ async function loadGSheets(){const url=document.getElementById('gsUrl').value.tr
 async function loadWorldBank(){const country=(document.getElementById('wbCountry').value||'IN').trim().toUpperCase();toast('Fetching World Bank…');try{const inds=['NY.GDP.MKTP.CD','FP.CPI.TOTL.ZG','SP.POP.TOTL','SL.UEM.TOTL.ZS','NY.GNP.PCAP.CD'];const names=['GDP (USD)','Inflation %','Population','Unemployment %','GNI per capita'];const results=await Promise.all(inds.map(i=>fetch(`https://api.worldbank.org/v2/country/${country}/indicator/${i}?format=json&mrv=5`).then(r=>r.json())));let txt=`WORLD BANK DATA — ${country}:\n`;results.forEach((r,i)=>{if(r[1]){txt+=`\n${names[i]}:\n`;r[1].filter(d=>d.value).slice(0,5).forEach(d=>{txt+=`  ${d.date}: ${Number(d.value).toLocaleString()}\n`;});}});S.fileData=txt;document.getElementById('livechip').style.display='';toast('✅ World Bank loaded!');sendAuto(`Analyze World Bank economic data for ${country}.`);}catch(e){toast('❌ API error');}}
 async function loadCurrency(){const base=(document.getElementById('currBase').value||'INR').trim().toUpperCase();toast('Fetching rates…');try{const res=await fetch(`https://open.er-api.com/v6/latest/${base}`);const data=await res.json();if(data.result!=='success')throw new Error();const major=['USD','EUR','GBP','JPY','CNY','AED','SGD','CAD','AUD','CHF'];let txt=`LIVE RATES — ${base} (${new Date().toLocaleDateString()})\n`;major.forEach(c=>{if(data.rates[c])txt+=`1 ${base} = ${data.rates[c].toFixed(4)} ${c}\n`;});S.fileData=txt;document.getElementById('livechip').style.display='';toast('✅ Live rates loaded!');sendAuto(`Analyze live exchange rates for ${base}. Import/export implications, hedging advice.`);}catch(e){toast('❌ Currency API unavailable');}}
 async function loadURL(){const url=document.getElementById('dataUrl').value.trim();if(!url)return toast('Enter a URL');toast('Fetching…');try{const res=await fetch(url);const txt=await res.text();if(txt.trim().startsWith('{')||txt.trim().startsWith('['))S.fileData='JSON FROM: '+url+'\n'+txt.slice(0,10000);else processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(/[,\t;]/)));toast('✅ Data loaded!');sendAuto('Analyze this fetched data. Profile, detect patterns, full insights.');}catch(e){toast('❌ Could not fetch — must be public CORS-enabled');}}
-function sendAuto(p){document.getElementById('userinput').value=p;setTimeout(()=>sendMsg(),350);}
+function sendAuto(p){const ta=document.getElementById('userinput');ta.value=p;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';document.getElementById('sendbtn').disabled=false;setTimeout(()=>sendMsg(),350);}
 
 // ── EXPORTS ──
 function dlBlob(c,f,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=f;a.click();URL.revokeObjectURL(a.href);}
-function saveAsTXT(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');dlBlob('NEXUS v6 Report\n'+new Date().toLocaleString()+'\n'+'═'.repeat(60)+'\n\n'+msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(60)+'\n\n'),'NEXUS-Report-'+Date.now()+'.txt','text/plain');toast('✅ TXT saved!');}
+function saveAsTXT(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');dlBlob('NEXUS v11 Report\n'+new Date().toLocaleString()+'\n'+'═'.repeat(60)+'\n\n'+msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(60)+'\n\n'),'NEXUS-Report-'+Date.now()+'.txt','text/plain');toast('✅ TXT saved!');}
 function saveAsCSV(){if(!S.csv)return toast('No data loaded');dlBlob([S.csv.hdrs.join(','),...S.csv.data.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(','))].join('\n'),'NEXUS-Data-'+Date.now()+'.csv','text/csv');toast('✅ CSV saved!');}
 function saveMarkdown(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');let md='# NEXUS v6 Analysis Report\n\n**Generated:** '+new Date().toLocaleString()+'\n\n---\n\n';msgs.forEach((m,i)=>{md+='## Analysis '+(i+1)+'\n\n'+m.content.replace(/═+/g,'---').replace(/▶ /g,'### ')+'\n\n---\n\n';});dlBlob(md,'NEXUS-Report-'+Date.now()+'.md','text/markdown');toast('✅ Markdown saved!');}
 async function saveChartImages(){const canvases=document.querySelectorAll('.chart-card canvas');if(!canvases.length)return toast('No charts');canvases.forEach((c,i)=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+(i+1)+'.png';a.click();});toast('✅ '+canvases.length+' chart(s) saved!');}
@@ -2731,7 +2786,7 @@ async function exportPDF(){
     toast('✅ PDF with charts saved!');
   }catch(e){console.error(e);toast('⚠️ PDF failed — try Save as TXT instead');}
 }
-function exportExcel(){if(!S.messages.filter(m=>m.role==='assistant').length)return toast('No analysis');try{const wb=XLSX.utils.book_new();const last=S.messages.filter(m=>m.role==='assistant').slice(-1)[0].content;const rows=[];last.split('\n').forEach(l=>{if(l.trimStart().startsWith('|')&&!/^\|[\s\-|]+\|$/.test(l.trim()))rows.push(l.split('|').filter(c=>c.trim()).map(c=>c.trim()));});if(rows.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Tables');const full=[['NEXUS v6 Report — '+new Date().toLocaleString()],[]];S.messages.filter(m=>m.role==='assistant').forEach((m,i)=>{full.push(['ANALYSIS '+(i+1)]);m.content.split('\n').forEach(l=>full.push([l]));full.push([]);});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(full),'Full Report');if(S.csv)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([S.csv.hdrs,...S.csv.data]),'Source Data');XLSX.writeFile(wb,'NEXUS-'+Date.now()+'.xlsx');toast('✅ Excel saved!');}catch(e){toast('Excel failed');}}
+function exportExcel(){if(!S.messages.filter(m=>m.role==='assistant').length)return toast('No analysis');try{const wb=XLSX.utils.book_new();const last=S.messages.filter(m=>m.role==='assistant').slice(-1)[0].content;const rows=[];last.split('\n').forEach(l=>{if(l.trimStart().startsWith('|')&&!/^\|[\s\-|]+\|$/.test(l.trim()))rows.push(l.split('|').filter(c=>c.trim()).map(c=>c.trim()));});if(rows.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Tables');const full=[['NEXUS v11 Report — '+new Date().toLocaleString()],[]];S.messages.filter(m=>m.role==='assistant').forEach((m,i)=>{full.push(['ANALYSIS '+(i+1)]);m.content.split('\n').forEach(l=>full.push([l]));full.push([]);});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(full),'Full Report');if(S.csv)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([S.csv.hdrs,...S.csv.data]),'Source Data');XLSX.writeFile(wb,'NEXUS-'+Date.now()+'.xlsx');toast('✅ Excel saved!');}catch(e){toast('Excel failed');}}
 function copyReport(){
   const msgs=S.messages.filter(m=>m.role==='assistant');
   if(!msgs.length)return toast('Nothing to copy');
@@ -2933,8 +2988,8 @@ function askWhatIf(){
 function setDepth(d){
   S.depth=d;
   document.querySelectorAll('.depth-btn').forEach((b,i)=>b.classList.toggle('active',i+1===d));
-  const labels={1:'Quick KPIs',2:'Summary',3:'Full Analysis',4:'Deep Dive',5:'CFO Grade'};
-  toast('Depth: '+labels[d]);
+  const labels={1:'⚡ Quick — 5 KPIs + 1 chart',2:'📊 Summary — KPIs + anomalies + 2 charts',3:'🔍 Full Analysis — complete report',4:'🧠 Deep Dive — full stats + regression',5:'👔 CFO Grade — board-level executive report'};
+  toast('Analysis depth: '+labels[d]);
 }
 
 // ── COMPARE MODE ──
@@ -3440,7 +3495,7 @@ if(_origRC){
 }
 
 // FIX 50: Console confirmation
-console.log('%cNEXUS v11 — All 50 fixes loaded ✓','color:#34d399;font-family:monospace;font-weight:bold;font-size:13px');
+console.log('%cNEXUS v11 PRODUCTION — 100x Agent Mode Active ✓','color:#34d399;font-family:monospace;font-weight:bold;font-size:14px');
 
 
 // ═══════════════════════════════════════════════
