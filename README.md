@@ -1,11 +1,10 @@
-# NEXUS-DATA ANALYST v6 — AI Business Analyst
+# NEXUS-DATA ANALYST v11 — AI Business Analyst [ULTRA STABLE]
 
 ## Project Structure
 ```
 nexus-project/
-├── frontend/
-│   ├── index.html          ← Main app (deployed to Cloudflare Pages)
-│   └── nexus-control.html  ← Admin panel
+├── index.html              ← Main app (v11.0 Ultra Stable)
+├── nexus-admin-v11.html    ← Modern Admin panel
 ├── backend/
 │   ├── worker.js           ← Cloudflare Worker backend
 │   ├── wrangler.toml       ← Worker config
@@ -45,16 +44,17 @@ nexus-project/
 | GET    | /api/admin/users         | List all users        |
 | POST   | /api/admin/activate      | Activate user plan    |
 
-## How to Deploy with Antigravity / Wrangler
+## How to Deploy
+### Backend
 ```bash
-# Backend
 cd backend
 npx wrangler deploy
-
-# Frontend — just upload index.html to Cloudflare Pages
-# or push to GitHub (connected to Cloudflare Pages)
 ```
 
+### Frontend
+- **GitHub**: Push to `main` (connected to Cloudflare Pages).
+- **Manual**: Upload `index.html` to Cloudflare Pages dashboard.
+
 ## Admin Panel
-Open nexus-control.html in browser.
-Use ADMIN_SECRET = admin123nexus to login.
+- Access `nexus-admin-v11.html` locally or via live URL.
+- Use `ADMIN_SECRET` to login (default: `admin123nexus`).
