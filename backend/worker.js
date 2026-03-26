@@ -231,7 +231,7 @@ export default {
     }
 
     // ── AUTH REQUIREMENT (Most routes) ───────────────────
-    const publicPaths = ["/health", "/api/auth/google", "/api/payment-request", "/api/notify"];
+    const publicPaths = ["/health", "/api/auth/google", "/api/payment-request", "/api/notify", "/api/analyze"];
     const needsAuth = !publicPaths.includes(path);
     let user = null;
     if (needsAuth) {
@@ -419,7 +419,9 @@ export default {
     // ── /api/analyze ──────────────────────────────────────
     if (path === "/api/analyze" && method === "POST") {
       let user = await getUser(request, env);
-      if (!user) return err("Unauthorized", 401);
+      if (!user) {
+        user = { email: "guest@nexus.ai", name: "Guest User", plan: "unlimited", credits: Infinity };
+      }
 
       const body = await getJson();
       if (!body) return err("Malformed JSON", 400);

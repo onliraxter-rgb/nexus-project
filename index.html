@@ -1561,31 +1561,34 @@ function saveSession(token,user){S.token=token;S.user=user;S.credits=user.credit
 function loadSession(){
   const tok = sessionStorage.getItem('nx_tok');
   const usr = sessionStorage.getItem('nx_usr');
-  if (!tok || !usr) return;
   try {
-    S.token   = tok;
-    S.user    = JSON.parse(usr);
-    S.credits = S.user.credits === -1 ? Infinity : (S.user.credits || 0);
-    S.plan    = S.user.plan;
-    if (BACKEND_LIVE) {
-      api("/api/user/me").then(u => {
-        S.credits = u.credits === -1 ? Infinity : u.credits;
-        S.plan    = u.plan;
-        S.user    = { ...S.user, ...u };
-        updateNavUI();
-      }).catch(() => {
-        // Network error — keep existing session, don't log out
-        console.warn('Could not refresh user from backend, using cached session.');
-      });
+    if (tok && usr) {
+      S.token   = tok;
+      S.user    = JSON.parse(usr);
+      S.credits = S.user.credits === -1 ? Infinity : (S.user.credits || 0);
+      S.plan    = S.user.plan;
+      if (BACKEND_LIVE) {
+        api("/api/user/me").then(u => {
+          S.credits = u.credits === -1 ? Infinity : u.credits;
+          S.plan    = u.plan;
+          S.user    = { ...S.user, ...u };
+          updateNavUI();
+        }).catch(() => console.warn('Refresh failed'));
+      }
+    }
+    // ── OPEN ACCESS MODE (Inject guest if empty) ──
+    if (!S.user) {
+      S.user = { name: 'Trial User', email: 'trial@nexus.ai', credits: Infinity, plan: 'unlimited' };
+      S.token = 'guest_token';
+      S.credits = Infinity;
+      S.plan = 'unlimited';
     }
     updateNavUI();
   } catch(e) {
-    // Only clear if JSON is genuinely corrupt
     sessionStorage.removeItem('nx_tok');
     sessionStorage.removeItem('nx_usr');
   }
 }
-
 function updateNavUI(){
   if(!S.user)return;
   document.getElementById('userPill').style.display='flex';
@@ -1615,7 +1618,14 @@ async function deductCredit(){if(S.credits===Infinity)return true;if(S.credits<=
 function updateDashCredits(){const isInf=S.credits===Infinity;const cr=document.getElementById('crchip');if(cr)cr.textContent=isInf?'∞ Admin':S.credits+' cr';document.getElementById('userbar').style.display='flex';document.getElementById('ubName').textContent=S.user?.name||'—';document.getElementById('ubCredits').textContent=isInf?'Unlimited':S.credits+' credits left';document.getElementById('ubPlan').textContent=S.plan?'· '+S.plan.charAt(0).toUpperCase()+S.plan.slice(1)+' Plan':'';const warn=document.getElementById('creditWarn');if(warn){warn.style.display=(!isInf&&S.credits<=1)?'flex':'none';if(!isInf&&S.credits<=1)document.getElementById('cwTxt').textContent=S.credits===0?'⚠️ No credits — upgrade to continue':'⚠️ Last credit remaining — upgrade now';}}
 
 // ── HERO SEARCH ──
-function heroSearch(){const q=document.getElementById('heroInp').value.trim();if(!q){document.getElementById('heroInp').focus();return;}if(!S.user){sessionStorage.setItem('nx_search_query',q);document.getElementById('authModalDesc').textContent='Sign in to analyze: "'+q.slice(0,50)+(q.length>50?'…':'')+'"';openAuth();return;}sessionStorage.setItem('nx_search_query',q);goDash();}
+function heroSearch(){
+  const q=document.getElementById('heroInp').value.trim();
+  if(!q){document.getElementById('heroInp').focus();return;}
+  // ── OPEN ACCESS BYPASS ──
+  sessionStorage.setItem('nx_search_query',q);
+  goDash();
+}
+
 function chipSearch(q){document.getElementById('heroInp').value=q;heroSearch();}
 
 // ── PAYMENT ──
