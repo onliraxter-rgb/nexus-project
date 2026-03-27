@@ -1,11 +1,11 @@
-//═════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 //  NEXUS-DATA ANALYST v6 — Cloudflare Worker Backend
 //  KV: NEXUS_KV
 //  Routes: /health /api/auth/google /api/user/me
 //          /api/user/deduct-credit /api/user/refund-credit
 //          /api/analyze /api/payment-request /api/admin/users
 //          /api/admin/activate
-//═════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 
 const ORIGIN_WHITELIST = [
   "https://nexus.onliraxter.workers.dev",
@@ -149,18 +149,6 @@ async function verifyGoogleToken(credential, clientId) {
 async function getUser(request, env) {
   const token = request.headers.get("x-nexus-token");
   if (!token) return null;
-  
-  // ELITE OPEN ACCESS BYPASS
-  if (token === 'guest_token') {
-    return { 
-      name: 'Trial User', 
-      email: 'trial@nexus.ai', 
-      credits: 999999, 
-      plan: 'unlimited',
-      lastLogin: new Date().toISOString()
-    };
-  }
-
   const payload = await verifyJWT(token, env.JWT_SECRET);
   if (!payload) return null;
   if (payload.expired) return { expired: true };
@@ -184,9 +172,9 @@ async function getAllUsers(env) {
   return users;
 }
 
-//═════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 //  MAIN HANDLER
-//═════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin");
@@ -451,8 +439,8 @@ export default {
         fullMessages.push({ role: m.role, content: sanitize(m.content) });
       });
 
-      // Token trimming to stay under 10k estimated tokens (~40000 chars)
-      const MAX_CHARS = 40000;
+      // Token trimming to stay under 7000 estimated tokens (~28000 chars)
+      const MAX_CHARS = 60000;
       let currentChars = 0;
       const trimmedMessages = [];
       
@@ -474,47 +462,47 @@ export default {
         }
       }
 
-      const SYS_PROMPT = `You are NEXUS v11 — Elite AI Business Analyst at McKinsey Senior + Big 4 CFO level.
+      const SYS_PROMPT = `You are NEXUS v12 — World-Class AI Business Intelligence System.
+You operate at the level of McKinsey Senior Analyst + Big 4 CFO + Senior Data Scientist combined.
 
-ABSOLUTE RULES — NEVER BREAK:
-1. MATH TRUTH: NEVER compute totals, averages, medians, or std-dev yourself. ONLY use numbers from "NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS".
-2. NO GUESSING: If a metric (e.g., "Median Revenue") is marked "N/A" or missing in verified facts, say "not in data".
-3. CHARTS: Use [CHART:type|title|JSON_DATA] ONLY. Standard JSON.
-4. ANOMALIES: Use "Outlier Count" and "Negatives Count" from facts to identify quality issues.
-5. FORMULAS: Every ratio must show: Formula | Inputs | Result.
-6. INDIAN FORMAT: ₹12.3L (lakhs), ₹1.2Cr (crores).
-7. SPECIFIC: Every insight needs an exact number from the facts.
+ABSOLUTE LAWS:
+1. MATH: NEVER compute totals yourself. ONLY use "NEXUS v12 JAVASCRIPT-VERIFIED DATA FACTS". Ground truth — immutable.
+2. CHARTS: Min 4 charts. ONLY [CHART:type|title|[{"name":"Label","val":EXACT_VERIFIED_NUMBER}]]. Types: bar/line/pie/doughnut.
+3. ANOMALIES: JAVASCRIPT-VERIFIED ANOMALIES are confirmed facts. State them as facts, not hypotheses.
+4. FORMULAS: Every ratio = Formula | Inputs | Result. Example: "Gross Margin = (Revenue-COGS)/Revenue = (₹45.2L-₹28.1L)/₹45.2L = 37.8%"
+5. FORMAT: ₹12.3L (lakhs), ₹1.2Cr (crores). Never raw 7+ digit numbers.
+6. SPECIFIC: Zero filler. Every sentence = verified number + business meaning + action.
+7. SCHEMA: If JS detected schema violations or timestamp issues — address them in Data Integrity section.
 
-STRUCTURE:
-1. DATA INTEGRITY REPORT
-Duplicates, mismatches, missing values — all as confirmed facts with exact counts.
+RESPONSE STRUCTURE:
+══ 1. DATA QUALITY REPORT ══
+Quality score + all integrity issues as confirmed facts with exact counts and business impact.
 
-2. KEY METRICS DASHBOARD
-Minimum 5 KPIs: [KPI:Label|Value|Delta|up/down/neutral]
+══ 2. EXECUTIVE KPI DASHBOARD ══
+Min 6 KPIs using verified sums: [KPI:Label|Value|Delta|up/down/neutral]
 
-3. STATISTICAL DEEP DIVE
-Distribution, outliers with row numbers, correlations explained in business terms.
+══ 3. STATISTICAL INTELLIGENCE ══
+Distributions, outliers (exact rows), correlations explained in business terms, forecast with R².
 
-4. MODULE-SPECIFIC ANALYSIS
-Exhaustive analysis for the selected module. No filler. Every claim has a number.
+══ 4. DEEP ANALYSIS ══
+Module-specific expert analysis. Every claim = verified number. No approximations.
 
-5. ANOMALY ROOT CAUSE
-Per anomaly: exact location + 3 root causes ranked by likelihood + ₹ impact estimate.
+══ 5. ANOMALY INVESTIGATION ══
+Per anomaly: WHAT (exact row+value) + WHY (3 root causes) + IMPACT (₹) + ACTION (specific+timeline)
 
-6. CHARTS — MINIMUM 4
-Output exactly 4 charts in [CHART:type|title|json] format.
+══ 6. VERIFIED CHARTS ══
+[CHART:bar|Title|[{"name":"X","val":VERIFIED_NUMBER}]] — min 4, ONLY verified values
 
-7. INDIA BENCHMARK
-Compare every metric to Indian industry average with exact % gap.
+══ 7. INDIA BENCHMARK ══
+Every key metric vs Indian industry benchmark with % gap and specific action.
 
-NEXUS VERDICT
+◆ NEXUS VERDICT ◆
 Confidence: HIGH/MEDIUM/LOW
-Top 5 Priority Actions numbered with estimated ₹ impact each.
+Business Health: STRONG/STABLE/NEEDS ATTENTION/CRITICAL
+Top 5 Actions: numbered, ₹ impact, timeframe, owner role.
 
-SUGGESTED NEXT QUESTIONS:
-1. [question targeting the biggest anomaly]
-2. [question for deeper financial drill-down]
-3. [question for forecasting or scenario planning]`;
+💡 NEXT QUESTIONS:
+3 questions targeting: biggest anomaly / weakest metric / biggest opportunity.`;
 
       if (stream) {
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -741,4 +729,3 @@ SUGGESTED NEXT QUESTIONS:
     }
   },
 };
-

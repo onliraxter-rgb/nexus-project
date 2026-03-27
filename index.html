@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
-<meta name="version" content="11.0.4"/>
+<meta name="version" content="NEXUS-V12-ELITE-001"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -22,7 +22,7 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
 <style>
 
-/* GLOBAL TOUCH FIX */
+/* ══ GLOBAL TOUCH FIX ══ */
 *{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 a,button,input,select,textarea,[onclick],[role=button],.cursor-pointer{touch-action:manipulation}
 button,.tb,.bpri,.bsec,.ncta,.nsignin,.mbtn,.pbtn,.hsb-btn,.hsb-chip,.sug-chip,.mod-item,.qk,.dc-sug,.hist-item,.samp-item,.tab,.mab,.ic-btn,.ic-top,.ham,.fstrip-btn,.conn-btn,.bench-btn,.new-btn,.bot-btn,.file-btn,.adv-row,.psel,.upi-id-big,.upiid,.upi-copy-btn,.ct,.chart-save-btn,.calc-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
@@ -43,17 +43,17 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--tx);font-family:var(--fh);overflow-x:hidden;transition:background .2s,color .2s;touch-action:manipulation}
 .glow-bg{display:none}
 
-/*════════════════════════════════════════
+/* ══════════════════════════════════════════
    VIEWS — only one visible at a time
-════════════════════════════════════════*/
+══════════════════════════════════════════ */
 .view{display:none;position:relative;z-index:1}
 .view.active{display:block}
 #view-dash{display:none;height:100vh;flex-direction:row;position:fixed;inset:0;z-index:50}
 #view-dash.active{display:flex}
 
-/*════════════════════════════════════════
+/* ══════════════════════════════════════════
    NAV (landing only)
-════════════════════════════════════════*/
+══════════════════════════════════════════ */
 nav{display:flex;align-items:center;justify-content:space-between;padding:14px 52px;border-bottom:1px solid var(--br);position:sticky;top:0;background:rgba(7,8,12,.92);backdrop-filter:blur(22px);z-index:200;transition:background .2s}
 [data-theme="light"] nav{background:rgba(240,242,248,.92)}
 .nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}
@@ -75,9 +75,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 5
 .nav-theme{width:28px;height:28px;background:var(--s2);border:1px solid var(--br);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mt);transition:all .15s}
 .nav-theme:hover{border-color:rgba(167,139,250,.3);color:var(--v)}
 
-/*════════════════════════════════════════
+/* ══════════════════════════════════════════
    HERO
-════════════════════════════════════════*/
+══════════════════════════════════════════ */
 .hero{max-width:1200px;margin:0 auto;padding:72px 52px 60px;display:grid;grid-template-columns:1fr 420px;gap:56px;align-items:center}
 .heye{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:20px;font-family:var(--fm);font-size:9px;font-weight:600;color:var(--v);letter-spacing:.07em;margin-bottom:22px}
 .hdot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:hpulse 2s infinite}
@@ -176,9 +176,9 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 .flink{font-family:var(--fm);font-size:10px;color:var(--mt);text-decoration:none;transition:color .15s}
 .flink:hover{color:var(--hd)}
 
-/*════════════════════════════════════════
+/* ══════════════════════════════════════════
    MODALS
-════════════════════════════════════════*/
+══════════════════════════════════════════ */
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:2000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
 .ov.show{display:flex;animation:ovIn .2s ease}
 @keyframes ovIn{from{opacity:0}to{opacity:1}}
@@ -224,9 +224,9 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 .toast.err{border-color:rgba(248,113,113,.3);color:var(--r)}
 @keyframes tin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/*════════════════════════════════════════
+/* ══════════════════════════════════════════
    DASHBOARD
-════════════════════════════════════════*/
+══════════════════════════════════════════ */
 [data-theme="dark"] #view-dash::before{display:none}
 .side{width:300px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--br);display:flex;flex-direction:column;transition:width .27s;overflow:hidden;z-index:20}
 .side.shut{width:0}
@@ -466,11 +466,40 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .mdbtn{padding:6px 13px;border-radius:7px;cursor:pointer;font-size:11px;font-weight:700;font-family:var(--fh)}
 .mdbtn.cancel{background:var(--s3);border:1px solid var(--br);color:var(--mt)}
 .mdbtn.confirm{background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;color:#fff}
+
+/* ══ NEXUS v12 — VERIFIED CHARTS BLOCK ══ */
+.verified-charts-block{margin:10px 0 6px;padding:10px 14px;background:rgba(52,211,153,.04);border:1px solid rgba(52,211,153,.15);border-radius:10px}
+.vc-label{font-family:var(--fm);font-size:8px;font-weight:700;color:var(--g);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:5px}
+.vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:680px){.vc-grid{grid-template-columns:1fr}}
+.vc-card{border-color:rgba(52,211,153,.2)!important}
+.vc-badge{font-family:var(--fm);font-size:7px;padding:1px 6px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:10px;color:var(--g);margin-left:auto}
+
+/* ══ NEXUS v12 — AI VALIDATION BADGE ══ */
+.validation-warn{margin:0 0 10px;padding:8px 12px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.2);border-radius:7px;font-family:var(--fm);font-size:9px;color:var(--o);line-height:1.5}
+.validation-ok{margin:0 0 10px;padding:6px 12px;background:rgba(52,211,153,.06);border:1px solid rgba(52,211,153,.18);border-radius:7px;font-family:var(--fm);font-size:9px;color:var(--g)}
+
+/* ══ NEXUS v12 — SCHEMA VIOLATION BANNER ══ */
+.schema-banner{margin:4px 13px 0;padding:7px 12px;background:rgba(248,113,113,.05);border:1px solid rgba(248,113,113,.15);border-radius:7px;display:none;flex-direction:column;gap:3px;flex-shrink:0}
+.schema-banner.show{display:flex}
+.schema-title{font-family:var(--fm);font-size:8px;font-weight:700;color:var(--r);letter-spacing:.08em}
+.schema-tag{font-family:var(--fm);font-size:8px;color:var(--o)}
+
+/* ══ NEXUS v12 — DATA HEALTH INDICATOR ══ */
+.health-bar{display:flex;align-items:center;gap:8px;padding:6px 14px;border-bottom:1px solid var(--br);background:var(--s2);flex-shrink:0;display:none}
+.health-bar.show{display:flex}
+.health-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.health-dot.green{background:#34d399}
+.health-dot.amber{background:#f59e0b}
+.health-dot.red{background:#f87171}
+.health-txt{font-family:var(--fm);font-size:8px;color:var(--tx)}
+.health-score{font-family:var(--fm);font-size:8px;font-weight:700;margin-left:auto}
+
 @media print{#view-dash .side,.topbar,.toolbar,.search-bar,.csv-preview,.anom-banner,.inp-zone,.pin-btn,.msg-acts,.credit-warn,.userbar,.av.u,.mrow.u{display:none!important}.bub.ai{border:none!important;padding:0!important}}
 @media(max-width:860px){nav{padding:12px 18px}.nlinks{display:none}h1{font-size:34px}.hero{padding:56px 18px 40px}.free-strip{padding:0 18px 30px}.fstrip-box{flex-direction:column;text-align:center}.fgrid,.pgrid,.tgrid{grid-template-columns:1fr}.sec{padding:46px 18px}.hstats{flex-direction:column}.hst{border-right:none;border-bottom:1px solid var(--br)}.hst:last-child{border-bottom:none}footer{flex-direction:column;gap:11px;text-align:center;padding:22px 18px}.ctabox{padding:30px 20px}.plansel{grid-template-columns:1fr}.hero-searchbox{padding:0 4px}}
 @media(max-width:680px){.feat-grid{grid-template-columns:repeat(2,1fr)}.qk-grid{grid-template-columns:1fr 1fr}.side{position:fixed;inset:0 auto 0 0;z-index:100}.side.shut{width:0}.top-title{display:none}.toolbar{gap:2px}.tb{font-size:8px;padding:3px 5px}}
 
-/* HERO MOCK CARD */
+/* ══ HERO MOCK CARD ══ */
 .hero-mock-wrap{display:flex;justify-content:flex-end}
 .hero-mock{background:#080808;border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:18px;box-shadow:0 24px 64px rgba(0,0,0,.7);width:100%;max-width:420px;flex-shrink:0}
 .mock-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#111;border-radius:7px;margin-bottom:14px}
@@ -491,7 +520,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .mock-bar-pct{font-family:var(--fm);font-size:8px;color:#4a5568;width:28px;flex-shrink:0}
 @media(max-width:900px){.hero{grid-template-columns:1fr!important;gap:32px!important;padding:52px 20px 40px!important}h1{font-size:36px!important}.hsub{margin:0 0 22px!important}.hero-mock-wrap{display:none!important}}
 
-/* DATASET UPLOAD CARD (Julius-style) */
+/* ══ DATASET UPLOAD CARD (Julius-style) ══ */
 .dataset-card{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:8px 14px;overflow:hidden;animation:slideDown .3s ease;flex-shrink:0}
 @keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
 .dc-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.05)}
@@ -517,7 +546,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .dc-q-bar{height:4px;background:#161616;border-radius:2px;overflow:hidden}
 .dc-q-fill{height:100%;background:linear-gradient(90deg,#34d399,#60a5fa);border-radius:2px;transition:width .8s ease}
 
-/* CHART SWITCHER TABS */
+/* ══ CHART SWITCHER TABS ══ */
 .chart-type-tabs{display:flex;gap:3px}
 .ct{font-family:var(--fm);font-size:8px;padding:2px 8px;background:#161616;border:1px solid rgba(255,255,255,.07);border-radius:4px;cursor:pointer;color:#4a5568;transition:all .15s;user-select:none}
 .ct:hover,.ct.on{border-color:rgba(167,139,250,.3);color:#a78bfa;background:rgba(167,139,250,.06)}
@@ -525,11 +554,11 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .chart-save-btn{cursor:pointer;font-size:9px;transition:all .15s;padding:2px 8px;border:1px solid rgba(255,255,255,.06);border-radius:4px;color:#3a4555}
 .chart-save-btn:hover{color:#a78bfa;border-color:rgba(167,139,250,.3)}
 
-/*══════════════════════════════════════════════
+/* ════════════════════════════════════════════════
    NEXUS v9 — COMPLETE MOBILE + PWA CSS
    Fixes: safe-area, toolbar scroll, inputs 16px,
    sidebar overlay, qk-grid, font sizes, touch targets
-  ════════════════════════════════════════════*/
+   ════════════════════════════════════════════════ */
 
 /* Fix all tiny fonts globally on mobile */
 @media(max-width:680px){
@@ -631,7 +660,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   .mob-nav{display:flex !important}
 }
 
-/* MOBILE BOTTOM NAVIGATION */
+/* ══ MOBILE BOTTOM NAVIGATION ══ */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#050505;border-top:1px solid rgba(255,255,255,.07);z-index:150;padding-bottom:env(safe-area-inset-bottom)}
 .mob-nav-inner{display:flex;justify-content:space-around;padding:6px 0 4px}
 .mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 10px;color:#3a4555;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:52px;flex:1}
@@ -639,14 +668,14 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .mob-nav-btn span:first-child{font-size:18px;line-height:1}
 .mob-nav-btn span:last-child{font-size:8px;font-family:var(--fm);font-weight:600;letter-spacing:.04em}
 
-/* SIDEBAR OVERLAY */
+/* ══ SIDEBAR OVERLAY ══ */
 #sideOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;backdrop-filter:blur(2px);-webkit-tap-highlight-color:transparent}
 #sideOverlay.show{display:block}
 
-/* SAFE AREA for inp-zone (always, not just mobile) */
+/* ══ SAFE AREA for inp-zone (always, not just mobile) ══ */
 .inp-zone{padding-bottom:max(8px, calc(env(safe-area-inset-bottom) + 6px))}
 
-/* TABLET 681-860px */
+/* ══ TABLET 681-860px ══ */
 @media(min-width:681px) and (max-width:860px){
   .toolbar{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none}
   .toolbar::-webkit-scrollbar{display:none}
@@ -661,7 +690,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   .mbox{width:90% !important;max-width:440px}
 }
 
-/* LANDSCAPE PHONE */
+/* ══ LANDSCAPE PHONE ══ */
 @media(max-height:500px) and (orientation:landscape){
   .inp-zone{padding-top:4px;padding-bottom:4px}
   .inp-suggestions{display:none}
@@ -669,7 +698,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   .mbox{max-height:95vh;overflow-y:auto}
 }
 
-/* PWA INSTALL BANNER */
+/* ══ PWA INSTALL BANNER ══ */
 .pwa-banner{display:none;position:fixed;bottom:calc(env(safe-area-inset-bottom) + 10px);left:10px;right:10px;background:#0d0d0d;border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:12px 14px;z-index:998;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.6)}
 .pwa-banner.show{display:flex}
 .pwa-banner-ico{font-size:26px;flex-shrink:0}
@@ -679,30 +708,30 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .pwa-banner-btn{padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:nowrap}
 .pwa-banner-x{color:#2a3545;font-size:16px;cursor:pointer;touch-action:manipulation;padding:4px;flex-shrink:0}
 
-/* DARK SCROLLBARS */
+/* ══ DARK SCROLLBARS ══ */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#1a1a1a;border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:#252525}
 
-/* FOCUS VISIBLE */
+/* ══ FOCUS VISIBLE ══ */
 :focus-visible{outline:2px solid rgba(124,58,237,.5);outline-offset:2px}
 button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 
 
-/* CONFIDENCE CARD */
+/* ══ CONFIDENCE CARD ══ */
 .confidence-card{background:#080808;border:1px solid rgba(52,211,153,.15);border-radius:12px;padding:12px 14px;margin:4px 0 8px;max-width:560px}
 .conf-title{font-family:var(--fm);font-size:10px;font-weight:700;color:#34d399;margin-bottom:10px;letter-spacing:.06em}
 .conf-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
 .conf-item{display:flex;flex-direction:column;align-items:center;gap:2px}
 .conf-val{font-family:var(--fm);font-size:13px;font-weight:700}
 .conf-lbl{font-family:var(--fm);font-size:8px;color:#2a3545;text-align:center}
-/* FOLLOW-UP CHIPS */
+/* ══ FOLLOW-UP CHIPS ══ */
 .followup-chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 4px;align-items:center}
 .fu-label{font-family:var(--fm);font-size:9px;color:#3a4555;font-weight:700;margin-right:2px;white-space:nowrap}
 .fu-chip{font-family:var(--fm);font-size:10px;padding:5px 12px;background:#0d0d0d;border:1px solid rgba(167,139,250,.2);border-radius:20px;color:#a78bfa;cursor:pointer;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .15s}
 .fu-chip:hover{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.4)}
-/* DATASET CARD ENHANCEMENTS */
+/* ══ DATASET CARD ENHANCEMENTS ══ */
 .dc-alert{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:6px;padding:6px 10px;font-family:var(--fm);font-size:10px;color:#f87171;margin:4px 0}
 .dc-alert-orange{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:#f59e0b}
 .dc-clean-btn{font-family:var(--fm);font-size:9px;padding:4px 10px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:6px;color:#34d399;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -711,7 +740,7 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 .dc-corr-tag{font-family:var(--fm);font-size:9px;padding:3px 8px;border-radius:10px}
 .dc-corr-tag.pos{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)}
 .dc-corr-tag.neg{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2)}
-/* WHAT-IF SIMULATOR */
+/* ══ WHAT-IF SIMULATOR ══ */
 #whatIfOv{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;display:none;align-items:center;justify-content:center;padding:16px}
 .wi-box{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto}
 .wi-title{font-family:var(--fm);font-size:13px;font-weight:700;color:#f0f4f8;margin-bottom:4px}
@@ -725,21 +754,21 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 .wi-res-row{display:flex;justify-content:space-between;font-family:var(--fm);font-size:11px;color:#8892a0;padding:3px 0}
 .wi-ask-btn{margin-top:12px;width:100%;padding:10px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:8px;color:#fff;font-family:var(--fm);font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation}
 .wi-ask-btn:hover{opacity:.9}
-/* DEPTH BUTTONS */
+/* ══ DEPTH BUTTONS ══ */
 .depth-sel{display:flex;gap:3px;align-items:center;padding:0 4px}
 .depth-btn{font-family:var(--fm);font-size:9px;padding:3px 7px;background:#0d0d0d;border:1px solid rgba(255,255,255,.07);border-radius:4px;cursor:pointer;color:#3a4555;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .12s}
 .depth-btn.active{color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.06)}
-/* STREAMING CURSOR */
+/* ══ STREAMING CURSOR ══ */
 .streaming-cursor{display:inline-block;width:2px;height:14px;background:#a78bfa;margin-left:2px;animation:blink .7s infinite;vertical-align:middle}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-/* COMPARE BUTTON ACTIVE */
+/* ══ COMPARE BUTTON ACTIVE ══ */
 #compareModeBtn.active{color:#34d399!important;border-color:rgba(52,211,153,.3)!important;background:rgba(52,211,153,.06)!important}
 
 
-/*═════════════════════════════════════════════
+/* ═══════════════════════════════════════════════
    NEXUS LANDING v4 — ALL 10 EFFECTS
    Self-contained WebGL · No CDN · Works file://
-═════════════════════════════════════════════*/
+═══════════════════════════════════════════════ */
 #view-landing{font-family:'Syne','DM Sans',system-ui,sans-serif;background:#050508;color:#e2e8f0;overflow-x:hidden}
 #view-landing *{box-sizing:border-box}
 
@@ -935,98 +964,7 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
   .lp-divider{padding:0 18px 42px}
 }
 
-/*NEXUS 3D ORB LOADER*/
-.nx-analyzing-bub{padding:12px 16px!important;background:#070710!important;border:1px solid rgba(124,58,237,.3)!important;border-left:3px solid #7c3aed!important;min-width:260px}
-.nx-orb-wrap{display:flex;align-items:center;gap:14px}
-.nx-orb-scene{flex-shrink:0;position:relative;width:72px;height:72px}
-.nx-orb-canvas{border-radius:50%;display:block}
-.nx-orb-scene::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.2) 0%,transparent 70%);animation:nx-pulse 2s ease-in-out infinite;pointer-events:none}
-@keyframes nx-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
-.nx-orb-info{flex:1;min-width:0}
-.nx-orb-title{font-family:var(--fm);font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
-.nx-orb-phase{font-family:var(--fm);font-size:11px;color:#c4b5fd;margin-bottom:8px;min-height:16px}
-.nx-orb-bar{height:3px;background:rgba(124,58,237,.15);border-radius:2px;overflow:hidden}
-.nx-orb-bar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#34d399);border-radius:2px;width:10%;transition:width 1.2s ease;box-shadow:0 0 8px rgba(124,58,237,.5)}
-
-/*NEXUS FINAL PATCH — All remaining 34 fixes*/
-
-/* FIX 17: chart-modal CSS (was missing — modal existed but no styles) */
-.chart-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
-.chart-modal.show{display:flex}
-.chart-modal-inner{background:#0a0a0a;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;max-width:800px;width:100%;max-height:90vh;overflow:auto;position:relative}
-.chart-modal-close{position:absolute;top:12px;right:14px;background:var(--s3);border:1px solid var(--br);border-radius:6px;color:var(--mt);font-size:11px;padding:4px 10px;cursor:pointer}
-.chart-modal-close:hover{color:var(--r);border-color:rgba(248,113,113,.3)}
-
-/* FIX 18: msg-acts always visible on last message + hover */
-.msg-acts{opacity:0;transition:opacity .18s}
-.mrow:hover .msg-acts{opacity:1}
-.mrow:last-child .msg-acts,.mrow:last-of-type .msg-acts{opacity:1}
-
-/* FIX 19: Credit badge color levels */
-.chip-cr.cr-low{background:rgba(245,158,11,.1)!important;border-color:rgba(245,158,11,.25)!important;color:var(--o)!important}
-.chip-cr.cr-zero{background:rgba(248,113,113,.1)!important;border-color:rgba(248,113,113,.25)!important;color:var(--r)!important}
-
-/* FIX 20: Better input focus ring */
-.inp-wrap:focus-within{border-color:rgba(124,58,237,.45);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
-
-/* FIX 21: Streaming cursor */
-.streaming-cursor{display:inline-block;width:2px;height:14px;background:var(--v);margin-left:2px;animation:sc-blink .65s steps(1) infinite;vertical-align:middle}
-@keyframes sc-blink{50%{opacity:0}}
-
-/* FIX 22: History item truncation */
-.hist-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
-
-/* FIX 23: Modal close button bigger tap target on mobile */
-.mx{min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px}
-.mx:hover{background:var(--s3)}
-
-/* FIX 24: Table row hover */
-tr:hover td{background:rgba(167,139,250,.04)!important}
-
-/* FIX 25: Sample item hover */
-.samp-item:hover{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2)}
-
-/* FIX 26: verdict-box better styling */
-.verdict-box{font-size:12px;line-height:1.75;padding:14px 18px}
-
-/* FIX 27: Landing page stats mobile */
-@media(max-width:480px){.hsv{font-size:16px}.hsl{font-size:9px}.hst{padding:12px 8px}}
-
-/* FIX 28: Smooth panel scroll */
-.panel{scroll-behavior:smooth}
-
-/* FIX 29: Chart min height */
-.chart-card canvas{min-height:160px}
-
-/* FIX 30: Module hover */
-.mod-item:hover .mod-lbl{color:var(--v)}
-
-/* FIX 31: Better placeholder */
-#userinput::placeholder{color:var(--mt);opacity:.4;font-size:13px}
-
-/* FIX 32: Touch manipulation everywhere */
-button,.qk,.mod-item,.samp-item,.tb,.hist-item,.dc-sug{touch-action:manipulation}
-
-/* FIX 33: Landing free strip mobile */
-@media(max-width:480px){.fstrip-left{flex-direction:column;gap:6px}}
-
-/* FIX 34: Keyboard hint visible */
-.inp-hint{opacity:.35;letter-spacing:.01em}
-
-/* FIX 35: Confidence card grid mobile */
-@media(max-width:480px){.conf-grid{grid-template-columns:repeat(3,1fr)}}
-
-/* FIX 36: Welcome screen sample button */
-.sample-run-btn{padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation}
-.sample-run-btn:hover{opacity:.88;transform:translateY(-1px)}
-
-/* FIX 37: Toolbar overflow on small screens better */
-@media(max-width:860px){
-  .toolbar{gap:2px}
-  .tb{font-size:9px;padding:4px 7px}
-}
 </style>
-
 
 <script>
 // ── INLINE PWA MANIFEST ──
@@ -1052,7 +990,6 @@ link.href = manifestURL;
 document.head.appendChild(link);
 
 // ── SERVICE WORKER for offline support ──
-/*
 if('serviceWorker' in navigator){
   const swCode = `
     const CACHE = 'nexus-v9';
@@ -1072,16 +1009,15 @@ if('serviceWorker' in navigator){
   const swURL = URL.createObjectURL(swBlob);
   navigator.serviceWorker.register(swURL, {scope:'/'}).catch(()=>{});
 }
-*/
 </script>
 
 </head>
 <body style="touch-action:manipulation;-webkit-tap-highlight-color:transparent">
 <div class="glow-bg"></div>
 
-<!--════════════════════════════════════════
+<!-- ══════════════════════════════════════════
      VIEW 1: LANDING PAGE
-════════════════════════════════════════-->
+══════════════════════════════════════════ -->
 <div id="view-landing" class="view active">
 
 <!-- LAYER 1: Fullscreen WebGL 3D orb — position:fixed, behind everything -->
@@ -1112,7 +1048,7 @@ if('serviceWorker' in navigator){
       <span class="u-credits" id="uCredits">5</span>
     </div>
     <button class="lp-btn-ghost" id="navSignin" onclick="openAuth()">Sign In</button>
-    <button class="lp-btn-pri" id="navStartFree" onclick="openAuth()">
+    <button class="lp-btn-pri" onclick="openAuth()">
       Start Free <span class="lp-arrow">&#8594;</span>
       <span class="lp-shine"></span>
     </button>
@@ -1144,7 +1080,7 @@ if('serviceWorker' in navigator){
     </h1>
     <p class="lp-sub">Upload your Excel or CSV. Ask anything. Get <strong>professional charts, profit insights,</strong> and specific actions &mdash; in 30 seconds.</p>
     <div class="lp-btns">
-      <button class="lp-cta" id="heroCta" onclick="openAuth()">
+      <button class="lp-cta" onclick="openAuth()">
         <span>Get Started Free</span>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         <span class="lp-cta-shine"></span>
@@ -1313,9 +1249,9 @@ if('serviceWorker' in navigator){
 </footer>
 </div><!-- /view-landing -->
 
-<!--════════════════════════════════════════
+<!-- ══════════════════════════════════════════
      VIEW 2: DASHBOARD (full-screen overlay)
-════════════════════════════════════════-->
+══════════════════════════════════════════ -->
 <div id="view-dash">
 <div id="sideOverlay" onclick="closeSideOverlay()"></div>
 <div class="side" id="sidebar">
@@ -1325,7 +1261,7 @@ if('serviceWorker' in navigator){
     <div class="brand-mark">NX</div>
     <div><div class="brand-name">NEXUS</div><div class="brand-sub" id="dashBrandSub">AI ANALYST</div></div>
    </div>
-   <div class="ver" id="dashVer">v11 · READY</div>
+   <div class="ver" id="dashVer">v12 · ELITE</div>
   </div>
   <div class="tabs">
    <div class="tab on" id="t-mod" onclick="swTab('mod')">MODULES</div>
@@ -1429,7 +1365,9 @@ if('serviceWorker' in navigator){
  <div class="search-bar" id="searchBar"><input class="search-inp" id="searchInp" placeholder="Search analyses…" oninput="doSearch(this.value)"/><span style="cursor:pointer;color:var(--mt);font-size:12px;margin-left:4px" onclick="closeSearch()">✕</span></div>
  <div class="credit-warn" id="creditWarn"><span class="cw-txt" id="cwTxt">Credits low</span><button class="cw-btn" onclick="showView('landing');setTimeout(()=>document.getElementById('pricing').scrollIntoView(),100)">Upgrade Plan</button></div>
  <div class="csv-preview" id="csvPrev"><div class="csv-header"><span class="csv-tit" id="csvTit">DATA</span><span class="csv-st" id="csvSt"></span><span style="cursor:pointer;color:var(--mt);font-size:11px" onclick="document.getElementById('csvPrev').style.display='none'">✕</span></div><div class="csv-wrap"><table class="csv-tbl" id="csvTbl"></table></div></div>
- <div class="anom-banner" id="anomBanner"><div class="anom-title">⚠️ ANOMALIES DETECTED</div><div class="anom-tags" id="anomTags"></div></div>
+ <div class="schema-banner" id="schemaBanner"></div>
+  <div class="health-bar" id="healthBar"><div class="health-dot green"></div><div class="health-txt">Data Health</div><div class="health-score"></div></div>
+  <div class="anom-banner" id="anomBanner"><div class="anom-title">⚠️ ANOMALIES DETECTED</div><div class="anom-tags" id="anomTags"></div></div>
  <div class="chat" id="chat"></div>
  <div class="inp-zone">
   <div class="inp-suggestions">
@@ -1527,9 +1465,9 @@ if('serviceWorker' in navigator){
 <input type="file" id="fileinput2" accept=".csv,.txt,.tsv,.json,.xlsx,.xls" style="display:none" onchange="loadFile2(event)"/>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-//══════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
 // NEXUS v6 — CONFIG (Auto-configured, works out of the box)
-//══════════════════════════════════════════════════
+// ════════════════════════════════════════════════════
 
 // ── HARDCODED DEFAULTS ──
 const _BACKEND_DEFAULT   = "https://nexus-data-analyst-api.onliraxter.workers.dev";
@@ -1577,64 +1515,6 @@ const RATE = {n:0, t:Date.now(), limit:50};
 let MEM = JSON.parse(localStorage.getItem('nexus_mem')||'{"sessions":[]}');
 let appInited = false;
 
-// ── 10x DETERMINISTIC ENGINE HELPERS ──
-function enforceSchema(v, type) {
-  if (v === null || v === undefined || String(v).trim() === '' || /n\/?a/i.test(String(v))) return null;
-  if (type === 'numeric') {
-    const n = parseFloat(String(v).replace(/[,₹$%\s]/g, ''));
-    return isNaN(n) ? null : n;
-  }
-  return String(v).trim();
-}
-
-function fuzzyFindCol(hdrs, patterns) {
-  for (const p of patterns) {
-    const idx = hdrs.findIndex(h => new RegExp(p, 'i').test(h.trim()));
-    if (idx >= 0) return idx;
-  }
-  return -1;
-}
-
-function generateVerifiedCharts(facts, hdrs, data) {
-  const charts = [];
-  // 1. Revenue/Sales Trend (if Revenue exists)
-  const revIdx = fuzzyFindCol(hdrs, ['revenue', 'sales', 'turnover', 'amount', 'total']);
-  const dateIdx = fuzzyFindCol(hdrs, ['date', 'month', 'year', 'time', 'period']);
-  if (revIdx >= 0 && dateIdx >= 0 && data.length > 1) {
-    const trend = data.slice(0, 15).map(r => ({ name: r[dateIdx] || '?', val: enforceSchema(r[revIdx], 'numeric') || 0 }));
-    charts.push({ type: 'line', title: 'Revenue Trend (Verified)', data: trend });
-  }
-  // 2. Category Distribution (if Category exists)
-  const catIdx = fuzzyFindCol(hdrs, ['category', 'type', 'group', 'region', 'source']);
-  if (catIdx >= 0 && revIdx >= 0) {
-    const map = {};
-    data.forEach(r => {
-      const c = r[catIdx] || 'Other';
-      map[c] = (map[c] || 0) + (enforceSchema(r[revIdx], 'numeric') || 0);
-    });
-    const dist = Object.entries(map).map(([name, val]) => ({ name, val })).sort((a, b) => b.val - a.val).slice(0, 8);
-    charts.push({ type: 'doughnut', title: 'Revenue by ' + hdrs[catIdx], data: dist });
-  }
-  return charts;
-}
-
-function validateAIResponse(text, facts) {
-  const warnings = [];
-  if (!facts || !text) return { warnings };
-  const nums = text.match(/\d+[,.]?\d*/g) || [];
-  nums.forEach(n => {
-    const val = parseFloat(n.replace(/,/g, ''));
-    if (val > 1000) { // Only check significant numbers
-       const exists = Object.values(facts).some(f => {
-         if (typeof f === 'number' && Math.abs(f - val) / f < 0.05) return true;
-         return false;
-       });
-       if (!exists && !text.includes('benchmark') && !text.includes('industry')) warnings.push(n);
-    }
-  });
-  return { warnings };
-}
-
 // Populate UPI on page
 const _upiPub=document.getElementById('upiPublic');if(_upiPub)_upiPub.textContent=UPI_ID;
 document.getElementById('upiDisplay').textContent = UPI_ID;
@@ -1669,7 +1549,6 @@ function toggleTheme() {
 
 // ── AUTH: GOOGLE SIGN-IN ──
 function initGoogleBtn() {
-  if (S.user || S.token === 'guest_token') return;
   if (typeof google === 'undefined') { document.getElementById('gFallback').style.display=''; return; }
   if (!GOOGLE_LIVE) { document.getElementById('gFallback').style.display=''; return; }
   try {
@@ -1744,7 +1623,6 @@ function loadSession(){
       S.plan = 'unlimited';
     }
     updateNavUI();
-    if(S.user) closeOv('authOv');
   } catch(e) {
     sessionStorage.removeItem('nx_tok');
     sessionStorage.removeItem('nx_usr');
@@ -1755,9 +1633,6 @@ function updateNavUI(){
   if(!S.user)return;
   document.getElementById('userPill').style.display='flex';
   document.getElementById('navSignin').style.display='none';
-  const sf=document.getElementById('navStartFree'); if(sf)sf.style.display='none';
-  const cta=document.getElementById('heroCta'); if(cta)cta.innerHTML='<span>Go to Dashboard</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
-  if(cta)cta.onclick=goDash;
   document.getElementById('uAv').textContent=(S.user.name||'U')[0].toUpperCase();
   document.getElementById('uName').textContent=S.user.name;
   document.getElementById('uCredits').textContent=S.credits===Infinity?'∞ credits':S.credits+' credits';
@@ -1863,10 +1738,7 @@ async function submitPay(){const name=document.getElementById('payName').value.t
 function emailNotify(){const email=document.getElementById('authEmail').value.trim();if(!email.includes('@')){setAuthErr('Enter valid email');return;}if(BACKEND_LIVE)fetch(BACKEND+'/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});closeOv('authOv');toast('Got it! We will email '+email+' when ready.');}
 
 // ── MODAL HELPERS ──
-function openAuth(){
-  if(S.user) return;
-  openOv('authOv');
-}
+function openAuth(){openOv('authOv');}
 function openOv(id){document.getElementById(id).classList.add('show');}
 function closeOv(id){document.getElementById(id).classList.remove('show');}
 ['authOv','payOv'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeOv(id);});});
@@ -1878,7 +1750,7 @@ function initApp(){
   // Set brand
   const isAdmin=S.credits===Infinity;
   document.getElementById('dashBrandSub').textContent=isAdmin?'AI ANALYST · ADMIN':'AI ANALYST';
-  document.getElementById('dashVer').textContent=isAdmin?'v11 · ADMIN':'v11 · '+((S.plan||'FREE').toUpperCase());
+  document.getElementById('dashVer').textContent=isAdmin?'v12 · ADMIN':'v12 · '+((S.plan||'FREE').toUpperCase());
   updateDashCredits();
   const ta=document.getElementById('userinput');
   ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';document.getElementById('sendbtn').disabled=!ta.value.trim();});
@@ -1890,8 +1762,8 @@ function initApp(){
 // ── SYSTEM PROMPT ──
 const SYS=`You are NEXUS v11 — Elite AI Business Analyst. You operate at the level of a McKinsey Senior Analyst + Big 4 CFO Advisor combined.
 
-══ABSOLUTE RULES — VIOLATION = WRONG ANSWER══
-1. MATH TRUTH: NEVER compute totals, sums, averages yourself. ONLY use numbers labeled "NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS". These are computed on ALL rows by JavaScript. They are GROUND TRUTH.
+════ ABSOLUTE RULES — VIOLATION = WRONG ANSWER ════
+1. MATH TRUTH: NEVER compute totals, sums, averages yourself. ONLY use numbers labeled "NEXUS v12 JAVASCRIPT-VERIFIED DATA FACTS". These are computed on ALL rows by JavaScript. They are GROUND TRUTH.
 2. NO GUESSING: If a number is not in verified facts, say "not in verified data" — never estimate or approximate.
 3. CHART DATA: Every chart MUST use ONLY values from verified facts. Zero invented data ever.
 4. ANOMALIES ARE CONFIRMED: JavaScript pre-detected all anomalies. Treat every JAVASCRIPT-VERIFIED ANOMALY as an absolute confirmed fact — not a hypothesis.
@@ -1900,77 +1772,476 @@ const SYS=`You are NEXUS v11 — Elite AI Business Analyst. You operate at the l
 7. BE SPECIFIC: Never write vague statements. Every insight must have an exact number, row reference, or formula behind it.
 8. ACTIONABLE VERDICT: Every analysis must end with 5 specific, numbered, actionable steps — not generic advice.
 
-══MANDATORY ANALYSIS STRUCTURE══
+════ MANDATORY ANALYSIS STRUCTURE ════
 
-1. DATA INTEGRITY REPORT
+══ 1. DATA INTEGRITY REPORT ══
 • State total rows, columns, quality score from verified facts
 • List every duplicate ID with exact row numbers
 • List every formula mismatch with exact difference
 • List missing value counts per column
 • Verdict: CLEAN / MINOR ISSUES / MAJOR ISSUES
 
-2. KEY METRICS DASHBOARD
+══ 2. KEY METRICS DASHBOARD ══
 Output minimum 5 KPI cards using ONLY verified totals:
 [KPI:Label|Value|Delta|up/down/neutral]
 Example: [KPI:Total Revenue|₹45.2L|+12.4%|up]
 
-3. STATISTICAL DEEP DIVE
+══ 3. STATISTICAL DEEP DIVE ══
 For every numeric column from verified facts:
 • Distribution shape (normal/skewed/bimodal) with evidence
 • Outliers: exact values, row numbers, business significance
 • Correlations: explain every r > 0.6 in plain business terms
 
-4. MODULE-SPECIFIC BUSINESS ANALYSIS
+══ 4. MODULE-SPECIFIC BUSINESS ANALYSIS ══
 Execute the full analysis for the selected module. Be exhaustive.
 Reference verified numbers for every claim. No filler text.
 
-5. ANOMALY ROOT CAUSE ANALYSIS
+══ 5. ANOMALY ROOT CAUSE ANALYSIS ══
 For each verified anomaly:
 → Exact location (row, column, value)
 → 3 possible root causes ranked by likelihood
 → Recommended investigation action
 → Estimated business impact in ₹
 
-6. CHARTS — MINIMUM 4
+══ 6. CHARTS — MINIMUM 4 ══
 [CHART:bar|Title|[{"name":"Label","val":123}]]
 Allowed types: bar, line, pie, doughnut
 Charts MUST visualize actual verified data. Include category breakdowns, trends, comparisons.
 
-7. INDIA BENCHMARK COMPARISON
+══ 7. INDIA BENCHMARK COMPARISON ══
 If industry detected: compare every key metric to Indian industry benchmark.
 Format: "Your X = Y% vs India benchmark Z%. [ABOVE/BELOW/AT] benchmark by N%."
 
-8. FORECAST & PROJECTIONS
+══ 8. FORECAST & PROJECTIONS ══
 If trend data exists: use JS-computed regression to project next 3 periods.
 State R² value and confidence level explicitly.
 
-NEXUS VERDICT
+◆ NEXUS VERDICT ◆
 Confidence: [HIGH/MEDIUM/LOW] — justified by data quality score and anomaly count
 Top 5 Priority Actions (numbered, specific, with estimated ₹ impact):
 1. [Action] → Expected impact: ₹X over Y months
 2. [Action] → Expected impact: ₹X over Y months
 3-5. [continue]
 
-SUGGESTED NEXT QUESTIONS:
+💡 SUGGESTED NEXT QUESTIONS:
 1. [question targeting the biggest anomaly found]
 2. [question for deeper financial/operational drill-down]
 3. [question for forecasting or scenario planning]`;
-const CHART_RULE = '\n\n[CHART RULE: MANDATORY minimum 4 charts. Use ONLY [CHART:type|title|[{"name":"Label","val":123}]] format. Types: bar, line, pie, doughnut. No $ or , inside JSON values. Use actual verified numbers only.]';
+const CHART_RULE='\n\n[CHART: Add charts using ONLY [CHART:type|title|[{"name":"Label","val":VERIFIED_NUMBER}]] with exact numbers from verified facts. Types: bar/line/pie/doughnut. Min 2 additional charts beyond verified set.]';
+
 const MPRPTS={
-  universal: CHART_RULE,
-  statistics: '\n\n[STATISTICS MODE — FULL BATTERY REQUIRED:\n• Central tendency: mean, median, mode for ALL numeric columns\n• Dispersion: std dev, variance, IQR, range, CV% for ALL numeric columns\n• Distribution shape: skewness coefficient, kurtosis, normality assessment\n• Full Pearson correlation matrix — explain every r>0.5 pair in business terms\n• Linear regression on top 2 correlated pairs: equation, R², p-value interpretation\n• Outlier analysis: IQR method results per column with exact row numbers\n• Percentile breakdown: P10, P25, P50, P75, P90 for revenue/profit columns\n• Confidence intervals (95%) for mean estimates\n• Trend analysis if time data present: decompose into trend + seasonality\nAll numbers from JAVASCRIPT-VERIFIED facts only.]'+CHART_RULE,
-  finance: '\n\n[FINANCE MODE — COMPLETE CFO-GRADE ANALYSIS:\n• P&L Decomposition: Revenue → Gross Profit → EBITDA → EBIT → EBT → PAT waterfall\n• DuPont ROE Bridge: ROE = Net Margin × Asset Turnover × Equity Multiplier (show each)\n• Altman Z-Score: compute if balance sheet data exists, interpret bankruptcy risk\n• Piotroski F-Score: all 9 criteria if data allows\n• DCF Sensitivity: NPV at 3 discount rates (8%, 12%, 16%)\n• Working Capital: CCC = DIO + DSO - DPO (calculate each component)\n• All 30+ financial ratios: Liquidity (CR, QR, Cash), Solvency (D/E, ICR, DSCR), Profitability (GM, OM, NM, ROA, ROE, ROCE), Efficiency (AT, IT, RT), Market (EPS, P/E if applicable)\n• Industry benchmark comparison for every ratio\n• Red flags: flag any ratio outside healthy range with exact threshold\n• Cash flow implications from every variance\nAll from JAVASCRIPT-VERIFIED totals only.]'+CHART_RULE,
-  ml: '\n\n[ML & PREDICTION MODE — FULL ANALYTICAL PIPELINE:\n• Problem framing: classification vs regression vs clustering — justify with data characteristics\n• Feature importance: rank all numeric columns by predictive value for target variable\n• Feature engineering suggestions: derived ratios, log transforms, binning recommendations\n• Top 3 recommended models with expected accuracy range and why\n• Churn/risk prediction: score each customer/segment 0-100 using available signals\n• Demand forecast: next 6 periods with 80% and 95% confidence intervals (use JS regression)\n• Customer segmentation: RFM or value-based, describe each segment with size and characteristics\n• Anomaly scoring: rank top 10 anomalous records by isolation score\n• Model validation approach: train/test split recommendation, cross-validation strategy\n• Business ROI of implementing each ML recommendation\nUse JS-computed regression R² as ground truth for trend strength.]'+CHART_RULE,
-  operations: '\n\n[OPERATIONS MODE — LEAN SIX SIGMA AUDIT:\n• OEE Decomposition: Availability × Performance × Quality = OEE% (calculate each if data allows)\n• TOC Bottleneck: identify the constraint, calculate impact of resolving it\n• Inventory: EOQ formula, reorder point, safety stock calculation with exact numbers\n• OTIF Analysis: On-Time In-Full %, root cause of failures, supplier ranking\n• Six Sigma: DPMO calculation, Sigma level, Cpk if process data exists\n• Lean Waste: identify all 8 wastes (TIMWOODS) present in data\n• Capacity utilization vs theoretical maximum\n• Lead time analysis: breakdown by stage if available\n• Supplier performance ranking with delay patterns\n• Cost of poor quality (COPQ) estimation\n• 90-day operations improvement roadmap with ₹ savings per initiative\nAll calculations from verified facts.]'+CHART_RULE,
-  marketing: '\n\n[MARKETING & GROWTH MODE — FULL FUNNEL ANALYSIS:\n• CAC per channel: total spend / new customers, rank channels by efficiency\n• LTV calculation: ARPU × Gross Margin % / Churn Rate (show formula + inputs)\n• LTV:CAC ratio per channel — flag any below 3:1 as unsustainable\n• Payback period per channel: CAC / Monthly Contribution Margin\n• ROAS ranking: revenue attributed / ad spend per campaign/channel\n• Multi-touch attribution analysis if channel data present\n• Cohort retention: D1, D7, D30 if time-based data, calculate drop-off %\n• Conversion funnel: calculate conversion rate at each stage with drop-off\n• Marketing efficiency score: composite CAC + ROAS + LTV:CAC\n• Budget reallocation recommendation: shift X from lowest ROAS to highest\n• Growth levers ranked by impact × effort matrix\n• Revenue at risk from churning cohorts\nAll from verified facts.]'+CHART_RULE,
-  hr: '\n\n[PEOPLE ANALYTICS MODE — FULL HR AUDIT:\n• Attrition analysis: voluntary vs involuntary split, by department/tenure/level\n• Flight risk scoring: identify high-risk employees using tenure + performance + comp signals\n• Performance distribution: bell curve analysis, % in each quartile\n• Compensation equity: compa-ratio per role (salary / midpoint), flag outliers >120% or <80%\n• Pay gap analysis: by gender/level/department with statistical significance\n• Headcount efficiency: revenue per employee, cost per employee trends\n• eNPS proxy: if survey data exists, calculate and benchmark\n• 9-Box talent matrix placement if performance + potential data available\n• Succession gaps: identify critical roles with no identified successor\n• Hiring funnel: time-to-fill, cost-per-hire, offer acceptance rate\n• Total rewards optimization: comp vs market, benefits ROI\n• 12-month workforce planning recommendation\nAll from verified facts.]'+CHART_RULE,
-  risk: '\n\n[RISK INTELLIGENCE MODE — ENTERPRISE RISK FRAMEWORK:\n• Risk taxonomy: identify ALL risk types present (credit, operational, market, liquidity, concentration, compliance)\n• Concentration risk: HHI index for customer/supplier/product concentration — flag HHI > 2500\n• Monte Carlo simulation: min/likely/max scenarios for top 3 metrics (use ±1σ, ±2σ from verified std)\n• Altman Z-Score bankruptcy probability if financial data exists\n• Liquidity stress test: days of runway at current burn rate\n• Sensitivity tornado: which variable swings revenue most per 10% change\n• Scenario analysis: 3 scenarios (Base / Bear -30% / Bull +30%) for revenue and profit\n• Supplier/customer risk: flag any single entity >20% of revenue/cost\n• Regulatory exposure: flag if pharma/finance/data columns detected\n• Risk-adjusted return: Sharpe ratio equivalent if investment data present\n• Risk mitigation roadmap: top 5 risks with owner, timeline, cost to mitigate\nAll calculations from verified facts.]'+CHART_RULE,
-  saas: '\n\n[SAAS & TECH METRICS MODE — INVESTOR-GRADE ANALYSIS:\n• MRR/ARR: calculate from subscription data, MoM growth rate\n• NRR (Net Revenue Retention): (Starting MRR + Expansion - Churn - Contraction) / Starting MRR × 100\n• GRR (Gross Revenue Retention): flag if below 85% (danger zone)\n• MRR decomposition: New + Expansion + Reactivation - Churn - Contraction waterfall\n• Rule of 40: Revenue Growth % + EBITDA Margin % (flag if below 40)\n• Magic Number: Net New ARR / S&M Spend previous quarter (flag if below 0.75)\n• CAC Payback Period: months to recover CAC from gross margin\n• LTV:CAC ratio: flag if below 3x\n• Churn cohort analysis: monthly, by plan tier, by acquisition channel\n• Logo churn vs revenue churn: distinguish and explain difference\n• Expansion revenue %: upsell/cross-sell as % of total MRR growth\n• SaaS efficiency score: ARR per FTE, ARR per $ of S&M\n• Investor benchmarks: compare to SaaS median/top quartile for stage\nAll from verified facts.]'+CHART_RULE,
-  strategy: '\n\n[STRATEGY MODE — BOARD-LEVEL ANALYSIS:\n• MECE issue tree: decompose the core business problem into mutually exclusive branches\n• BCG Matrix: plot all products/segments by market growth vs relative share\n• Ansoff Matrix: identify which growth quadrant current strategy occupies + recommendations\n• Porter 5 Forces: assess each force (1-10 threat level) with data-backed evidence\n• SWOT: each point backed by a specific number from verified data\n• OKR recommendations: 3 Objectives with 3 Key Results each, all measurable\n• Impact × Effort 2×2: rank all identified initiatives by impact vs effort\n• Competitive position: where the business sits on cost leadership vs differentiation axis\n• 30-60-90-180 day roadmap: specific milestones with ₹ targets\n• Value creation potential: ₹ value unlockable per strategic initiative\n• Strategic risks: top 3 existential threats with mitigation\nAll strategy recommendations grounded in verified numbers.]'+CHART_RULE,
-  sql: '\n\n[SQL & CODE MODE — PRODUCTION-READY OUTPUT:\n• Write 5 production SQL queries for the most valuable analyses on this dataset\n• Each query: CTE structure, window functions where appropriate, comments explaining logic\n• Include: YoY/MoM comparison, running totals, ranking, outlier detection, cohort analysis\n• Python/pandas equivalent for each SQL query\n• R/tidyverse version for statistical analysis\n• DAX measures for Power BI if the schema suits it\n• Data model recommendation: star schema DDL for this dataset\n• Index recommendations for query performance\n• Data cleaning script: handle the exact missing values and duplicates found in this file\n• Automation suggestion: which queries to schedule daily/weekly/monthly\nAll column names and values taken from actual verified dataset headers.]'+CHART_RULE,
-  dashboard: '\n\n[DASHBOARD DESIGN MODE — BI BLUEPRINT:\n• KPI hierarchy: L1 (CEO view, 3-5 KPIs), L2 (Manager view, 8-12 KPIs), L3 (Analyst view, full detail)\n• Chart type rationale: explain why each chart type is best for each metric\n• Layout wireframe: describe exact grid layout — header, hero KPIs, main charts, detail tables\n• Color coding system: green/amber/red thresholds for every KPI with exact values\n• Drill-down paths: L1 → L2 → L3 navigation design\n• Star schema DDL: fact and dimension tables for this dataset\n• DAX measures: write actual DAX for top 5 KPIs\n• Refresh schedule: which metrics need real-time vs daily vs weekly refresh\n• Mobile vs desktop layout differences\n• Filter panel design: which dimensions to expose as slicers\n• Alert triggers: exact threshold rules for automated notifications\nAll metric targets from verified data baselines.]'+CHART_RULE,
-  realtime: '\n\n[REAL-TIME MONITORING MODE — OPERATIONAL INTELLIGENCE:\n• KPI threshold matrix: WARN and CRITICAL levels for every numeric column (based on verified mean ± std)\n• Anomaly detection rules: exact SQL WHERE conditions to catch each verified anomaly type\n• Alert trigger design: event → condition → notification channel → escalation path\n• Escalation matrix: Tier 1 (auto-resolve) → Tier 2 (ops team) → Tier 3 (management)\n• Monitoring frequency: per KPI — real-time / hourly / daily recommendation with justification\n• Runbook: step-by-step response procedure for each alert type\n• Baseline establishment: control limits (UCL/LCL) using verified mean ± 3σ\n• Seasonal adjustment: flag metrics that need seasonal normalization\n• Dashboard refresh architecture: streaming vs batch recommendation\n• SLA definition: uptime, latency, data freshness targets per metric\n• Cost of downtime: estimate ₹/hour impact for each critical KPI breach\nAll thresholds calculated from verified statistical facts.]'+CHART_RULE
+  universal:CHART_RULE,
+
+  statistics:`\n\n[STATISTICS MODULE — FULL QUANTITATIVE BATTERY:
+
+DESCRIPTIVE STATS (from verified facts only):
+• Mean, Median, Mode for ALL numeric columns — flag if mean/median gap >15% (indicates skew)
+• Std Dev, Variance, Range, IQR for ALL numeric columns
+• Coefficient of Variation (CV = Std/Mean × 100) — flag CV>50% as HIGH VOLATILITY
+• Skewness interpretation: if top5 values >> median, state "right-skewed — outliers pulling mean up"
+
+DISTRIBUTION ANALYSIS:
+• For each column: state if approximately normal, right-skewed, left-skewed, or bimodal with evidence
+• Percentile breakdown: P10, P25, P50, P75, P90 for revenue/profit columns
+
+OUTLIER ANALYSIS (use verified outlierRows data):
+• List every outlier: Row number, exact value, z-score estimate, business significance
+• Classify: data error vs genuine business event vs seasonal spike
+
+CORRELATION INTELLIGENCE:
+• Full Pearson matrix from verified corrMatrix
+• For every |r|>0.5: "When X increases by 1%, Y tends to change by Z%" in plain English
+• For every |r|>0.8: flag as STRONG relationship, explain business causation
+• Spurious correlation check: flag if correlated columns are likely co-caused by a third factor
+
+REGRESSION & FORECAST:
+• Use JS-computed regression R² and next-3-period forecast from verified facts
+• Interpret R²: "R²=0.87 means 87% of revenue variation is explained by the trend"
+• State confidence: HIGH (R²>0.8), MEDIUM (R²>0.5), LOW (R²<0.5)
+
+NORMALITY ASSESSMENT:
+• Compare mean vs median: if within 5%, approximately normal
+• If skewed: recommend appropriate transformation (log, sqrt, Box-Cox)]`+CHART_RULE,
+
+  finance:`\n\n[FINANCE MODULE — COMPLETE CFO-GRADE ANALYSIS:
+
+P&L WATERFALL (use verified sums only):
+• Revenue → Gross Profit (Revenue - COGS) → EBITDA → EBIT → EBT → PAT
+• Show each line as ₹ value AND % of revenue
+• YoY or MoM change where time data exists
+
+PROFITABILITY RATIOS (show formula + verified inputs + result):
+• Gross Margin = (Revenue - COGS) / Revenue × 100
+• Operating Margin = EBIT / Revenue × 100  
+• Net Margin = PAT / Revenue × 100
+• EBITDA Margin = EBITDA / Revenue × 100
+• Compare each to India industry benchmark — flag if >10% below benchmark
+
+EFFICIENCY RATIOS:
+• Asset Turnover = Revenue / Total Assets
+• Inventory Turnover = COGS / Average Inventory (flag if <4x for retail, <8x for FMCG)
+• Receivables Turnover = Revenue / Accounts Receivable
+• Payables Turnover = COGS / Accounts Payable
+• Cash Conversion Cycle = DIO + DSO - DPO
+
+SOLVENCY & LIQUIDITY:
+• Current Ratio = Current Assets / Current Liabilities (healthy: 1.5-3)
+• Quick Ratio = (Current Assets - Inventory) / Current Liabilities (healthy: >1)
+• Debt/Equity Ratio (healthy for India: <2)
+• Interest Coverage Ratio = EBIT / Interest Expense (healthy: >3)
+
+DUPONT ROE BRIDGE (DuPont ROE Bridge):
+• ROE = Net Margin × Asset Turnover × Equity Multiplier
+• Show each component separately — identify which driver dominates
+• Piotroski F-Score: compute all 9 signals if balance sheet data available (score >7 = strong, <3 = weak)
+
+ALTMAN Z-SCORE (if balance sheet data):
+• Z = 1.2×WC/TA + 1.4×RE/TA + 3.3×EBIT/TA + 0.6×MVE/TL + 1.0×S/TA
+• Interpretation: >2.99 Safe, 1.81-2.99 Grey Zone, <1.81 Distress
+
+INDIA BENCHMARKS by sector:
+• Retail: GM 25-35%, NM 3-8%, IT 4-8×
+• Pharma: GM 18-22%, NM 10-15%, AT 0.8-1.2
+• IT Services: GM 60-75%, NM 15-25%, AT 1.5-2.5
+• Manufacturing: GM 15-25%, NM 4-10%, AT 0.7-1.0
+• FMCG: GM 40-55%, NM 8-15%, IT 6-12×
+• SaaS: GM 65-80%, NM 10-25%, Churn <5%/mo]`+CHART_RULE,
+
+  ml:`\n\n[ML & PREDICTION MODULE — FULL DATA SCIENCE PIPELINE:
+
+PROBLEM FRAMING:
+• Identify the business prediction task: classification vs regression vs clustering vs anomaly detection
+• State target variable, feature variables, and sample size sufficiency
+• Data quality assessment for ML: flag class imbalance, missing rate, correlation with target
+
+FEATURE IMPORTANCE ANALYSIS (from verified correlations):
+• Rank ALL numeric columns by correlation with target/revenue column
+• Identify multicollinearity: if two features corr>0.9, recommend keeping only one
+• Engineer derived features: Revenue/Unit, Margin%, Growth Rate, Rolling Average
+• Suggest categorical encoding for text columns
+
+CHURN/RISK PREDICTION:
+• Using RFM if customer data: Recency + Frequency + Monetary scores (1-5 each)
+• RFM scoring: R5F5M5 = Champions, R1F1M1 = Lost customers
+• Calculate churn risk per segment using frequency quartiles
+• Estimate revenue at risk from churning segments in ₹
+
+DEMAND FORECASTING (use JS-computed regression):
+• Use verified R² and next-3-period values
+• State trend direction: "growing at X% per period"
+• Seasonality: if time column present, identify peak/trough months
+• Forecast accuracy estimate based on R²
+
+CUSTOMER SEGMENTATION:
+• If customer/order data: segment by value (High/Medium/Low) using quartiles of revenue per entity
+• Describe each segment: size, avg revenue, behaviour pattern
+• Recommended strategy per segment
+
+ANOMALY SCORING:
+• Use verified outlierRows to rank top 10 most anomalous records
+• Isolation score (z-score): (value - mean) / std — values >3 are extreme outliers
+• isolation score (z-score based): (value - mean) / std — extreme if >3σ
+• Business action per anomaly type with ₹ impact estimate]`+CHART_RULE,
+
+  operations:`\n\n[OPERATIONS MODULE — LEAN SIX SIGMA AUDIT:
+
+OEE ANALYSIS (if production data):
+• OEE = Availability × Performance × Quality
+• World class: >85%. Average: 60%. Poor: <40%
+• Decompose: which component is dragging OEE down most
+
+INVENTORY ANALYSIS:
+• EOQ = √(2DS/H) where D=annual demand, S=ordering cost, H=holding cost
+• Reorder Point = (Lead time × Daily demand) + Safety Stock
+• Safety Stock = Z × σ_demand × √lead_time
+• Flag: stockout risk (if stock < safety stock), dead stock (if no movement >90 days)
+• Inventory turnover vs cash tied up: "₹X tied in slow-moving SKU Y"
+
+SUPPLY CHAIN & OTIF:
+• OTIF% = (On-Time AND In-Full deliveries) / Total deliveries × 100
+• Identify worst-performing suppliers by delay frequency
+• Cost of delays: each delayed day = holding cost + customer penalty estimate
+
+SIX SIGMA METRICS:
+• DPMO = (Defects / (Opportunities × Units)) × 1,000,000
+• Sigma level: 6σ=3.4 DPMO, 5σ=233 DPMO, 4σ=6210 DPMO, 3σ=66807 DPMO
+• Cpk process capability if spec limits available
+
+LEAN WASTE (TIMWOODS) — identify from data:
+• Transportation, Inventory, Motion, Waiting, Overproduction, Over-processing, Defects, Skills
+• Quantify each waste type in ₹ impact estimate
+
+CAPACITY & THROUGHPUT:
+• Current utilisation vs theoretical maximum
+• Bottleneck identification: which step/resource constrains output
+• Theory of Constraints: focus improvement on the constraint only]`+CHART_RULE,
+
+  marketing:`\n\n[MARKETING & GROWTH MODULE — FULL FUNNEL INTELLIGENCE:
+
+CUSTOMER ACQUISITION:
+• CAC per channel = Channel Spend / New Customers from Channel
+• Blended CAC = Total Marketing Spend / Total New Customers
+• CAC trend: improving or worsening MoM?
+• Payback Period = CAC / (Monthly Revenue per Customer × Gross Margin%)
+• Benchmark: payback < 12 months = healthy, > 18 months = concerning
+
+LIFETIME VALUE:
+• LTV = ARPU × Gross Margin% / Monthly Churn Rate
+• LTV:CAC ratio — flag if <3x as unsustainable
+• LTV:CAC by channel — identify best and worst channels
+• Customer profitability: LTV - CAC = Customer Profit per acquisition
+
+CAMPAIGN & CHANNEL ANALYSIS:
+• ROAS = Revenue Attributed / Ad Spend for each campaign/channel
+• Rank all campaigns by ROAS — recommend shifting budget from worst to best
+• Attribution: if multi-touch data, calculate first-touch vs last-touch vs linear
+• Impression-to-conversion funnel with drop-off rates at each stage
+
+COHORT RETENTION:
+• If time data present: D1, D7, D30 retention by acquisition cohort
+• Revenue by cohort: which cohorts are most valuable?
+• Churn rate per cohort: declining cohorts indicate product-market fit issues
+
+INDIA DIGITAL BENCHMARKS:
+• E-commerce conversion: 2-4%, Email open: 20-25%, CAC retail: ₹200-800
+• D30 retention by category: Gaming 25-40%, E-comm 30-45%, SaaS 80-90%]`+CHART_RULE,
+
+  hr:`\n\n[PEOPLE ANALYTICS MODULE — FULL HR INTELLIGENCE:
+
+ATTRITION ANALYSIS:
+• Overall attrition rate = Separations / Average Headcount × 100
+• Voluntary vs involuntary split (if available)
+• Attrition by: department, tenure band, salary band, performance tier
+• Cost of attrition: (Recruiting + Onboarding + Productivity loss) × number of exits
+• India benchmark: IT 18-25%, Manufacturing 8-15%, BFSI 12-20%, Retail 25-40%
+
+FLIGHT RISK SCORING:
+• High risk signals: tenure <1yr, recent poor performance, comp below market, missed promotion
+• Score each employee 1-10 using available signals
+• Revenue at risk from high-flight-risk employees: their revenue/productivity contribution
+
+COMPENSATION EQUITY:
+• Compa-ratio = Actual Salary / Midpoint of Salary Band × 100
+• Green: 90-110%, Yellow: 80-90% or 110-120%, Red: <80% or >120%
+• Pay gap analysis: by gender/level/dept — flag any gap >5% as statistically significant
+• Market positioning: compare to India compensation surveys (Mercer, Aon, Korn Ferry bands)
+
+PERFORMANCE DISTRIBUTION:
+• Bell curve: % in each performance tier
+• 9-Box talent matrix if performance + potential data
+• High performer retention: are your best people leaving?
+
+WORKFORCE PLANNING:
+• Headcount efficiency: Revenue per FTE trend
+• Span of control: managers to individual contributor ratio
+• Critical role gaps: roles with single point of failure]`+CHART_RULE,
+
+  risk:`\n\n[RISK INTELLIGENCE MODULE — ENTERPRISE RISK FRAMEWORK:
+
+CONCENTRATION RISK:
+• Revenue concentration: HHI index = Σ(market_share²) × 10000
+  HHI > 2500: HIGH concentration, 1500-2500: MODERATE, < 1500: LOW
+• Customer concentration: flag if any single customer > 20% of revenue
+• Supplier concentration: flag if any single supplier > 30% of COGS
+• Geographic concentration: flag if any single region > 40% of revenue
+
+MONTE CARLO SIMULATION (Scenario Analysis) (Monte Carlo Scenario Analysis):
+• Base case: verified mean values
+• Bear case (Monte Carlo Simulation -2σ): mean - 2σ (using verified std from facts)
+• Bull case: mean + 2σ
+• Present as range: "Revenue likely between ₹X and ₹Y with 95% confidence"
+
+ALTMAN Z-SCORE (enterprise health):
+• Compute if financial data available
+• Z < 1.81 = HIGH bankruptcy risk, require immediate action
+• 1.81-2.99 = Grey zone, monitor closely
+• > 2.99 = Financially healthy
+
+SENSITIVITY ANALYSIS (TORNADO):
+• For each input variable: calculate impact of ±10% change on revenue/profit
+• Rank by sensitivity — most sensitive variable is biggest risk
+• "If [variable] drops 10%, profit decreases by ₹X (Y%)"
+
+LIQUIDITY RISK:
+• Days of cash runway = Cash / Monthly Burn Rate
+• Current ratio < 1.0 = immediate liquidity risk
+• Working capital gap = Current Assets - Current Liabilities
+
+STRESS SCENARIOS:
+• Scenario 1 (Revenue -30%): impact on profit, cash, solvency ratios
+• Scenario 2 (COGS +20%): impact on margins
+• Scenario 3 (Key customer loss): revenue impact and recovery timeline]`+CHART_RULE,
+
+  saas:`\n\n[SAAS & TECH MODULE — INVESTOR-GRADE METRICS:
+
+REVENUE METRICS:
+• MRR = Sum of all monthly subscription revenue
+• ARR = MRR × 12
+• MoM MRR growth rate (healthy SaaS: 10-20% MoM early stage)
+• ARR per Customer (ACV) — flag if declining as upsell weakness
+
+RETENTION METRICS:
+• Net Revenue Retention (NRR) = (Start MRR + Expansion - Churn - Contraction) / Start MRR × 100
+  World class: >130%, Good: >110%, Acceptable: >100%, Concerning: <100%
+• Gross Revenue Retention (GRR) = (Start MRR - Churn - Contraction) / Start MRR × 100
+  Healthy: >85% annually. <85% = product-market fit concern.
+• Logo Churn Rate (monthly) — healthy: <2% for SMB, <0.5% for Enterprise
+
+UNIT ECONOMICS:
+• LTV:CAC ratio — >3x is minimum, >5x is excellent
+• CAC Payback Period — <12 months is healthy, <6 months is excellent
+• Magic Number = Net New ARR / Sales & Marketing Spend (healthy: >0.75)
+• Rule of 40 = Revenue Growth% + EBITDA Margin% (healthy: >40)
+
+MRR DECOMPOSITION WATERFALL:
+• New MRR + Expansion MRR - Churned MRR - Contraction MRR = Net New MRR
+• State each component as % of total MRR
+• Expansion revenue %: healthy SaaS has 20-40% of growth from expansion
+
+SAAS EFFICIENCY:
+• ARR per FTE (full-time equivalent)
+• S&M as % of ARR (healthy: 20-40% at growth stage)
+• R&D as % of ARR (healthy: 15-25%)
+• G&A as % of ARR (healthy: 8-15%)]`+CHART_RULE,
+
+  strategy:`\n\n[STRATEGY MODULE — BOARD-LEVEL ANALYSIS:
+
+MECE ISSUE TREE:
+• Decompose the core business problem into mutually exclusive, collectively exhaustive branches
+• Tree structure: Problem → Root Causes (3-5) → Sub-causes → Solutions
+• Each branch quantified with verified data impact
+
+BCG MATRIX:
+• Plot all products/segments on 2×2: Market Growth (Y) vs Relative Market Share (X)
+• Stars (high-high): invest aggressively
+• Cash Cows (low-high): harvest, fund Stars
+• Question Marks (high-low): strategic decision needed
+• Dogs (low-low): divest or reinvent
+
+PORTER 5 FORCES (quantified):
+• Rate each force 1-10 threat level with data-backed evidence
+• Competitive rivalry, Supplier power, Buyer power, Substitutes, New entrants
+• Overall industry attractiveness score
+
+ANSOFF MATRIX:
+• Current position: which quadrant is the business in?
+• Recommended growth path: Market Penetration → Market Development → Product Development → Diversification
+• ₹ opportunity size for each quadrant
+
+SWOT (data-driven):
+• Every strength/weakness/opportunity/threat backed by a verified number
+• No generic statements — each point = specific metric + specific action
+
+30-60-90-180 DAY ROADMAP:
+• 30 days: Quick wins (no investment required, impact >₹X)
+• 60 days: Process changes (low investment, medium impact)
+• 90 days: Strategic initiatives (medium investment, high impact)
+• 180 days: Transformation moves (high investment, transformational impact)]`+CHART_RULE,
+
+  sql:`\n\n[SQL & CODE MODULE — PRODUCTION-READY OUTPUT:
+
+Write ALL of the following for this exact dataset:
+
+1. DATA PROFILING QUERY:
+SELECT column_name, COUNT(*), COUNT(DISTINCT column_name), 
+  MIN(column_name), MAX(column_name), AVG(column_name),
+  SUM(CASE WHEN column_name IS NULL THEN 1 ELSE 0 END) as null_count
+FROM table GROUP BY 1;
+
+2. REVENUE ANALYSIS WITH WINDOW FUNCTIONS:
+SELECT *, 
+  SUM(revenue) OVER (PARTITION BY category ORDER BY date) as running_total,
+  LAG(revenue) OVER (PARTITION BY category ORDER BY date) as prev_period,
+  revenue - LAG(revenue) OVER (ORDER BY date) as mom_change,
+  RANK() OVER (ORDER BY revenue DESC) as revenue_rank
+FROM sales;
+
+3. ANOMALY DETECTION QUERY:
+WITH stats AS (SELECT AVG(value) as mean, STDDEV(value) as std FROM table)
+SELECT *, (value - mean)/std as z_score, ABS((value-mean)/std) > 2 as is_outlier
+FROM table, stats WHERE ABS((value-mean)/std) > 2;
+
+4. COHORT ANALYSIS:
+WITH first_purchase AS (
+  SELECT customer_id, MIN(date) as cohort_date FROM orders GROUP BY 1),
+cohort AS (
+  SELECT f.cohort_date, DATEDIFF(o.date, f.cohort_date) as period, COUNT(DISTINCT o.customer_id)
+  FROM orders o JOIN first_purchase f ON o.customer_id=f.customer_id GROUP BY 1,2)
+SELECT * FROM cohort ORDER BY cohort_date, period;
+
+5. DUPLICATE DETECTION:
+SELECT *, COUNT(*) OVER (PARTITION BY id_column) as dup_count
+FROM table HAVING dup_count > 1;
+
+PYTHON/PANDAS EQUIVALENT for all 5 queries.
+R/TIDYVERSE equivalent for statistical analysis.
+DAX MEASURES for Power BI dashboard.
+DATA MODEL: Star schema DDL recommendation for this dataset.]`+CHART_RULE,
+
+  dashboard:`\n\n[DASHBOARD MODULE — BI BLUEPRINT:
+
+KPI HIERARCHY DESIGN:
+• L1 Executive View (CEO): 3-5 KPIs visible at a glance — Revenue, Margin, Growth, Cash, Risk
+• L2 Manager View: 8-12 KPIs — department-specific performance metrics
+• L3 Analyst View: Full detail — all columns, filters, drill-downs
+
+COLOUR CODING SYSTEM (with exact thresholds from verified data):
+• Green: metric > (mean + 0.5σ)  
+• Amber: metric between (mean - 0.5σ) and (mean + 0.5σ)
+• Red: metric < (mean - 0.5σ)
+
+CHART SELECTION RATIONALE:
+• Revenue over time → Line chart (trends)
+• Category comparison → Horizontal bar (ranking)
+• Part-of-whole → Doughnut chart (max 6 slices)
+• Correlation → Scatter plot
+• Distribution → Histogram or Box plot
+• KPI vs target → Bullet chart
+
+LAYOUT WIREFRAME:
+• Header: Time filter, KPI summary strip
+• Row 1: Hero KPIs (3-4 large number cards)
+• Row 2: Primary chart (line/bar) + Secondary chart (doughnut/bar)
+• Row 3: Detail table + Anomaly alerts
+• Footer: Last updated timestamp + Data quality score
+
+POWER BI / TABLEAU SPECIFIC:
+• Write actual DAX measures for top 5 KPIs
+• Recommend star schema: Fact_Sales, Dim_Customer, Dim_Product, Dim_Date, Dim_Region
+• Suggest calculated columns vs measures tradeoffs]`+CHART_RULE,
+
+  realtime:`\n\n[MONITORING MODULE — REAL-TIME OPERATIONAL INTELLIGENCE:
+
+THRESHOLD MATRIX (calculated from verified mean ± std):
+For each numeric column:
+• Normal: mean ± 1σ
+• WARNING: outside mean ± 1.5σ  
+• CRITICAL: outside mean ± 2.5σ
+State exact threshold values: "Revenue WARN if < ₹X or > ₹Y, CRITICAL if < ₹A or > ₹B"
+
+ALERT RULE ENGINE:
+Write specific SQL/pseudo-code alert rules:
+  IF revenue < (daily_avg × 0.7) → ALERT: "Revenue 30% below average — investigate immediately"
+  IF new_orders = 0 for > 2 hours → ALERT: "Order pipeline stopped"
+  IF error_rate > 5% → CRITICAL: "Quality threshold breached"
+  IF inventory < safety_stock → ALERT: "Stockout risk for SKU X"
+
+ESCALATION MATRIX:
+• Tier 1 (auto-resolve): Minor deviation (<1σ), system auto-corrects, log only
+• Tier 2 (ops team): Significant deviation (1-2σ), ops team notified within 15 min
+• Tier 3 (management): Critical (>2σ), management + ops notified within 5 min
+• Tier 4 (executive): Business-critical (>3σ or revenue impact >₹X), CEO notified immediately
+
+SLA DEFINITIONS:
+• Data freshness: define acceptable lag per metric (real-time vs hourly vs daily)
+• Uptime target: 99.9% for revenue metrics, 99.5% for operational metrics
+• Alert response time: < 5 min for P0, < 30 min for P1, < 4 hours for P2
+
+COST OF DOWNTIME:
+• Revenue per hour = Annual Revenue / 8760
+• "Each hour of metric blindness costs approximately ₹X in undetected issues"]`+CHART_RULE
 };
+
 const MODS=[{id:'universal',i:'⚡',l:'Universal',d:'Auto-detect & analyze'},{id:'statistics',i:'∑',l:'Statistics',d:'Descriptive + inferential'},{id:'finance',i:'◈',l:'Finance',d:'P&L, DCF, ratios, valuation'},{id:'ml',i:'◉',l:'ML & Predict',d:'Models, features, forecast'},{id:'operations',i:'⊗',l:'Operations',d:'OEE, supply chain, lean'},{id:'marketing',i:'◐',l:'Marketing',d:'CAC, LTV, attribution'},{id:'hr',i:'◎',l:'People',d:'Attrition, equity, eNPS'},{id:'risk',i:'◇',l:'Risk',d:'Monte Carlo, stress, HHI'},{id:'saas',i:'◑',l:'SaaS/Tech',d:'MRR, NRR, Rule of 40'},{id:'strategy',i:'▲',l:'Strategy',d:'BCG, OKRs, roadmap'},{id:'sql',i:'</>',l:'SQL & Code',d:'SQL, Python, DAX, R'},{id:'dashboard',i:'▦',l:'Dashboard',d:'BI blueprint, KPI design'},{id:'realtime',i:'●',l:'Monitoring',d:'Alerts, thresholds, watch'}];
 const SAMPS = [
   {
@@ -2057,7 +2328,7 @@ async function sendMsg(){
   const isFirstWithData=S.messages.length===0&&S.factsSummary;
   const hasData=!!S.factsSummary&&S.factsSummary.length>10;
   if(hasData){
-    if(isFirstWithData||!S.messages.some(m=>m.content.includes('NEXUS v11 JAVASCRIPT-VERIFIED'))){
+    if(isFirstWithData||!S.messages.some(m=>m.content.includes('NEXUS v12 JAVASCRIPT-VERIFIED'))){
       prompt+='\n\n'+S.factsSummary;
     } else {
       // Compact reminder for follow-ups (saves tokens)
@@ -2108,7 +2379,7 @@ async function sendMsg(){
 
       // Streaming response
       let bubEl = null;
-      window.bubGenerated = false;
+      let bubGenerated = false;
 
       const reader=streamRes.body.getReader();
       const decoder=new TextDecoder();
@@ -2134,7 +2405,7 @@ async function sendMsg(){
                 removeTyp(tid);
                 document.getElementById('sendbtn').disabled = false;
                 bubEl = addBub('assistant', '', true, true);
-                window.bubGenerated = true;
+                bubGenerated = true;
               }
               if (bubEl) bubEl.innerHTML = fullText.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>") + '<span class="streaming-cursor"></span>';
             }
@@ -2182,18 +2453,54 @@ async function sendMsg(){
       }
       reply = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
       if (!reply) throw new Error('Gemini returned empty response.');
-      window.bubGenerated = false; // ensure standard bubble fallback
 
     } else {
       throw new Error('No AI configured.');
     }
 
-    if (!window.bubGenerated) {
+    if (!bubGenerated) {
       removeTyp(tid);
       document.getElementById('sendbtn').disabled=false;
       addBub('assistant', reply, true);
     }
     S.messages.push({ role: 'assistant', content: reply });
+
+    // ── NEXUS v12: Render verified charts from JS data (not AI text) ──
+    if (S.verifiedCharts && S.verifiedCharts.length > 0 && bubEl) {
+      const vcDiv = document.createElement('div');
+      vcDiv.className = 'verified-charts-block';
+      vcDiv.innerHTML = '<div class="vc-label">📊 VERIFIED DATA CHARTS — computed from your data, not AI</div><div class="vc-grid" id="vcGrid_'+Date.now()+'"></div>';
+      bubEl.appendChild(vcDiv);
+      const grid = vcDiv.querySelector('.vc-grid');
+      S.verifiedCharts.forEach(vc => {
+        const card = document.createElement('div');
+        card.className = 'chart-card vc-card';
+        card.id = vc.id;
+        card.innerHTML = `<div class="chart-lbl"><span>✅ ${esc(vc.title)}</span><span class="vc-badge">JS-VERIFIED</span></div><canvas></canvas>`;
+        grid.appendChild(card);
+        const canvas = card.querySelector('canvas');
+        const COLORS=['#a78bfa','#60a5fa','#34d399','#f59e0b','#f87171','#38bdf8','#fb923c','#4ade80'];
+        const labels = vc.data.map(d=>d.name);
+        const vals = vc.data.map(d=>d.val);
+        if (vc.type==='doughnut'||vc.type==='pie') {
+          new Chart(canvas,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:COLORS,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,animation:{duration:600},plugins:{legend:{labels:{color:'#566070',font:{size:9,family:'IBM Plex Mono'}}}},cutout:'55%'}});
+        } else {
+          new Chart(canvas,{type:vc.type,data:{labels,datasets:[{label:vc.title,data:vals,backgroundColor:COLORS.map(c=>c+'88'),borderColor:COLORS,borderWidth:2,borderRadius:vc.type==='bar'?4:0,tension:.4,fill:false,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:true,animation:{duration:600},plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}},y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}}}}});
+        }
+      });
+    }
+
+    // ── NEXUS v12: Validate AI response numbers ──
+    if (S.verifiedFacts && bubEl) {
+      const validation = validateAIResponse(reply, S.verifiedFacts);
+      if (validation.warnings.length > 0) {
+        const badge = document.createElement('div');
+        badge.className = 'validation-warn';
+        badge.innerHTML = `⚠️ <strong>${validation.warnings.length} number(s)</strong> in this analysis could not be cross-checked against your data. Verified charts above are always accurate.`;
+        bubEl.insertBefore(badge, bubEl.firstChild);
+      }
+    }
+
     // Confidence card + follow-up chips
     if(S.confidenceData&&S.messages.filter(m=>m.role==='assistant').length<=2)showConfidenceCard();
     showFollowUpChips(reply);
@@ -2256,11 +2563,15 @@ function addTyp(){
   const id='t'+Date.now();
   const r=document.createElement('div');
   r.className='mrow';r.id=id;
+
   const phases=['Reading your data…','Running statistical analysis…','Detecting anomalies…','Generating charts…','Building insights…','Finalizing report…'];
   let pi=0;
+
   r.innerHTML=`<div class="av ai">NX</div><div class="bub ai nx-analyzing-bub">
     <div class="nx-orb-wrap">
-      <div class="nx-orb-scene"><canvas class="nx-orb-canvas" id="orb-${id}" width="72" height="72"></canvas></div>
+      <div class="nx-orb-scene">
+        <canvas class="nx-orb-canvas" id="orb-${id}" width="72" height="72"></canvas>
+      </div>
       <div class="nx-orb-info">
         <div class="nx-orb-title">NEXUS is analyzing</div>
         <div class="nx-orb-phase" id="phase-${id}">${phases[0]}</div>
@@ -2268,7 +2579,11 @@ function addTyp(){
       </div>
     </div>
   </div>`;
-  chat.appendChild(r); chat.scrollTop=chat.scrollHeight;
+
+  chat.appendChild(r);
+  chat.scrollTop=chat.scrollHeight;
+
+  // Animate phase text
   const phaseEl=document.getElementById('phase-'+id);
   const barEl=document.getElementById('bar-'+id);
   const phaseTimer=setInterval(()=>{
@@ -2277,103 +2592,169 @@ function addTyp(){
     if(barEl)barEl.style.width=Math.min(90,(pi+1)*(90/phases.length))+'%';
   },1400);
   r._phaseTimer=phaseTimer;
+
+  // 3D Orb with WebGL
   const canvas=document.getElementById('orb-'+id);
-  if(canvas&&canvas.getContext){ try{ startOrb(canvas); }catch(e){} }
+  if(canvas&&canvas.getContext){
+    try{ startOrb(canvas); }catch(e){}
+  }
+
   return id;
 }
+function removeTyp(id){
+  const el=document.getElementById(id);
+  if(el){if(el._phaseTimer)clearInterval(el._phaseTimer);el.remove();}
+}
 
+// ── 3D ORB RENDERER ──
 function startOrb(canvas){
   const gl=canvas.getContext('webgl',{antialias:true,alpha:true});
   if(!gl)return;
   gl.clearColor(0,0,0,0);
+
   const vsrc=`attribute vec3 aP;attribute vec3 aN;uniform mat4 uMV;uniform mat4 uP;uniform float uT;
 varying vec3 vN;varying vec3 vP;varying float vD;
 void main(){
   float noise=sin(aP.x*4.+uT)*0.08+sin(aP.y*3.+uT*1.3)*0.07+sin(aP.z*5.+uT*0.9)*0.06;
-  vec3 disp=aP+aN*noise; vN=aN;vP=disp;vD=noise;
+  vec3 disp=aP+aN*noise;
+  vN=aN;vP=disp;vD=noise;
   gl_Position=uP*uMV*vec4(disp,1.);
 }`;
-  const fsrc=`precision mediump float; varying vec3 vN;varying vec3 vP;varying float vD; uniform float uT;
+  const fsrc=`precision mediump float;
+varying vec3 vN;varying vec3 vP;varying float vD;
+uniform float uT;
 void main(){
-  vec3 light=normalize(vec3(0.5,1.,0.8)); float d=max(dot(normalize(vN),light),0.);
-  float rim=1.-max(dot(normalize(-vP),normalize(vN)),0.); rim=pow(rim,2.5);
-  vec3 c1=vec3(0.48,0.22,0.98); vec3 c2=vec3(0.13,0.53,0.96); vec3 c3=vec3(0.2,0.85,0.62);
-  float t=sin(uT*0.4+vP.y*2.)*0.5+0.5; float t2=cos(uT*0.3+vP.x*2.)*0.5+0.5;
-  vec3 col=mix(mix(c1,c2,t),c3,t2*0.4); col=col*(0.4+d*0.6)+vec3(rim*0.6); col+=vec3(vD*0.3);
+  vec3 light=normalize(vec3(0.5,1.,0.8));
+  float d=max(dot(normalize(vN),light),0.);
+  float rim=1.-max(dot(normalize(-vP),normalize(vN)),0.);
+  rim=pow(rim,2.5);
+  vec3 c1=vec3(0.48,0.22,0.98);
+  vec3 c2=vec3(0.13,0.53,0.96);
+  vec3 c3=vec3(0.2,0.85,0.62);
+  float t=sin(uT*0.4+vP.y*2.)*0.5+0.5;
+  float t2=cos(uT*0.3+vP.x*2.)*0.5+0.5;
+  vec3 col=mix(mix(c1,c2,t),c3,t2*0.4);
+  col=col*(0.4+d*0.6)+vec3(rim*0.6);
+  col+=vec3(vD*0.3);
   gl_FragColor=vec4(col,0.92);
 }`;
+
   function mkShader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
-  const prog=gl.createProgram(); gl.attachShader(prog,mkShader(gl.VERTEX_SHADER,vsrc)); gl.attachShader(prog,mkShader(gl.FRAGMENT_SHADER,fsrc));
-  gl.linkProgram(prog); gl.useProgram(prog);
+  const prog=gl.createProgram();
+  gl.attachShader(prog,mkShader(gl.VERTEX_SHADER,vsrc));
+  gl.attachShader(prog,mkShader(gl.FRAGMENT_SHADER,fsrc));
+  gl.linkProgram(prog);gl.useProgram(prog);
+
+  // Generate sphere geometry
   const res=32;const verts=[];const norms=[];const idx=[];
   for(let lat=0;lat<=res;lat++){
     const theta=lat*Math.PI/res;
-    for(let lon=0;lon<res;lon++){ // Corrected loop condition for lon
-      const phi=lon*2*Math.PI/res; const x=Math.sin(theta)*Math.cos(phi); const y=Math.cos(theta); const z=Math.sin(theta)*Math.sin(phi);
+    for(let lon=0;lon<=res;lon++){
+      const phi=lon*2*Math.PI/res;
+      const x=Math.sin(theta)*Math.cos(phi);
+      const y=Math.cos(theta);
+      const z=Math.sin(theta)*Math.sin(phi);
       verts.push(x,y,z);norms.push(x,y,z);
     }
   }
-  for(let lat=0;lat<res;lat++){ for(let lon=0;lon<res;lon++){ const a=lat*(res+1)+lon; idx.push(a,a+1,a+res+1,a+1,a+res+2,a+res+1); } }
+  for(let lat=0;lat<res;lat++){
+    for(let lon=0;lon<res;lon++){
+      const a=lat*(res+1)+lon;
+      idx.push(a,a+1,a+res+1,a+1,a+res+2,a+res+1);
+    }
+  }
+
   const vBuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vBuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);
   const nBuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,nBuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(norms),gl.STATIC_DRAW);
   const iBuf=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuf);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),gl.STATIC_DRAW);
-  const aP=gl.getAttribLocation(prog,'aP'); const aN=gl.getAttribLocation(prog,'aN'); const uMV=gl.getUniformLocation(prog,'uMV'); const uP_=gl.getUniformLocation(prog,'uP'); const uT=gl.getUniformLocation(prog,'uT');
-  function mat4Perspective(fov,aspect,near,far){ const f=1/Math.tan(fov/2);const r=1/(near-far); return[f/aspect,0,0,0, 0,f,0,0, 0,0,(near+far)*r,-1, 0,0,2*near*far*r,0]; }
-  function mat4LookAt(t){ const c=Math.cos(t),s=Math.sin(t); return[c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,-2.2,1]; }
-  const proj=mat4Perspective(0.8,1,0.1,10); let raf,startT=Date.now();
+
+  const aP=gl.getAttribLocation(prog,'aP');
+  const aN=gl.getAttribLocation(prog,'aN');
+  const uMV=gl.getUniformLocation(prog,'uMV');
+  const uP_=gl.getUniformLocation(prog,'uP');
+  const uT=gl.getUniformLocation(prog,'uT');
+
+  function mat4Perspective(fov,aspect,near,far){
+    const f=1/Math.tan(fov/2);const r=1/(near-far);
+    return[f/aspect,0,0,0, 0,f,0,0, 0,0,(near+far)*r,-1, 0,0,2*near*far*r,0];
+  }
+  function mat4LookAt(t){
+    const c=Math.cos(t),s=Math.sin(t);
+    return[c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,-2.2,1];
+  }
+
+  const proj=mat4Perspective(0.8,1,0.1,10);
+  let raf,startT=Date.now();
+
   function draw(){
-    raf=requestAnimationFrame(draw); const t=(Date.now()-startT)/1000;
-    gl.viewport(0,0,72,72); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-    const mv=mat4LookAt(t*0.4); gl.uniformMatrix4fv(uMV,false,mv); gl.uniformMatrix4fv(uP_,false,proj); gl.uniform1f(uT,t);
-    gl.bindBuffer(gl.ARRAY_BUFFER,vBuf); gl.enableVertexAttribArray(aP);gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
-    gl.bindBuffer(gl.ARRAY_BUFFER,nBuf); gl.enableVertexAttribArray(aN);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,0,0);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuf); gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0);
+    raf=requestAnimationFrame(draw);
+    const t=(Date.now()-startT)/1000;
+    gl.viewport(0,0,72,72);
+    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+    gl.enable(gl.DEPTH_TEST);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+
+    const mv=mat4LookAt(t*0.4);
+    gl.uniformMatrix4fv(uMV,false,mv);
+    gl.uniformMatrix4fv(uP_,false,proj);
+    gl.uniform1f(uT,t);
+
+    gl.bindBuffer(gl.ARRAY_BUFFER,vBuf);
+    gl.enableVertexAttribArray(aP);gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,nBuf);
+    gl.enableVertexAttribArray(aN);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuf);
+    gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0);
   }
   draw();
-  const obs=new MutationObserver(()=>{ if(!document.contains(canvas)){cancelAnimationFrame(raf);gl.getExtension('WEBGL_lose_context')?.loseContext();obs.disconnect();} });
-  obs.observe(document.body,{childList:true,subtree:true});
-}
 
-function removeTyp(id){ const el=document.getElementById(id); if(el){if(el._phaseTimer)clearInterval(el._phaseTimer);el.remove();} }
-function copyBub(btn){navigator.clipboard.writeText(btn.closest('.bub').innerText.replace(/⎘ Copy.*$/s,'').trim()).then(()=>toast('✅ Copied!'));}
-
-function renderContent(text){
-  const pc=[]; let html = '';
-  if (S.verifiedCharts && S.verifiedCharts.length > 0 && !S.messages.some(m => m.role === 'assistant')) {
-     html += '<div class="sec-div"><span>📊 VERIFIED ENGINE CHARTS</span></div><div class="verified-charts-grid">';
-     S.verifiedCharts.forEach(c => {
-       const id = 'v' + (++S.cCount); pc.push({ id, type: c.type, title: c.title, data: c.data, verified: true });
-       html += `<div class="chart-card verified" id="${id}"><div class="chart-lbl"><span>✅ ${esc(c.title)}</span></div><canvas></canvas></div>`;
-     });
-     html += '</div>';
-  }
-  const validation = validateAIResponse(text, S.verifiedFacts);
-  if (validation.warnings.length > 0) html += `<div class="val-badge warn">⚠️ ${validation.warnings.length} numbers could not be verified. Review carefully.</div>`;
-  else if (text.length > 100) html += `<div class="val-badge ok">✅ All critical numbers JS-verified.</div>`;
-
-  // 1. Strict Chart Normalizer (Prevents word mangling)
-  text = text.replace(/\[(?:CHART|ART|CH):?(bar|line|pie|doughnut|comparison|trend|of|\|)?\s*\|\s*([^|]*?)\s*\|/gi, (m, type, title) => {
-    const t = type && type !== '|' ? type.toLowerCase() : 'bar'; return `[CHART:${t}|${title||''}|`;
+  // Stop when element removed
+  const observer=new MutationObserver(()=>{
+    if(!document.contains(canvas)){cancelAnimationFrame(raf);gl.getExtension('WEBGL_lose_context')?.loseContext();observer.disconnect();}
   });
-  // 2. Main Chart Parser (Handles nested JSON brackets)
-  text = text.replace(/\[CHART:([\w|]*)\|(.*?)\|(\[[\s\S]*?\])\]/gi, (m, type, title, json) => {
+  observer.observe(document.body,{childList:true,subtree:true});
+}
+function removeTyp(id){const el=document.getElementById(id);if(el)el.remove();}
+function copyBub(btn){navigator.clipboard.writeText(btn.closest('.bub').innerText.replace(/⎘ Copy.*$/s,'').trim()).then(()=>toast('✅ Copied!')).catch(()=>{});}
+function renderContent(text){
+  const pc=[];
+  // ULTRA-RESILIENT Chart & KPI Matcher
+  // 1. Standardize weird AI tags first
+  text = text.replace(/\[?(?:CHART|ART|CH)(bar|line|pie|doughnut|comparison|trend|of)?\]?:?\s*([\w\s]+)?\|/gi, (m, type, title) => {
+    const t = type || 'bar';
+    return `[CHART:${t}|${title||''}|`;
+  });
+  
+  // 2. Final Parser
+  text=text.replace(/\[CHART:([\w]*)\|(.*?)\|([\s\S]*?)\]/gi,(m,type,title,json)=>{
     try{
-      let t = type.toLowerCase() || 'bar'; if(t.includes('pie')) t='doughnut'; if(t.includes('trend')) t='line';
-      let cj = json.trim(); if(!cj.startsWith('[')) cj = '[' + cj; if(!cj.endsWith(']')) cj = cj + ']';
-      const data=JSON.parse(cj); const id='c'+(++S.cCount); pc.push({id,type:t,title:title||'Analysis Chart',data});
-      return `<div class="chart-card ai-gen" id="${id}"><div class="chart-lbl"><span>🔸 ${esc(title||'AI-Generated Chart')}</span><span class="unv-tag">Unverified</span></div><canvas></canvas></div>`;
+      let t = type.toLowerCase() || 'bar';
+      if(t.includes('pie')) t='doughnut';
+      if(t.includes('trend')) t='line';
+      
+      // Clean JSON string aggressively
+      let cj = json.trim();
+      if(!cj.startsWith('[')) cj = '[' + cj;
+      if(!cj.endsWith(']')) cj = cj + ']';
+      cj = cj.replace(/(\d+),(\d+)/g, '$1$2').replace(/\$([0-9.]+)/g, '$1').replace(/:(\s*)?(\$)?([0-9.MK]+)/g, (match, s, dollar, val)=>{
+        let v = val.replace(/M/i, '000000').replace(/K/i, '000');
+        return ': ' + (parseFloat(v) || 0);
+      });
+
+      const data=JSON.parse(cj);
+      const id='c'+(++S.cCount);
+      pc.push({id,type:t,title:title||'Analysis Chart',data});
+      return `<div class="chart-card" id="${id}"><div class="chart-lbl"><span>${esc(title||'Analysis Chart')}</span><div style="display:flex;align-items:center;gap:4px"><div class="chart-type-tabs"><span class="ct on" data-t="bar" onclick="swChType('${id}','bar',this)">Bar</span><span class="ct" data-t="line" onclick="swChType('${id}','line',this)">Line</span><span class="ct" data-t="doughnut" onclick="swChType('${id}','doughnut',this)">Pie</span></div><span class="chart-save-btn" onclick="saveOneChart('${id}')">⬇</span></div></div><canvas></canvas></div>`;
     }catch(e){ return m; }
   });
-  const kpis=[]; text=text.replace(/\[KPI:\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(up|down|neutral)\]/gi,(m,lbl,val,delta,dir)=>{
-    kpis.push(`<div class="kpi-card"><div class="kpi-label">${esc(lbl)}</div><div class="kpi-value">${esc(val)}</div><div class="kpi-delta ${dir}">${dir==='up'?'▲':dir==='down'?'▼':'─'} ${esc(delta)}</div></div>`);
-    return '';
-  });
-  const lines=text.split('\n'); if(kpis.length) html += `<div class="kpi-grid">${kpis.join('')}</div>`;
-  let i=0;
+  const kpis=[];
+  text=text.replace(/\[KPI:(.*?)\|(.*?)\|(.*?)\|(up|down|neutral)\]/g,(m,lbl,val,delta,dir)=>{kpis.push(`<div class="kpi-card"><div class="kpi-label">${esc(lbl)}</div><div class="kpi-value">${esc(val)}</div><div class="kpi-delta ${dir}">${dir==='up'?'▲':dir==='down'?'▼':'─'} ${esc(delta)}</div></div>`);return '';});
+  const lines=text.split('\n');let html=kpis.length?`<div class="kpi-grid">${kpis.join('')}</div>`:'';let i=0;
   while(i<lines.length){
     const l=lines[i];
     if(/^[═━]{2,}/.test(l)){html+=`<div class="sec-div"><span>${l.replace(/[═━]/g,'').trim()||'─'}</span></div>`;}
-    else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){const vt=l.replace(/^◆\s*/,'').trim();html+=`<div class="verdict-box">${vt||'NEXUS VERDICT'}</div>`;}
+    else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){const vt=l.replace(/^◆\s*/,'').trim();html+=`<div class="verdict-box">◆ ${vt||'NEXUS VERDICT'}</div>`;}
     else if(/^▶/.test(l)){html+=`<div class="layer-hdr"><span class="layer-arrow">▶</span><span>${fmt(l.replace(/^▶\s*/,''))}</span></div>`;}
     else if(/^\*\*[^*]+:\*\*$/.test(l.trim())||/^## /.test(l)){html+=`<div class="sub-hdr">${fmt(l.replace(/^\*\*/,'').replace(/\*\*$/,'').replace(/^## /,''))}</div>`;}
     else if(l.trimStart().startsWith('|')){
@@ -2403,7 +2784,7 @@ function showWelcome(){
     setTimeout(()=>setSugAndSend('Analyze this 6-month P&L completely — revenue trends, profit margins, best and worst months, 3 specific actions to improve profitability. Generate 3 charts.'),400);
   };
   const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Free · ~20 seconds · 12 months of data</span></div>` : '';
-  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v11 · AI DATA ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSug('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSug('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
+  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v12 · ELITE AI ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSug('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSug('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
 }
 
 // ── FILE UPLOAD ──
@@ -2421,36 +2802,48 @@ function processArr(rows,fname,isSecond){
   const csv={hdrs,data};
   if(isSecond){S.csv2=csv;}else{S.csv=csv;}
 
-  // 1. Identify Key Columns
-  const revIdx = fuzzyFindCol(hdrs, ['revenue', 'sales', 'turnover', 'amount', 'total']);
-  const unitIdx = fuzzyFindCol(hdrs, ['unit', 'qty', 'quantity', 'count', 'vol']);
-  const priceIdx = fuzzyFindCol(hdrs, ['price', 'rate', 'mrp', 'sp']);
-  const dateIdx = fuzzyFindCol(hdrs, ['date', 'month', 'year', 'time', 'period']);
+  // ═══ LAYER 1: JS PRE-COMPUTATION — ALL ROWS (truly unlimited) ═══
+  const facts={};
+  const numCols=[];
+  const catCols=[];
 
-  const facts = { rowCount: data.length, colCount: hdrs.length };
-  
-  // 2. Compute Primary Stats
-  if (revIdx >= 0) {
-    const vals = data.map(r => enforceSchema(r[revIdx], 'numeric')).filter(v => v !== null);
-    if (vals.length > 0) {
-      facts.totalRevenue = vals.reduce((a, b) => a + b, 0);
-      facts.avgRevenue = facts.totalRevenue / vals.length;
-      facts.maxRevenue = Math.max(...vals);
-      facts.minRevenue = Math.min(...vals);
-      const sorted = [...vals].sort((a,b)=>a-b);
-      facts.medianRevenue = sorted[Math.floor(sorted.length/2)];
-      const avg = facts.avgRevenue;
-      facts.stdDevRevenue = Math.sqrt(vals.reduce((s,v)=>s+Math.pow(v-avg,2),0)/vals.length);
-      facts.negCount = vals.filter(v=>v<0).length;
-      const q1 = sorted[Math.floor(sorted.length*0.25)] || 0;
-      const q3 = sorted[Math.floor(sorted.length*0.75)] || 0;
-      const iqr = q3 - q1;
-      facts.outlierCount = vals.filter(v => v < q1 - 1.5*iqr || v > q3 + 1.5*iqr).length;
+  hdrs.forEach((h,hi)=>{
+    const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');
+    const nums=vals.map(v=>parseFloat(String(v).replace(/[,₹$%\s]/g,''))).filter(v=>!isNaN(v)&&isFinite(v));
+    if(nums.length>0&&nums.length/vals.length>0.7){
+      numCols.push({h,hi,nums});
+      const sorted=[...nums].sort((a,b)=>a-b);
+      const sum=nums.reduce((a,b)=>a+b,0);
+      const avg=sum/nums.length;
+      const median=sorted[Math.floor(sorted.length/2)];
+      const variance=nums.map(v=>(v-avg)**2).reduce((a,b)=>a+b,0)/nums.length;
+      const std=Math.sqrt(variance);
+      // Top/Bottom 5
+      const top5=[...sorted].reverse().slice(0,5);
+      const bot5=[...sorted].slice(0,5);
+      // IQR outliers
+      const q1=sorted[Math.floor(sorted.length*0.25)];
+      const q3=sorted[Math.floor(sorted.length*0.75)];
+      const iqr=q3-q1;
+      const outlierRows=data.reduce((acc,r,ri)=>{
+        const v=parseFloat(String(r[hi]||'').replace(/[,₹$%\s]/g,''));
+        if(!isNaN(v)&&(v<q1-1.5*iqr||v>q3+1.5*iqr))acc.push({row:ri+2,val:v});
+        return acc;
+      },[]);
+      const negCount=nums.filter(v=>v<0).length;
+      facts[h]={type:'numeric',count:nums.length,sum:sum,avg:avg,median:median,std:std,min:sorted[0],max:sorted[sorted[sorted.length-1]],q1,q3,top5,bot5,outlierCount:outlierRows.length,outlierRows:outlierRows.slice(0,5),negCount};
+    } else {
+      catCols.push({h,hi,vals});
+      const freq={};
+      vals.forEach(v=>{const k=String(v).trim();freq[k]=(freq[k]||0)+1;});
+      const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+      facts[h]={type:'categorical',count:vals.length,unique:new Set(vals).size,top5:sorted.slice(0,5).map(([v,c])=>({val:v,count:c})),missing:data.length-vals.length};
     }
-  }
+  });
 
-  // 3. Duplicate Detection
+  // ═══ DUPLICATE DETECTION — ALL ROWS ═══
   const dups=[];
+  // Find likely ID column
   const idColIdx=hdrs.findIndex(h=>/\bid\b|code|no\b|num\b|cust|invoice|order|sku/i.test(h));
   if(idColIdx>=0){
     const idMap={};
@@ -2464,48 +2857,415 @@ function processArr(rows,fname,isSecond){
       if(rows.length>1)dups.push({id:v,col:hdrs[idColIdx],rows,count:rows.length});
     });
   }
+  // Full row duplicates
+  const rowHash={};
+  const fullRowDups=[];
+  data.forEach((r,ri)=>{
+    const key=r.map(c=>String(c||'').trim()).join('|');
+    if(!key.replace(/\|/g,''))return;
+    if(!rowHash[key])rowHash[key]=[];
+    rowHash[key].push(ri+2);
+  });
+  Object.entries(rowHash).forEach(([,rows])=>{if(rows.length>1)fullRowDups.push(rows);});
 
-  // 4. Formula Mismatch
+  // ═══ FORMULA MISMATCH DETECTION — ALL ROWS ═══
   const mismatches=[];
-  if(revIdx>=0 && unitIdx>=0 && priceIdx>=0){
+  // ── NEXUS v12: FUZZY COLUMN MATCHING (works on real-world files) ──
+  const revIdx  = fuzzyFindCol(hdrs,[/^revenue$/i,/^sales$/i,/^amount$/i,/^total$/i,/total.rev/i,/net.sales/i,/gross.rev/i,/sale.amt/i,/turnover/i,/income/i]);
+  const unitIdx = fuzzyFindCol(hdrs,[/^units?$/i,/^qty$/i,/^quantity$/i,/units.sold/i,/no.of.units/i,/pieces/i,/count/i]);
+  const priceIdx= fuzzyFindCol(hdrs,[/^price$/i,/^rate$/i,/^mrp$/i,/unit.price/i,/selling.price/i,/sp$/i,/cost.price/i,/cp$/i]);
+  const discIdx = fuzzyFindCol(hdrs,[/^discount$/i,/^disc/i,/^rebate/i,/off$/i,/promo/i]);
+  if(revIdx>=0&&unitIdx>=0&&priceIdx>=0){
     data.forEach((r,ri)=>{
-      const r_val = enforceSchema(r[revIdx], 'numeric');
-      const u_val = enforceSchema(r[unitIdx], 'numeric');
-      const p_val = enforceSchema(r[priceIdx], 'numeric');
-      if(r_val!==null && u_val!==null && p_val!==null){
-        const expected = u_val * p_val;
-        if(Math.abs(r_val - expected) > Math.max(1, expected * 0.05)) {
-          mismatches.push({row:ri+2, revenue:r_val, expected, diff: Math.abs(r_val-expected)});
-        }
-      }
+      const rev=parseFloat(String(r[revIdx]||'').replace(/[,₹$\s]/g,''));
+      const units=parseFloat(String(r[unitIdx]||'').replace(/[,\s]/g,''));
+      const price=parseFloat(String(r[priceIdx]||'').replace(/[,₹$\s]/g,''));
+      if(isNaN(rev)||isNaN(units)||isNaN(price))return;
+      const disc=discIdx>=0?parseFloat(String(r[discIdx]||'').replace(/[%\s]/g,''))/100:0;
+      const expected=units*price*(1-(isNaN(disc)?0:disc));
+      const diff=Math.abs(rev-expected);
+      if(diff>Math.max(1,expected*0.02))mismatches.push({row:ri+2,revenue:rev,expected:Math.round(expected),diff:Math.round(diff)});
     });
   }
 
-  // 5. Build Comprehensive Summary for AI
-  let summary = `### NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS\n`;
-  summary += `ROWS: ${facts.rowCount} | COLS: ${facts.colCount}\n`;
-  if(facts.totalRevenue !== undefined) {
-    summary += `Total Revenue: ${fmtN(facts.totalRevenue)}\n`;
-    summary += `Avg Revenue: ${fmtN(facts.avgRevenue)}\n`;
-    summary += `Median Revenue: ${fmtN(facts.medianRevenue)}\n`;
-    summary += `Std Dev: ${fmtN(facts.stdDevRevenue)}\n`;
-    summary += `Outliers: ${facts.outlierCount} | Negatives: ${facts.negCount}\n`;
+  // ═══ GST DETECTION ═══
+  const gstCols=hdrs.filter(h=>/gst|cgst|sgst|igst|tax/i.test(h));
+  let gstSummary='';
+  if(gstCols.length>0){
+    gstSummary='\nGST COLUMNS DETECTED: '+gstCols.join(', ');
+    gstCols.forEach(gc=>{
+      const gcIdx=hdrs.indexOf(gc);
+      const gcFacts=facts[gc];
+      if(gcFacts&&gcFacts.type==='numeric')gstSummary+=`\n  ${gc}: Total=₹${gcFacts.sum.toFixed(2)}, Avg=₹${gcFacts.avg.toFixed(2)}`;
+    });
   }
-  if(dups.length > 0) summary += `⚠️ DUPLICATE IDs: ${dups.length} found.\n`;
-  if(mismatches.length > 0) summary += `⚠️ FORMULA ERROR: ${mismatches.length} rows have revenue mismatch.\n`;
 
-  // Store Results
-  S.verifiedFacts = facts;
-  S.verifiedCharts = generateVerifiedCharts(facts, hdrs, data);
-  S.factsSummary = summary;
-  S.duplicates = dups;
-  S.mismatches = mismatches;
-  S.fileName = fname;
+  // ═══ QUALITY SCORE — ALL ROWS ═══
+  const totalCells=data.length*hdrs.length||1;
+  const filledCells=hdrs.reduce((t,h,hi)=>{
+    return t+data.filter(r=>r[hi]!=null&&String(r[hi]).trim()!=='').length;
+  },0);
+  const qualityScore=Math.round(filledCells/totalCells*100);
 
-  showFOk(fname, facts);
+  // ═══ PEARSON CORRELATION MATRIX ═══
+  let corrMatrix=null;
+  if(typeof ss!=='undefined'&&numCols.length>=2&&numCols.length<=10){
+    corrMatrix={};
+    numCols.forEach(({h:h1,nums:n1})=>{
+      corrMatrix[h1]={};
+      numCols.forEach(({h:h2,nums:n2})=>{
+        if(h1===h2){corrMatrix[h1][h2]=1;return;}
+        try{
+          const len=Math.min(n1.length,n2.length);
+          if(len<3){corrMatrix[h1][h2]=null;return;}
+          corrMatrix[h1][h2]=ss.sampleCorrelation(n1.slice(0,len),n2.slice(0,len));
+        }catch(e){corrMatrix[h1][h2]=null;}
+      });
+    });
+  }
+
+  // ═══ AUTO FORECAST — largest numeric col ═══
+  let forecastSummary='';
+  if(typeof ss!=='undefined'&&numCols.length>0){
+    const mainNum=numCols.reduce((a,b)=>b.nums.length>a.nums.length?b:a);
+    if(mainNum.nums.length>=6){
+      try{
+        const pts=mainNum.nums.slice(-12).map((v,i)=>[i,v]);
+        const reg=ss.linearRegression(pts);
+        const fn=ss.linearRegressionLine(reg);
+        const r2=ss.rSquaredXY(pts,fn);
+        const next3=[(pts.length),(pts.length+1),(pts.length+2)].map(x=>Math.max(0,fn(x)));
+        forecastSummary=`\nFORECAST (${mainNum.h}, linear, R²=${r2.toFixed(2)}): Next 3 periods: ${next3.map(v=>v.toFixed(2)).join(', ')} ${r2>0.7?'[HIGH CONFIDENCE]':r2>0.4?'[MEDIUM CONFIDENCE]':'[LOW CONFIDENCE — weak trend]'}`;
+      }catch(e){}
+    }
+  }
+
+  // ═══ INDIA BENCHMARKS AUTO-DETECT ═══
+  const INDIA_BENCHMARKS={
+    retail:{gross_margin:[25,35],net_margin:[3,8],inventory_turns:[6,12]},
+    pharma:{gross_margin:[18,22],net_margin:[10,15]},
+    fmcg:{gross_margin:[40,55],net_margin:[8,15]},
+    it_services:{gross_margin:[60,75],net_margin:[15,25]},
+    manufacturing:{gross_margin:[15,25],net_margin:[4,10]},
+    ecommerce:{gross_margin:[30,45],net_margin:[-5,5]},
+    saas:{gross_margin:[65,80],net_margin:[10,25]},
+  };
+  let benchmarkHint='';
+  const allText=(hdrs.join(' ')+data.slice(0,20).map(r=>r.join(' ')).join(' ')).toLowerCase();
+  let detectedIndustry=null;
+  if(/pharma|medicine|drug|tablet|capsule/i.test(allText))detectedIndustry='pharma';
+  else if(/software|saas|subscription|mrr|arr/i.test(allText))detectedIndustry='saas';
+  else if(/retail|store|sku|inventory|pos/i.test(allText))detectedIndustry='retail';
+  else if(/manufacture|production|oee|defect/i.test(allText))detectedIndustry='manufacturing';
+  else if(/order|cart|shipping|ecommerce|amazon|flipkart/i.test(allText))detectedIndustry='ecommerce';
+  if(detectedIndustry&&INDIA_BENCHMARKS[detectedIndustry]){
+    benchmarkHint=`\nDETECTED INDUSTRY: ${detectedIndustry.toUpperCase()}\nINDIA BENCHMARKS for ${detectedIndustry}: ${JSON.stringify(INDIA_BENCHMARKS[detectedIndustry])}`;
+  }
+
+  // ═══ BUILD VERIFIED FACTS SUMMARY (sent to AI instead of raw CSV) ═══
+  let summary=`━━━ NEXUS v12 JAVASCRIPT-VERIFIED DATA FACTS ━━━
+FILE: ${fname} | ROWS: ${data.length} | COLS: ${hdrs.length} | QUALITY: ${qualityScore}%
+JAVASCRIPT ENGINE: Processed ALL ${data.length} rows. Fuzzy column matching. Schema validated. Geo normalised.
+AI INSTRUCTION: Use ONLY these numbers. Do NOT recompute. Do NOT estimate. If a metric is not here, say 'not in verified data'.
+
+━━━ COMPUTED COLUMN STATS (ALL ${data.length} ROWS) ━━━\n`;
+
+  hdrs.forEach(h=>{
+    const f=facts[h];
+    if(!f)return;
+    if(f.type==='numeric'){
+      summary+=`${h}: SUM=${fmtN(f.sum)} | AVG=${fmtN(f.avg)} | MEDIAN=${fmtN(f.median)} | MIN=${fmtN(f.min)} | MAX=${fmtN(f.max)} | STD=${fmtN(f.std)} | COUNT=${f.count}`;
+      if(f.negCount>0)summary+=` | ⚠️ ${f.negCount} NEGATIVES`;
+      if(f.outlierCount>0)summary+=` | ⚠️ ${f.outlierCount} OUTLIERS (IQR)`;
+      summary+='\n';
+    } else {
+      summary+=`${h}: CATEGORICAL | UNIQUE=${f.unique} | COUNT=${f.count} | MISSING=${f.missing}`;
+      if(f.top5.length)summary+=` | TOP: ${f.top5.slice(0,3).map(x=>`${x.val}(${x.count})`).join(', ')}`;
+      summary+='\n';
+    }
+  });
+
+  if(dups.length>0){
+    summary+=`\n━━━ DUPLICATE IDs FOUND (JavaScript verified) ━━━\n`;
+    dups.forEach(d=>summary+=`⚠️ ${d.col}="${d.id}" appears ${d.count}x in rows: ${d.rows.join(',')}\n`);
+  }
+  if(fullRowDups.length>0){
+    summary+=`⚠️ ${fullRowDups.length} FULLY DUPLICATE ROWS detected\n`;
+  }
+  if(mismatches.length>0){
+    summary+=`\n━━━ FORMULA MISMATCHES (Revenue ≠ Units×Price) ━━━\n`;
+    mismatches.slice(0,5).forEach(m=>summary+=`⚠️ Row ${m.row}: Revenue=${fmtN(m.revenue)} but Units×Price=${fmtN(m.expected)} (diff=${fmtN(m.diff)})\n`);
+    if(mismatches.length>5)summary+=`...and ${mismatches.length-5} more\n`;
+  }
+  if(corrMatrix){
+    summary+='\n━━━ CORRELATION MATRIX (Pearson, JS-computed) ━━━\n';
+    const numHdrs=numCols.map(c=>c.h);
+    numHdrs.forEach(h1=>{
+      const row=numHdrs.map(h2=>{const v=corrMatrix[h1]?.[h2];return v!=null?v.toFixed(2):'N/A';}).join(' | ');
+      summary+=`${h1}: ${row}\n`;
+    });
+  }
+  if(forecastSummary)summary+=forecastSummary+'\n';
+  if(gstSummary)summary+=gstSummary+'\n';
+  if(benchmarkHint)summary+=benchmarkHint+'\n';
+  // ── NEXUS v12: Add schema + timestamp violations to AI context ──
+  const _schemaV = enforceSchema(hdrs, data);
+  const _tsV = validateTimestamps(hdrs, data);
+  if(_schemaV.length>0){
+    summary+=`\n━━━ SCHEMA VIOLATIONS (JS-detected) ━━━\n`;
+    _schemaV.forEach(v=>summary+=`⚠️ ${v.col}: ${v.type}${v.sample?' — sample: '+v.sample:''}${v.fix?' — fix: '+v.fix:''}\n`);
+  }
+  if(_tsV.length>0){
+    summary+=`\n━━━ TIMESTAMP ISSUES (JS-detected) ━━━\n`;
+    _tsV.forEach(t=>summary+=`⚠️ ${t.col}: ${t.invalid} invalid dates (${t.pct}% fail rate)${t.mixed?' MIXED FORMATS: '+t.formats.join(', '):''}\n`);
+  }
+  summary+=`\n━━━ DATA SAMPLE (first 8 rows for context) ━━━\n${hdrs.join(',')}\n`;
+  data.slice(0,8).forEach(r=>summary+=r.map(c=>String(c||'').trim()).join(',')+'\n');
+
+  // Store
+  if(isSecond){
+    S.verifiedFacts2=facts;
+    S.factsSummary2=summary.slice(0,25000);
+  } else {
+    S.verifiedFacts=facts;
+    S.factsSummary=summary.slice(0,25000); // expanded for 100x analysis depth
+    S.duplicates=dups;
+    S.formulaMismatches=mismatches;
+    S.correlationMatrix=corrMatrix;
+
+    // Build anomaly facts for injection
+    const anomFacts=[];
+    hdrs.forEach(h=>{
+      const f=facts[h];
+      if(!f)return;
+      if(f.type==='numeric'){
+        if(f.outlierRows&&f.outlierRows.length>0)anomFacts.push(`${h}: ${f.outlierCount} outliers (IQR). Rows: ${f.outlierRows.map(o=>`row${o.row}=val${o.val}`).join(',')}`);
+        if(f.negCount>0&&/revenue|sales|price|profit/i.test(h))anomFacts.push(`⚠️ ${h}: ${f.negCount} negative values in revenue/sales column`);
+      } else {
+        if(f.missing>0)anomFacts.push(`${h}: ${f.missing} missing values (${Math.round(f.missing/data.length*100)}% of rows)`);
+      }
+    });
+    if(dups.length>0)anomFacts.push(`DUPLICATE IDs: ${dups.length} duplicate ID values found`);
+    if(mismatches.length>0)anomFacts.push(`FORMULA MISMATCH: ${mismatches.length} rows where Revenue ≠ Units×Price`);
+
+    // ── NEXUS v12: Schema + Timestamp validation ──
+    const schemaViolations = enforceSchema(hdrs, data);
+    const tsIssues = validateTimestamps(hdrs, data);
+    schemaViolations.forEach(v => anomFacts.push(`SCHEMA: ${v.col} — ${v.type}: ${v.sample||v.fix||''}`));
+    tsIssues.forEach(t => anomFacts.push(`TIMESTAMP: ${t.col} — ${t.invalid} invalid dates (${t.pct}%)${t.mixed?' MIXED FORMATS:'+t.formats.join(','):''}`));
+    S.schemaViolations = schemaViolations;
+    S.tsIssues = tsIssues;
+
+    // ── NEXUS v12: Geo normalisation ──
+    const geoColIdx = hdrs.findIndex(h => /city|state|region|location|geo|country|district|zone/i.test(h));
+    if (geoColIdx >= 0 && facts[hdrs[geoColIdx]]) {
+      const gf = facts[hdrs[geoColIdx]];
+      if (gf.top5) gf.top5 = gf.top5.map(x => ({...x, val: normalizeGeo(x.val)}));
+    }
+
+    // ── NEXUS v12: Generate verified charts immediately ──
+    S.verifiedCharts = generateVerifiedCharts(facts, hdrs, data);
+
+    S.anomalyFacts=anomFacts.join('\n');
+
+    // Confidence data
+    S.confidenceData={
+      qualityScore,
+      totalRows:data.length,
+      dupCount:dups.length+fullRowDups.length,
+      mismatchCount:mismatches.length,
+      missingCols:hdrs.filter(h=>facts[h]&&facts[h].type==='categorical'&&facts[h].missing>0).length,
+      level:qualityScore>=85&&dups.length===0&&mismatches.length===0?'HIGH':qualityScore>=65?'MEDIUM':'LOW'
+    };
+
+    // Audit log entry
+    S.auditLog.push({
+      ts:new Date().toISOString(),
+      file:fname,
+      rows:data.length,
+      cols:hdrs.length,
+      quality:qualityScore,
+      dups:dups.length,
+      mismatches:mismatches.length
+    });
+    try{localStorage.setItem('nx_audit',JSON.stringify(S.auditLog.slice(-50)));}catch(e){}
+  }
+
+  // Update S.fileData (legacy fallback, no longer primary)
+  S.fileData='[FACTS COMPUTED — see S.factsSummary]';
+  S.fileName=fname;
+
+  showFOk(fname,{rows:data.length,cols:hdrs.length,hdrs,data,facts,qualityScore,dups,mismatches,isSecond});
+  if(!isSecond){
+    detectAnom(hdrs,data,facts);
+    // Show schema violations if any
+    if(S.schemaViolations&&S.schemaViolations.length>0){
+      const sb=document.getElementById('schemaBanner');
+      if(sb){
+        sb.classList.add('show');
+        sb.innerHTML=`<div class="schema-title">⚠️ SCHEMA ISSUES DETECTED</div>`+
+          S.schemaViolations.map(v=>`<div class="schema-tag">• ${esc(v.col)}: ${esc(v.type)}${v.sample?' (e.g. '+esc(v.sample)+')':''}</div>`).join('');
+      }
+    }
+    // Show timestamp issues if any
+    if(S.tsIssues&&S.tsIssues.length>0){
+      S.tsIssues.forEach(t=>toast(`⚠️ Date column "${t.col}": ${t.invalid} invalid dates${t.mixed?' — mixed formats':''}`,true));
+    }
+    // Update data health bar
+    const hb=document.getElementById('healthBar');
+    if(hb&&S.confidenceData){
+      hb.classList.add('show');
+      const lvl=S.confidenceData.level;
+      const dot=hb.querySelector('.health-dot');
+      if(dot){dot.className='health-dot '+(lvl==='HIGH'?'green':lvl==='MEDIUM'?'amber':'red');}
+      const htxt=hb.querySelector('.health-txt');
+      if(htxt)htxt.textContent=`Data Health: ${lvl} — ${S.confidenceData.totalRows.toLocaleString('en-IN')} rows processed`;
+      const hscore=hb.querySelector('.health-score');
+      if(hscore)hscore.textContent=`${S.confidenceData.qualityScore}% quality`;
+    }
+  }
 }
 
 // Helper: format number Indian style
+
+// ══ NEXUS v12 — FUZZY COLUMN MATCHER ══
+function fuzzyFindCol(hdrs, patterns) {
+  // Pass 1: exact regex match
+  let idx = hdrs.findIndex(h => patterns.some(p => p.test(h.trim())));
+  if (idx >= 0) return idx;
+  // Pass 2: any keyword appears anywhere in col name (normalised)
+  const norm = s => s.toLowerCase().replace(/[^a-z0-9]/g,'');
+  const keywords = patterns.map(p => p.source.replace(/[\^$.*+?()[\]{}|]/g,'').split('|')).flat().map(norm);
+  return hdrs.findIndex(h => keywords.some(k => norm(h).includes(k)));
+}
+
+// ══ NEXUS v12 — TIMESTAMP VALIDATOR ══
+function validateTimestamps(hdrs, data) {
+  const issues = [];
+  hdrs.forEach((h, ci) => {
+    if (!/date|time|stamp|created|updated|period|month|year|week/i.test(h)) return;
+    let invalid = 0, formats = new Set();
+    data.forEach(row => {
+      const v = String(row[ci]||'').trim();
+      if (!v) return;
+      if (/^\d{4}-\d{2}-\d{2}/.test(v)) formats.add('YYYY-MM-DD');
+      else if (/^\d{2}\/\d{2}\/\d{4}/.test(v)) formats.add('DD/MM/YYYY');
+      else if (/^\d{2}-\d{2}-\d{4}/.test(v)) formats.add('DD-MM-YYYY');
+      else if (/^[A-Za-z]{3}[\s-]\d{4}/.test(v)) formats.add('MON-YYYY');
+      else if (/^[A-Za-z]{3}[\s-]\d{2}$/.test(v)) formats.add('MON-YY');
+      if (isNaN(new Date(v).getTime()) && !/^[A-Za-z]/.test(v)) invalid++;
+    });
+    if (invalid > 0 || formats.size > 1)
+      issues.push({col:h, invalid, pct:Math.round(invalid/data.length*100), mixed:formats.size>1, formats:[...formats]});
+  });
+  return issues;
+}
+
+// ══ NEXUS v12 — SCHEMA ENFORCER ══
+function enforceSchema(hdrs, data) {
+  const violations = [];
+  hdrs.forEach((h, hi) => {
+    const vals = data.map(r => r[hi]).filter(v => v!=null && String(v).trim()!=='');
+    if (/price|amount|revenue|salary|cost|value|rate|income|profit|loss|sales/i.test(h)) {
+      const bad = vals.filter(v => isNaN(parseFloat(String(v).replace(/[,₹$%\s]/g,''))));
+      if (bad.length) violations.push({col:h, type:'TYPE_MISMATCH', sample:bad.slice(0,2).join(', '), count:bad.length});
+    }
+    if (/discount|disc|rebate/i.test(h)) {
+      const nums = vals.map(v=>parseFloat(String(v).replace(/[%\s]/g,''))).filter(v=>!isNaN(v));
+      if (vals.some(v=>String(v).includes('%')) || nums.every(v=>v>1))
+        violations.push({col:h, type:'DISCOUNT_AS_PERCENT', fix:'divide_by_100'});
+    }
+  });
+  return violations;
+}
+
+// ══ NEXUS v12 — GEO NORMALIZER ══
+const GEO_MAP = {
+  'new delhi':'Delhi','nd':'Delhi','ndl':'Delhi','in-del':'Delhi',
+  'bombay':'Mumbai','in-bom':'Mumbai','mum':'Mumbai',
+  'bangalore':'Bengaluru','bengaluru':'Bengaluru','blr':'Bengaluru','in-blr':'Bengaluru',
+  'madras':'Chennai','in-maa':'Chennai','chn':'Chennai',
+  'calcutta':'Kolkata','in-ccu':'Kolkata','kol':'Kolkata',
+  'hyderabad':'Hyderabad','hyd':'Hyderabad','in-hyd':'Hyderabad',
+  'pune':'Pune','pun':'Pune','in-pun':'Pune',
+  'ahmedabad':'Ahmedabad','amd':'Ahmedabad','in-amd':'Ahmedabad',
+  'jaipur':'Jaipur','jp':'Jaipur','in-jp':'Jaipur',
+  'unknown':'Unknown','n/a':'Unknown','na':'Unknown','null':'Unknown',''  :'Unknown'
+};
+function normalizeGeo(val) {
+  if (!val) return 'Unknown';
+  const k = String(val).toLowerCase().trim();
+  return GEO_MAP[k] || val;
+}
+
+// ══ NEXUS v12 — AI RESPONSE VALIDATOR ══
+function validateAIResponse(text, verifiedFacts) {
+  if (!verifiedFacts) return {warnings:[]};
+  const warnings = [];
+  // Build set of verified numbers (within 5% tolerance check)
+  const verified = [];
+  Object.values(verifiedFacts).forEach(f => {
+    if (f.type==='numeric') {
+      [f.sum,f.avg,f.min,f.max,f.median].forEach(v => { if(v!=null&&!isNaN(v)) verified.push(v); });
+    }
+  });
+  // Extract significant numbers from AI text
+  const pat = /[₹\$]?([\d,]+\.?\d*)\s*(Cr|L|K|crore|lakh|thousand)?/gi;
+  let m;
+  while ((m=pat.exec(text))!==null) {
+    let v = parseFloat(m[1].replace(/,/g,''));
+    const u = (m[2]||'').toLowerCase();
+    if (u==='cr'||u==='crore') v*=10000000;
+    if (u==='l'||u==='lakh') v*=100000;
+    if (u==='k'||u==='thousand') v*=1000;
+    if (v < 100) continue; // ignore small numbers
+    const matched = verified.some(ref => ref>0 && Math.abs(ref-v)/ref < 0.08);
+    if (!matched && verified.length > 0) warnings.push(v);
+  }
+  return {warnings: [...new Set(warnings)].slice(0,5)};
+}
+
+// ══ NEXUS v12 — VERIFIED CHART GENERATOR ══
+// Generates charts FROM S.verifiedFacts — zero AI involvement
+function generateVerifiedCharts(facts, hdrs, csvData) {
+  const charts = [];
+  const numCols = Object.entries(facts).filter(([,f])=>f.type==='numeric');
+  const catCols = Object.entries(facts).filter(([,f])=>f.type==='categorical'&&f.top5&&f.top5.length>1);
+
+  // Chart 1: Numeric column sums comparison
+  if (numCols.length >= 2) {
+    charts.push({id:'vc1', type:'bar', title:'Column Totals — JS Verified',
+      data: numCols.slice(0,8).map(([h,f])=>({name:h.slice(0,14), val:Math.round(f.sum)})),
+      verified:true});
+  }
+  // Chart 2: Top category distribution
+  if (catCols.length > 0) {
+    const [h,f] = catCols[0];
+    charts.push({id:'vc2', type:'doughnut', title:`${h} Distribution — Verified`,
+      data: f.top5.slice(0,6).map(x=>({name:x.val.slice(0,12), val:x.count})),
+      verified:true});
+  }
+  // Chart 3: Time trend if time column exists
+  const timeIdx = hdrs.findIndex(h=>/month|date|week|quarter|period|year/i.test(h));
+  if (timeIdx>=0 && numCols.length>0 && csvData) {
+    const [numH] = numCols[0];
+    const numIdx = hdrs.indexOf(numH);
+    const td = csvData.slice(0,20).map(r=>({
+      name:String(r[timeIdx]||'').slice(0,10),
+      val:parseFloat(String(r[numIdx]||'0').replace(/[,₹$]/g,''))||0
+    })).filter(d=>d.name&&d.val);
+    if (td.length>=3) charts.push({id:'vc3', type:'line', title:`${numH} Trend — Verified`, data:td, verified:true});
+  }
+  // Chart 4: Second category if exists
+  if (catCols.length > 1) {
+    const [h2,f2] = catCols[1];
+    charts.push({id:'vc4', type:'bar', title:`${h2} Breakdown — Verified`,
+      data: f2.top5.slice(0,6).map(x=>({name:x.val.slice(0,12), val:x.count})),
+      verified:true});
+  }
+  return charts;
+}
+
 function fmtN(n){
   if(n==null||isNaN(n))return'N/A';
   if(Math.abs(n)>=10000000)return'₹'+(n/10000000).toFixed(2)+'Cr';
@@ -2621,7 +3381,7 @@ function showFOk(fname,info){
       <div class="dc-stat"><div class="dc-sv" style="color:#a78bfa">${numCols}</div><div class="dc-sl">Numeric</div></div>
       <div class="dc-stat"><div class="dc-sv" style="color:#f59e0b">${quality}%</div><div class="dc-sl">Quality</div></div>
     </div>
-    <div class="dc-sec">Quick Suggestions</div>
+    <div class="dc-sec">💡 Quick Suggestions</div>
     <div class="dc-sugs">${sugs.slice(0,5).map(s=>`<span class="dc-sug" onclick="setSug('${s.replace(/['"<>]/g,'')}');document.getElementById('dcCard').remove()">${esc(s)}</span>`).join('')}</div>
     <div class="dc-sec">Preview — First ${rows.length} rows</div>
     <div class="dc-tbl-wrap"><table class="dc-tbl"><thead><tr>${cols.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map((_,i)=>`<td>${esc(String(r[i]||''))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
@@ -2640,7 +3400,7 @@ function sendAuto(p){const ta=document.getElementById('userinput');ta.value=p;ta
 
 // ── EXPORTS ──
 function dlBlob(c,f,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=f;a.click();URL.revokeObjectURL(a.href);}
-function saveAsTXT(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');dlBlob('NEXUS v11 Report\n'+new Date().toLocaleString()+'\n'+'═'.repeat(60)+'\n\n'+msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(60)+'\n\n'),'NEXUS-Report-'+Date.now()+'.txt','text/plain');toast('✅ TXT saved!');}
+function saveAsTXT(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');dlBlob('NEXUS v12 Report\n'+new Date().toLocaleString()+'\n'+'═'.repeat(60)+'\n\n'+msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(60)+'\n\n'),'NEXUS-Report-'+Date.now()+'.txt','text/plain');toast('✅ TXT saved!');}
 function saveAsCSV(){if(!S.csv)return toast('No data loaded');dlBlob([S.csv.hdrs.join(','),...S.csv.data.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(','))].join('\n'),'NEXUS-Data-'+Date.now()+'.csv','text/csv');toast('✅ CSV saved!');}
 function saveMarkdown(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');let md='# NEXUS v6 Analysis Report\n\n**Generated:** '+new Date().toLocaleString()+'\n\n---\n\n';msgs.forEach((m,i)=>{md+='## Analysis '+(i+1)+'\n\n'+m.content.replace(/═+/g,'---').replace(/▶ /g,'### ')+'\n\n---\n\n';});dlBlob(md,'NEXUS-Report-'+Date.now()+'.md','text/markdown');toast('✅ Markdown saved!');}
 async function saveChartImages(){const canvases=document.querySelectorAll('.chart-card canvas');if(!canvases.length)return toast('No charts');canvases.forEach((c,i)=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+(i+1)+'.png';a.click();});toast('✅ '+canvases.length+' chart(s) saved!');}
@@ -2681,7 +3441,7 @@ async function exportPDF(){
     toast('✅ PDF with charts saved!');
   }catch(e){console.error(e);toast('⚠️ PDF failed — try Save as TXT instead');}
 }
-function exportExcel(){if(!S.messages.filter(m=>m.role==='assistant').length)return toast('No analysis');try{const wb=XLSX.utils.book_new();const last=S.messages.filter(m=>m.role==='assistant').slice(-1)[0].content;const rows=[];last.split('\n').forEach(l=>{if(l.trimStart().startsWith('|')&&!/^\|[\s\-|]+\|$/.test(l.trim()))rows.push(l.split('|').filter(c=>c.trim()).map(c=>c.trim()));});if(rows.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Tables');const full=[['NEXUS v11 Report — '+new Date().toLocaleString()],[]];S.messages.filter(m=>m.role==='assistant').forEach((m,i)=>{full.push(['ANALYSIS '+(i+1)]);m.content.split('\n').forEach(l=>full.push([l]));full.push([]);});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(full),'Full Report');if(S.csv)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([S.csv.hdrs,...S.csv.data]),'Source Data');XLSX.writeFile(wb,'NEXUS-'+Date.now()+'.xlsx');toast('✅ Excel saved!');}catch(e){toast('Excel failed');}}
+function exportExcel(){if(!S.messages.filter(m=>m.role==='assistant').length)return toast('No analysis');try{const wb=XLSX.utils.book_new();const last=S.messages.filter(m=>m.role==='assistant').slice(-1)[0].content;const rows=[];last.split('\n').forEach(l=>{if(l.trimStart().startsWith('|')&&!/^\|[\s\-|]+\|$/.test(l.trim()))rows.push(l.split('|').filter(c=>c.trim()).map(c=>c.trim()));});if(rows.length)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),'Tables');const full=[['NEXUS v12 Report — '+new Date().toLocaleString()],[]];S.messages.filter(m=>m.role==='assistant').forEach((m,i)=>{full.push(['ANALYSIS '+(i+1)]);m.content.split('\n').forEach(l=>full.push([l]));full.push([]);});XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(full),'Full Report');if(S.csv)XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet([S.csv.hdrs,...S.csv.data]),'Source Data');XLSX.writeFile(wb,'NEXUS-'+Date.now()+'.xlsx');toast('✅ Excel saved!');}catch(e){toast('Excel failed');}}
 function copyReport(){
   const msgs=S.messages.filter(m=>m.role==='assistant');
   if(!msgs.length)return toast('Nothing to copy');
@@ -2694,7 +3454,7 @@ function shareWhatsApp(){
   const msgs=S.messages.filter(m=>m.role==='assistant');
   if(!msgs.length)return toast('No analysis to share');
   const last=msgs[msgs.length-1].content;
-  const verdict=last.match(/NEXUS VERDICT[\s\S]*?(?:\n\n|$)/)?.[0]||last.slice(0,500);
+  const verdict=last.match(/◆ NEXUS VERDICT[\s\S]*?(?:\n\n|$)/)?.[0]||last.slice(0,500);
   const text='*NEXUS AI Analysis*\n'+new Date().toLocaleDateString('en-IN')+(S.fileName?'\nDataset: '+S.fileName:'')+'\n\n'+verdict.trim()+'\n\n_Full analysis: nexus.onliraxter.workers.dev_';
   window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
 }
@@ -2786,7 +3546,7 @@ function showFollowUpChips(reply){
   if(chips.length===0)return;
   const div=document.createElement('div');
   div.className='followup-chips';
-  div.innerHTML='<div class="fu-label">Ask next</div>'+chips.slice(0,4).map(c=>`<span class="fu-chip" onclick="setSugAndSend('${c.replace(/'/g,"\\'").replace(/"/g,"&quot;")}');this.parentElement.remove()">${esc(c)}</span>`).join('');
+  div.innerHTML='<div class="fu-label">💡 Ask next</div>'+chips.slice(0,4).map(c=>`<span class="fu-chip" onclick="setSugAndSend('${c.replace(/'/g,"\\'").replace(/"/g,"&quot;")}');this.parentElement.remove()">${esc(c)}</span>`).join('');
   chat.appendChild(div);
   chat.scrollTop=chat.scrollHeight;
 }
@@ -2953,9 +3713,9 @@ function toast(msg,isErr){const el=document.createElement('div');el.className='t
 // ── INIT ──
 // Touch fix: prevent 300ms delay and ghost clicks on mobile
 
-//══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // NEXUS v9 — MOBILE + PWA JS
-//══════════════════════════════════════════════
+// ════════════════════════════════════════════════
 
 // ── SIDEBAR OVERLAY ──
 function openSide(){
@@ -3122,8 +3882,142 @@ document.addEventListener('click',function(e){
 loadSession();
 if(typeof google!=='undefined')initGoogleBtn();
 else document.querySelector("script[src*='accounts.google.com']")?.addEventListener('load', initGoogleBtn);
+</script>
 
-//── NEXUS FINAL PATCH — Runtime fixes 38-50══
+<!-- Chart Expand Modal -->
+<div id="chartModal" class="chart-modal" onclick="if(event.target===this)this.classList.remove('show')">
+  <div class="chart-modal-inner">
+    <button class="chart-modal-close" onclick="document.getElementById('chartModal').classList.remove('show')">✕ Close</button>
+    <div id="chartModalContent" style="width:100%;height:450px;display:flex;align-items:center;justify-content:center"></div>
+  </div>
+</div>
+
+
+<!-- PRIVACY MODAL -->
+<div class="ov" id="privacyOv">
+  <div class="mbox" style="max-width:520px">
+    <button class="mx" onclick="closeOv('privacyOv')">✕</button>
+    <h3>Privacy Policy</h3>
+    <p style="font-size:12px;color:var(--mt);line-height:1.8;margin-top:10px">
+      <strong style="color:var(--hd)">Your data never leaves your browser for storage.</strong><br><br>
+      When you upload a file, it is processed locally in your browser and sent directly to the AI model for analysis. We do not store your data on any server.<br><br>
+      <strong style="color:var(--hd)">What we store:</strong> Only your Google account name, email, and credit balance — on Cloudflare KV. No file contents, no analysis results.<br><br>
+      <strong style="color:var(--hd)">Third parties:</strong> Analysis goes to Groq API. Google OAuth for login. No other third parties receive your data.<br><br>
+      Questions? Email hello@onliraxter.workers.dev
+    </p>
+  </div>
+</div>
+
+<!-- TERMS MODAL -->
+<div class="ov" id="termsOv">
+  <div class="mbox" style="max-width:520px">
+    <button class="mx" onclick="closeOv('termsOv')">✕</button>
+    <h3>Terms of Service</h3>
+    <p style="font-size:12px;color:var(--mt);line-height:1.8;margin-top:10px">
+      <strong style="color:var(--hd)">Free Plan:</strong> 5 analyses per account. One account per person.<br><br>
+      <strong style="color:var(--hd)">Paid Plans:</strong> Credits are non-refundable after activation. Cancel anytime.<br><br>
+      <strong style="color:var(--hd)">Acceptable Use:</strong> Do not upload sensitive personal data of others or classified information.<br><br>
+      <strong style="color:var(--hd)">Accuracy:</strong> AI analysis is for decision support, not professional financial advice. Verify critical numbers with a qualified professional.<br><br>
+      By using NEXUS, you agree to these terms.
+    </p>
+  </div>
+</div>
+
+<style>
+/* ════ NEXUS 3D ORB LOADER ════ */
+.nx-analyzing-bub{padding:12px 16px!important;background:#070710!important;border:1px solid rgba(124,58,237,.3)!important;border-left:3px solid #7c3aed!important;min-width:260px}
+.nx-orb-wrap{display:flex;align-items:center;gap:14px}
+.nx-orb-scene{flex-shrink:0;position:relative;width:72px;height:72px}
+.nx-orb-canvas{border-radius:50%;display:block}
+.nx-orb-scene::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.2) 0%,transparent 70%);animation:nx-pulse 2s ease-in-out infinite;pointer-events:none}
+@keyframes nx-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+.nx-orb-info{flex:1;min-width:0}
+.nx-orb-title{font-family:var(--fm);font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.nx-orb-phase{font-family:var(--fm);font-size:11px;color:#c4b5fd;margin-bottom:8px;min-height:16px}
+.nx-orb-bar{height:3px;background:rgba(124,58,237,.15);border-radius:2px;overflow:hidden}
+.nx-orb-bar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#34d399);border-radius:2px;width:10%;transition:width 1.2s ease;box-shadow:0 0 8px rgba(124,58,237,.5)}
+
+/* ════ NEXUS FINAL PATCH — All remaining 34 fixes ════ */
+
+/* FIX 17: chart-modal CSS (was missing — modal existed but no styles) */
+.chart-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.chart-modal.show{display:flex}
+.chart-modal-inner{background:#0a0a0a;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;max-width:800px;width:100%;max-height:90vh;overflow:auto;position:relative}
+.chart-modal-close{position:absolute;top:12px;right:14px;background:var(--s3);border:1px solid var(--br);border-radius:6px;color:var(--mt);font-size:11px;padding:4px 10px;cursor:pointer}
+.chart-modal-close:hover{color:var(--r);border-color:rgba(248,113,113,.3)}
+
+/* FIX 18: msg-acts always visible on last message + hover */
+.msg-acts{opacity:0;transition:opacity .18s}
+.mrow:hover .msg-acts{opacity:1}
+.mrow:last-child .msg-acts,.mrow:last-of-type .msg-acts{opacity:1}
+
+/* FIX 19: Credit badge color levels */
+.chip-cr.cr-low{background:rgba(245,158,11,.1)!important;border-color:rgba(245,158,11,.25)!important;color:var(--o)!important}
+.chip-cr.cr-zero{background:rgba(248,113,113,.1)!important;border-color:rgba(248,113,113,.25)!important;color:var(--r)!important}
+
+/* FIX 20: Better input focus ring */
+.inp-wrap:focus-within{border-color:rgba(124,58,237,.45);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
+
+/* FIX 21: Streaming cursor */
+.streaming-cursor{display:inline-block;width:2px;height:14px;background:var(--v);margin-left:2px;animation:sc-blink .65s steps(1) infinite;vertical-align:middle}
+@keyframes sc-blink{50%{opacity:0}}
+
+/* FIX 22: History item truncation */
+.hist-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
+
+/* FIX 23: Modal close button bigger tap target on mobile */
+.mx{min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px}
+.mx:hover{background:var(--s3)}
+
+/* FIX 24: Table row hover */
+tr:hover td{background:rgba(167,139,250,.04)!important}
+
+/* FIX 25: Sample item hover */
+.samp-item:hover{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2)}
+
+/* FIX 26: verdict-box better styling */
+.verdict-box{font-size:12px;line-height:1.75;padding:14px 18px}
+
+/* FIX 27: Landing page stats mobile */
+@media(max-width:480px){.hsv{font-size:16px}.hsl{font-size:9px}.hst{padding:12px 8px}}
+
+/* FIX 28: Smooth panel scroll */
+.panel{scroll-behavior:smooth}
+
+/* FIX 29: Chart min height */
+.chart-card canvas{min-height:160px}
+
+/* FIX 30: Module hover */
+.mod-item:hover .mod-lbl{color:var(--v)}
+
+/* FIX 31: Better placeholder */
+#userinput::placeholder{color:var(--mt);opacity:.4;font-size:13px}
+
+/* FIX 32: Touch manipulation everywhere */
+button,.qk,.mod-item,.samp-item,.tb,.hist-item,.dc-sug{touch-action:manipulation}
+
+/* FIX 33: Landing free strip mobile */
+@media(max-width:480px){.fstrip-left{flex-direction:column;gap:6px}}
+
+/* FIX 34: Keyboard hint visible */
+.inp-hint{opacity:.35;letter-spacing:.01em}
+
+/* FIX 35: Confidence card grid mobile */
+@media(max-width:480px){.conf-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* FIX 36: Welcome screen sample button */
+.sample-run-btn{padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.sample-run-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+/* FIX 37: Toolbar overflow on small screens better */
+@media(max-width:860px){
+  .toolbar{gap:2px}
+  .tb{font-size:9px;padding:4px 7px}
+}
+</style>
+
+<script>
+// ════ NEXUS FINAL PATCH — Runtime fixes 38-50 ════
 
 // FIX 38: Add privacyOv + termsOv to click-outside close
 ['authOv','payOv','privacyOv','termsOv'].forEach(id=>{
@@ -3178,25 +4072,14 @@ document.addEventListener('paste',function(e){
   const txt=e.clipboardData.getData('text');
   if(!txt)return;
   const lines=txt.trim().split('\n');
-  if(lines.length > 2) {
-    const delimiters = [',', '\t', ';', '|'];
-    let bestDelim = null;
-    let maxCols = 0;
-    delimiters.forEach(d => {
-      const cols = lines[0].split(d).length;
-      if (cols > 2 && cols === lines[1].split(d).length) {
-        if (cols > maxCols) { maxCols = cols; bestDelim = d; }
-      }
-    });
-
-    if(bestDelim){
-      e.preventDefault();
-      const rows=lines.map(r=>r.split(bestDelim));
-      if(typeof processArr==='function'){
-        processArr(rows,'Pasted Data');
-        ta.dispatchEvent(new Event('input'));
-        toast('📋 ' + (bestDelim==='\t'?'TSV':'CSV') + ' data detected! Press Enter to analyze.');
-      }
+  if(lines.length>3&&lines[0].includes(',')&&lines[1].includes(',')){
+    e.preventDefault();
+    const rows=lines.map(r=>r.split(','));
+    if(typeof processArr==='function'){
+      processArr(rows,'Pasted Data');
+      ta.value='Analyze this data completely with charts';
+      ta.dispatchEvent(new Event('input'));
+      toast('📋 CSV data detected! Press Enter to analyze.');
     }
   }
 });
@@ -3267,12 +4150,12 @@ if(_origRC){
 }
 
 // FIX 50: Console confirmation
-console.log('%cNEXUS v11 PRODUCTION — 100x Agent Mode Active ✓','color:#34d399;font-family:monospace;font-weight:bold;font-size:14px');
+console.log('%cNEXUS v12 ELITE — 100x Agent Mode Active ✓','color:#34d399;font-family:monospace;font-weight:bold;font-size:14px');
 
 
-//═════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // NEXUS LANDING v4 — All 10 effects, no CDN
-//═════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 (function(){
 'use strict';
 
@@ -3379,7 +4262,7 @@ function initWebGL(){
     gl.viewport(0,0,canvas.width,canvas.height);
   },{passive:true});
 
-  // VERTEX SHADER — handles both torus knots AND morphing sphere
+  // ══ VERTEX SHADER — handles both torus knots AND morphing sphere ══
   var VS=[
     'attribute vec3 aP;attribute vec3 aN;',
     'uniform mat4 uMVP;uniform float uT;uniform float uMorph;',
@@ -3392,7 +4275,7 @@ function initWebGL(){
     '}'
   ].join('\n');
 
-  // FRAGMENT SHADER — purple/blue/teal gradient, metallic rim
+  // ══ FRAGMENT SHADER — purple/blue/teal gradient, metallic rim ══
   var FS=[
     'precision mediump float;',
     'varying vec3 vN;varying vec3 vP;',
@@ -3426,7 +4309,7 @@ function initWebGL(){
   var uCol2=gl.getUniformLocation(prog,'uCol2');
   var uCol3=gl.getUniformLocation(prog,'uCol3');
 
-  // MATRIX MATH (inline, no library)
+  // ══ MATRIX MATH (inline, no library) ══
   function m4(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);}
   function mul(a,b){var r=m4();for(var i=0;i<4;i++)for(var j=0;j<4;j++){var s=0;for(var k=0;k<4;k++)s+=a[i+k*4]*b[k+j*4];r[i+j*4]=s;}return r;}
   function persp(fov,asp,n,f){var ff=1/Math.tan(fov/2),r2=1/(n-f),m=m4();m[0]=ff/asp;m[5]=ff;m[10]=(n+f)*r2;m[11]=-1;m[14]=2*n*f*r2;m[15]=0;return m;}
@@ -3436,7 +4319,7 @@ function initWebGL(){
   function tr(x,y,z){var m=m4();m[12]=x;m[13]=y;m[14]=z;return m;}
   function sc(x,y,z){var m=m4();m[0]=x;m[5]=y;m[10]=z;return m;}
 
-  // GEOMETRY BUILDERS
+  // ══ GEOMETRY BUILDERS ══
 
   // Torus knot geometry — pure math, no Three.js
   function buildTorusKnot(R,r,tubeSeg,radSeg,p,q){
@@ -3504,7 +4387,7 @@ function initWebGL(){
     return {verts:new Float32Array(verts),norms:new Float32Array(norms),idx:new Uint16Array(idx)};
   }
 
-  // BUILD OBJECTS
+  // ══ BUILD OBJECTS ══
   function mkBuf(geo){
     var vB=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vB);gl.bufferData(gl.ARRAY_BUFFER,geo.verts,gl.STATIC_DRAW);
     var nB=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,nB);gl.bufferData(gl.ARRAY_BUFFER,geo.norms,gl.STATIC_DRAW);
@@ -3522,7 +4405,7 @@ function initWebGL(){
     {buf:mkBuf(buildSphere(36)), pos:[0,0,-2.5], rx:0,ry:0,rz:0, sx:[0.002,0.003,0.001], col1:[0.5,0.18,0.97],col2:[0.1,0.5,0.97],col3:[0.14,0.88,0.58], morph:0.18}
   ];
 
-  // DRAW CALL
+  // ══ DRAW CALL ══
   function drawObj(obj,proj,mxv,myv,t2){
     obj.rx+=obj.sx[0];obj.ry+=obj.sx[1];obj.rz+=obj.sx[2];
     // Float y
