@@ -1525,14 +1525,14 @@ localStorage.setItem('nx_cp_backend', _BACKEND_DEFAULT);
 if (!localStorage.getItem('nx_cp_google_id')) localStorage.setItem('nx_cp_google_id', _GOOGLE_ID_DEFAULT);
 
 // Live config
-const BACKEND          = (localStorage.getItem('nx_cp_backend')  || _BACKEND_DEFAULT).replace(/\/$/, '');
-const GOOGLE_CLIENT_ID =  localStorage.getItem('nx_cp_google_id')|| _GOOGLE_ID_DEFAULT;
-const UPI_ID           =  localStorage.getItem('nx_cp_upi')      || _UPI_DEFAULT;
-const GEMINI_KEY       =  localStorage.getItem('nx_cp_anthropic')|| '';
-const FREE_CREDITS     =  parseInt(localStorage.getItem('nx_cp_free_cr') || '5', 10);
+const BACKEND          = localStorage.getItem('nx_cp_backend') || 'http://localhost:8000';
+const GOOGLE_CLIENT_ID = localStorage.getItem('nx_cp_google_id')|| _GOOGLE_ID_DEFAULT;
+const UPI_ID           = localStorage.getItem('nx_cp_upi')      || _UPI_DEFAULT;
+const GEMINI_KEY       = localStorage.getItem('nx_cp_anthropic')|| '';
+const FREE_CREDITS     = parseInt(localStorage.getItem('nx_cp_free_cr') || '5', 10);
 const GEMINI_MODEL     = "gemini-1.5-flash";
 
-const BACKEND_LIVE = BACKEND.startsWith('http') && !BACKEND.includes('YOUR');
+const BACKEND_LIVE = true; // Now using FastAPI backend
 const GOOGLE_LIVE  = GOOGLE_CLIENT_ID.includes('.apps.googleusercontent.com');
 const GEMINI_LIVE  = GEMINI_KEY.startsWith('AIzaSy');
 
@@ -1556,6 +1556,8 @@ const S = {
   auditLog: [],
   templates: [],
   confidenceData: null,
+  analysisResult: null, // New: Storage for FastAPI result
+  rawFile: null,        // New: Storage for the actual File object
 };
 const RATE = {n:0, t:Date.now(), limit:50};
 let MEM = JSON.parse(localStorage.getItem('nexus_mem')||'{"sessions":[]}');
@@ -2344,261 +2346,122 @@ function setMode(id){S.mode=id;document.querySelectorAll('.mod-item').forEach(e=
 function toggleAdv(){S.adv=!S.adv;document.getElementById('advrow').classList.toggle('on',S.adv);document.getElementById('advchip').style.display=S.adv?'':'none';}
 function toggleSide(){S.sideOpen=!S.sideOpen;document.getElementById('sidebar').classList.toggle('shut',!S.sideOpen);}
 
-// ── SEND MESSAGE ──
+// ── SEND MESSAGE (Hybrid FastAPI Version) ──
 let isSending=false;
 async function sendMsg(){
   const ta=document.getElementById('userinput');
   const raw=ta.value.trim();
-  if(!raw)return;
-  if(isSending)return;
+  if(!raw && !S.rawFile) return;
+  if(isSending) return;
   isSending=true;
+
   if(!rateOk()){isSending=false;return toast('Rate limit reached. Wait a moment.');}
   if(!await deductCredit()){isSending=false;return;}
 
-  // Build prompt with verified facts (NOT raw CSV slice)
-  let prompt=raw+(MPRPTS[S.mode]||'');
-  if(S.adv)prompt+='\n\n[ADVANCED MODE: Monte Carlo, ML feature importance, time series decomp, cluster profiling, 30-60-90-180 roadmap.]';
-  if(S.lang!=='english')prompt+=`\n\n[LANGUAGE: Respond entirely in ${S.lang}. Use ₹ for currency. Use lakhs/crores format.]`;
-  // DEPTH LEVEL INSTRUCTIONS
-  const depthInstructions={
-    1:'\n\n[DEPTH 1 — QUICK: Only top 5 KPIs and 1 chart. Be concise.]',
-    2:'\n\n[DEPTH 2 — SUMMARY: KPIs + top 3 anomalies + 2 charts.]',
-    3:'',// default — full analysis
-    4:'\n\n[DEPTH 4 — DEEP: Full analysis + complete statistical breakdown + regression + correlation analysis.]',
-    5:'\n\n[DEPTH 5 — CFO GRADE: Everything in depth 4 + show all formulas used + Monte Carlo ranges + full 90-day roadmap + executive summary for board.]'
-  };
-  if(S.depth&&S.depth!==3)prompt+=depthInstructions[S.depth]||'';
-
-  // First message: inject full verified facts
-  // Follow-up messages: inject compact reminder only
-  const isFirstWithData=S.messages.length===0&&S.factsSummary;
-  const hasData=!!S.factsSummary&&S.factsSummary.length>10;
-  if(hasData){
-    if(isFirstWithData||!S.messages.some(m=>m.content.includes('NEXUS v12 JAVASCRIPT-VERIFIED'))){
-      prompt+='\n\n'+S.factsSummary;
-    } else {
-      // Compact reminder for follow-ups (saves tokens)
-      const numKeys=S.verifiedFacts?Object.keys(S.verifiedFacts).filter(k=>S.verifiedFacts[k].type==='numeric'):[];
-      if(numKeys.length>0){
-        const reminder=numKeys.slice(0,10).map(k=>`${k}:SUM=${fmtN(S.verifiedFacts[k].sum)},AVG=${fmtN(S.verifiedFacts[k].avg)}`).join(' | ');
-        prompt+=`\n\n[DATA REMINDER — use verified facts from initial message: ${reminder}]`;
-      }
-    }
-  }
-
-  // Inject anomaly facts if first analysis
-  if(S.anomalyFacts&&S.messages.length===0){
-    prompt+=`\n\n[JAVASCRIPT-VERIFIED ANOMALIES — TREAT AS GROUND TRUTH, DO NOT CONTRADICT:\n${S.anomalyFacts}]`;
-  }
-
-  // Comparison mode
-  if(S.compareMode&&S.factsSummary2){
-    prompt+='\n\n[COMPARISON MODE — FILE 2 FACTS:\n'+S.factsSummary2.slice(0,3000)+']';
-  }
-
-  // Keep last 12 messages (dataset NOT stored in history — saves tokens)
-  if(S.messages.length>12)S.messages=S.messages.slice(-12);
-  S.messages.push({role:'user',content:prompt});
-
   const chat=document.getElementById('chat');
   if(document.querySelector('.welcome'))chat.innerHTML='';
-  addBub('user',raw,true);
+  addBub('user', raw || "Analyze this file", true);
   const tid=addTyp();
   ta.value='';ta.style.height='auto';ta.style.height='44px';
   document.getElementById('sendbtn').disabled=true;
 
-  try{
-    let reply='';
-
-    if(BACKEND_LIVE){
-      const tok=sessionStorage.getItem('nx_tok')||'';
-
-      // ── STREAMING MODE ──
-      const streamRes=await fetch(BACKEND+'/api/analyze',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-nexus-token':tok||(S.token==='guest_token'?'guest_token':'guest')},
-        signal:AbortSignal.timeout(120000),
-        body:JSON.stringify({messages:S.messages,stream:true,token:tok||'guest'})
-      });
-
-      if(!streamRes.ok)throw new Error(`Backend streaming HTTP error: ${streamRes.status}`);
-
-      // Streaming response
-      let bubEl = null;
-      let bubGenerated = false;
-
-      const reader=streamRes.body.getReader();
-      const decoder=new TextDecoder();
-      let fullText='';
-      let buffer='';
-
-      while(true){
-        const{done,value}=await reader.read();
-        if(done)break;
-        buffer+=decoder.decode(value,{stream:true});
-        const lines=buffer.split('\n');
-        buffer=lines.pop()||'';
-        for(const line of lines){
-          if(!line.startsWith('data: '))continue;
-          const json=line.slice(6);
-          if(json==='[DONE]')continue;
-          try{
-            const d=JSON.parse(json);
-            const token=d.token||d.choices?.[0]?.delta?.content||'';
-            if(token){
-              fullText+=token;
-              if (!bubEl) {
-                removeTyp(tid);
-                document.getElementById('sendbtn').disabled = false;
-                bubEl = addBub('assistant', '', true, true);
-                bubGenerated = true;
-              }
-              if (bubEl) {
-                // Show streaming text cleanly - preserve line breaks but escape HTML
-                const safeTxt = fullText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-                bubEl.innerHTML = '<div style="white-space:pre-wrap;font-family:inherit">' + safeTxt + '</div><span class="streaming-cursor"></span>';
-              }
-            }
-          }catch(e){}
-        }
-      }
-      reply=fullText;
-      if (!reply) throw new Error('Backend returned empty response.');
-      if(bubEl) {
-        bubEl.innerHTML = renderContent(reply);
-        const acts=document.createElement('div');acts.className='msg-acts';
-        acts.innerHTML='<span class="mab" onclick="copyBub(this)">⎘ Copy</span><span class="mab" onclick="exportPDF()">📄 PDF</span><span class="mab" onclick="exportExcel()">📊 Excel</span><span class="mab" onclick="saveAsTXT()">📝 TXT</span><span class="mab" onclick="shareWhatsApp()">💬 WA</span>';
-        bubEl.appendChild(acts);
-        renderCharts(bubEl);
-      }
-
-    } else if(GEMINI_LIVE){
-      const geminiMsgs = S.messages.map(m => ({
-        role: m.role === 'assistant' ? 'model' : 'user',
-        parts: [{ text: m.content }]
-      }));
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: SYS }] },
-            contents: geminiMsgs,
-            generationConfig: { maxOutputTokens: 8192, temperature: 0.3, topP: 0.95 },
-            safetySettings: [
-              { category: 'HARM_CATEGORY_HARASSMENT',        threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_HATE_SPEECH',       threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_NONE' },
-              { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_NONE' }
-            ]
-          })
-        }
-      );
-      const data = await res.json();
-      if (!res.ok) {
-        const msg = data.error?.message || '';
-        if (msg.includes('quota') || msg.includes('429')) throw new Error('Gemini quota exceeded. Try tomorrow.');
-        throw new Error(msg || 'Gemini error');
-      }
-      reply = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
-      if (!reply) throw new Error('Gemini returned empty response.');
-
+  try {
+    const formData = new FormData();
+    if(S.rawFile) {
+        formData.append('file', S.rawFile);
     } else {
-      throw new Error('No AI configured.');
+        // If no file, create a dummy one or handle text-only (handled by backend later)
+        const blob = new Blob([S.csv?.data.map(r=>r.join(',')).join('\n') || ""], { type: 'text/csv' });
+        formData.append('file', blob, S.fileName || 'data.csv');
     }
 
-    if (!bubGenerated) {
-      removeTyp(tid);
-      document.getElementById('sendbtn').disabled=false;
-      addBub('assistant', reply, true);
-    }
-    S.messages.push({ role: 'assistant', content: reply });
+    const res = await fetch(BACKEND + '/api/analyze', {
+        method: 'POST',
+        headers: {
+            'x-nexus-token': S.token === 'guest_token' ? 'guest_token' : (S.token || 'guest')
+        },
+        body: formData
+    });
 
-    // ── NEXUS v12: Render verified charts from JS data (not AI text) ──
-    if (S.verifiedCharts && S.verifiedCharts.length > 0 && bubEl) {
-      const vcDiv = document.createElement('div');
-      vcDiv.className = 'verified-charts-block';
-      vcDiv.innerHTML = '<div class="vc-label">📊 VERIFIED DATA CHARTS — computed from your data, not AI</div><div class="vc-grid" id="vcGrid_'+Date.now()+'"></div>';
-      bubEl.appendChild(vcDiv);
-      const grid = vcDiv.querySelector('.vc-grid');
-      S.verifiedCharts.forEach(vc => {
-        const card = document.createElement('div');
-        card.className = 'chart-card vc-card';
-        card.id = vc.id;
-        card.innerHTML = `<div class="chart-lbl"><span>✅ ${esc(vc.title)}</span><span class="vc-badge">JS-VERIFIED</span></div><canvas></canvas>`;
-        grid.appendChild(card);
-        const canvas = card.querySelector('canvas');
-        const COLORS=['#a78bfa','#60a5fa','#34d399','#f59e0b','#f87171','#38bdf8','#fb923c','#4ade80','#e879f9','#fbbf24'];
-        const labels = vc.data.map(d=>d.name);
-        const vals = vc.data.map(d=>d.val);
-        if (vc.type==='doughnut'||vc.type==='pie') {
-          new Chart(canvas,{type:'doughnut',data:{labels,datasets:[{data:vals,backgroundColor:COLORS,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:true,animation:{duration:600},plugins:{legend:{labels:{color:'#566070',font:{size:9,family:'IBM Plex Mono'}}}},cutout:'55%'}});
-        } else {
-          new Chart(canvas,{type:vc.type,data:{labels,datasets:[{label:vc.title,data:vals,backgroundColor:COLORS.map(c=>c+'88'),borderColor:COLORS,borderWidth:2,borderRadius:vc.type==='bar'?4:0,tension:.4,fill:false,pointRadius:3}]},options:{responsive:true,maintainAspectRatio:true,animation:{duration:600},plugins:{legend:{display:false}},scales:{x:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}},y:{ticks:{color:'#566070',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}}}}});
-        }
-      });
-    }
-
-    // ── NEXUS v12: Validate AI response numbers ──
-    if (S.verifiedFacts && bubEl) {
-      const validation = validateAIResponse(reply, S.verifiedFacts);
-      if (validation.warnings.length > 0) {
-        const badge = document.createElement('div');
-        badge.className = 'validation-warn';
-        badge.innerHTML = `⚠️ <strong>${validation.warnings.length} number(s)</strong> in this analysis could not be cross-checked against your data. Verified charts above are always accurate.`;
-        bubEl.insertBefore(badge, bubEl.firstChild);
-      }
-    }
-
-    // Confidence card + follow-up chips
-    if(S.confidenceData&&S.messages.filter(m=>m.role==='assistant').length<=2)showConfidenceCard();
-    showFollowUpChips(reply);
-
-    // Audit log
-    if(S.auditLog&&S.auditLog.length>0){
-      S.auditLog[S.auditLog.length-1].lastQuestion=raw.slice(0,100);
-      try{localStorage.setItem('nx_audit',JSON.stringify(S.auditLog.slice(-50)));}catch(e){}
-    }
-
-    if (S.messages.length === 2) saveSess(raw.slice(0, 55));
-    else if (MEM.sessions.length) {
-      MEM.sessions[MEM.sessions.length - 1].mc   = S.messages.length;
-      MEM.sessions[MEM.sessions.length - 1].msgs = S.messages.slice();
-      try { localStorage.setItem('nexus_mem', JSON.stringify(MEM)); } catch(e) { /* storage full */ }
+    if(!res.ok) throw new Error(`Backend Error: ${res.status}`);
+    
+    const data = await res.json();
+    S.analysisResult = data;
+    
+    removeTyp(tid);
+    const bubEl = addBub('assistant', data.insight, true);
+    
+    // Render deterministic metrics above the insight
+    renderDeterministicMetrics(bubEl, data);
+    
+    if (data.metrics.revenue_trend) {
+        renderChartsFromBackend(bubEl, data.metrics.revenue_trend);
     }
 
   } catch(e) {
     removeTyp(tid);
-    // Refund credit on any error
-    if (S.credits !== Infinity) {
-      S.credits++;
-      updateDashCredits();
-      if (BACKEND_LIVE) api('/api/user/refund-credit', { method: 'POST' }).catch(() => {});
-    }
-    let errMsg = e.message || 'Something went wrong';
-    if (errMsg.includes('401') || errMsg.includes('Unauthorized')) {
-      if (errMsg.includes('AI Provider')) {
-        // This is a Groq key issue, specifically caught by our new backend logic
-      } else {
-        errMsg = 'Session expired or invalid — please refresh and sign in again.';
-      }
-    } else if (errMsg.includes('quota') || errMsg.includes('429')) {
-      errMsg = 'AI quota reached — please try again in 1 minute.';
-    } else if (errMsg.includes('timeout') || errMsg.includes('AbortError')) {
-      errMsg = 'Request timed out. Try a smaller file or simpler question.';
-    } else if (errMsg.includes('500')) {
-      errMsg = 'Server error. Please try again.';
-    } else if (errMsg.includes('No AI')) {
-      errMsg = 'AI not connected — check your internet and reload.';
-    }
-    
-    addBub('assistant', '⚠️ ' + errMsg + '\n\nYour credit has been refunded.');
+    addBub('assistant', '⚠️ Analysis Failed: ' + e.message + '\n\nPlease ensure your Python backend is running at ' + BACKEND);
+  } finally {
+    isSending = false;
+    document.getElementById('sendbtn').disabled = false;
   }
+}
 
-  document.getElementById('sendbtn').disabled = false;
-  isSending = false;
-  document.getElementById('sendbtn').disabled = false;
+function renderDeterministicMetrics(container, data) {
+    const m = data.metrics;
+    const grid = document.createElement('div');
+    grid.className = 'kpi-grid';
+    grid.innerHTML = `
+        <div class="kpi-card">
+            <div class="kpi-label">Total Revenue</div>
+            <div class="kpi-value">₹${fmtN(m.revenue)}</div>
+            <div class="kpi-delta ${m.growth >= 0 ? 'up' : 'down'}">${m.growth >= 0 ? '▲' : '▼'} ${m.growth}%</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Orders</div>
+            <div class="kpi-value">${m.orders}</div>
+            <div class="kpi-delta neutral">Total Count</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">AOV</div>
+            <div class="kpi-value">₹${fmtN(m.aov)}</div>
+            <div class="kpi-delta neutral">Per Order</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">Data Quality</div>
+            <div class="kpi-value">${data.confidence}</div>
+            <div class="kpi-delta ${data.confidence === 'HIGH' ? 'up' : 'down'}">${data.data_quality.rows_after} Rows</div>
+        </div>
+    `;
+    container.insertBefore(grid, container.firstChild);
+}
+
+function renderChartsFromBackend(container, trendData) {
+    const id = 'chart_' + Date.now();
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+    card.innerHTML = `<div class="chart-lbl"><span>📈 Revenue Trend (Verified)</span></div><canvas id="${id}"></canvas>`;
+    container.appendChild(card);
+    
+    const ctx = document.getElementById(id);
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: trendData.map(d => d.name),
+            datasets: [{
+                label: 'Daily Revenue',
+                data: trendData.map(d => d.val),
+                borderColor: '#a78bfa',
+                backgroundColor: 'rgba(167,139,250,0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
 }
 
 // ── CHAT UI ──
@@ -2829,109 +2692,35 @@ function renderContent(text){
 function saveOneChart(id){const c=document.querySelector('#'+id+' canvas');if(!c)return;const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+id+'.png';a.click();}
 function renderCharts(container){if(!window._pc||!window._pc.length)return;const toR=[...window._pc];window._pc=[];toR.forEach(({id,type,title,data})=>{const card=container.querySelector('#'+id);if(!card)return;const canvas=card.querySelector('canvas');if(!canvas||!data.length)return;const keys=Object.keys(data[0]).filter(k=>k!=='name');const labels=data.map(d=>d.name);let ct='bar';if(type==='line'||type==='area')ct='line';if(type==='pie'||type==='donut')ct='doughnut';if(type==='radar')ct='radar';const tip={backgroundColor:S.theme==='dark'?'#0d0f14':'#fff',borderColor:'rgba(167,139,250,.3)',borderWidth:1,titleColor:'#a0aec0',bodyColor:'#c8d0e0',titleFont:{family:'IBM Plex Mono',size:10},bodyFont:{family:'IBM Plex Mono',size:10}};const ds=keys.map((k,i)=>({label:k,data:data.map(d=>d[k]),backgroundColor:COLORS.map(c=>c+'55'),borderColor:COLORS[i%COLORS.length],borderWidth:2,pointRadius:3,fill:type==='area',tension:.4,borderRadius:ct==='bar'?4:0}));const pd={labels,datasets:[{data:data.map(d=>d[keys[0]]),backgroundColor:COLORS,borderWidth:0,hoverOffset:6}]};new Chart(canvas,{type:ct,data:ct==='doughnut'?pd:{labels,datasets:ds},options:{responsive:true,maintainAspectRatio:true,animation:{duration:700},plugins:{legend:{labels:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:10,family:'IBM Plex Mono'}}},tooltip:tip},scales:ct!=='doughnut'&&ct!=='radar'?{x:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}},y:{ticks:{color:S.theme==='dark'?'#566070':'#9ca3af',font:{size:9}},grid:{color:'rgba(128,128,128,.1)'}}}:undefined,cutout:type==='donut'?'58%':undefined}});});}
 
+// ── WELCOME ──
 function showWelcome(){
   const isFirst = !localStorage.getItem('nx_visited');
   if(isFirst) localStorage.setItem('nx_visited','1');
-  const sCSV = `Month,Revenue,Expenses,Profit,Units,Region,Category\nJan 2025,285000,198000,87000,142,North,Electronics\nFeb 2025,312000,201000,111000,156,South,Electronics\nMar 2025,298000,195000,103000,149,West,FMCG\nApr 2025,334000,210000,124000,167,East,Electronics\nMay 2025,289000,203000,86000,144,North,Pharma\nJun 2025,356000,218000,138000,178,West,Electronics\nJul 2025,401000,225000,176000,201,South,FMCG\nAug 2025,378000,219000,159000,189,East,Pharma\nSep 2025,412000,231000,181000,206,North,Electronics\nOct 2025,445000,242000,203000,223,West,Electronics\nNov 2025,389000,228000,161000,195,South,FMCG\nDec 2025,467000,251000,216000,234,North,Electronics`;
+  
   window.loadSampleData = function(){
-    const rows=sCSV.split('\n').map(r=>r.split(','));
-    processArr(rows,'Sample Business P&L.csv');
-    setTimeout(()=>setSugAndSend('Give me a complete expert analysis of this 12-month business data. I want: 6 KPI cards with verified numbers, profit margin analysis, regional breakdown, anomaly detection, month-over-month trends with forecast, and 5 specific priority actions with ₹ impact estimates. Generate minimum 4 charts using actual data values.'),400);
+    const sCSV = `Month,Revenue,Expenses,Profit,Units,Region,Category\nJan 2025,285000,198000,87000,142,North,Electronics\nFeb 2025,312000,201000,111000,156,South,Electronics\nMar 2025,298000,195000,103000,149,West,FMCG\nApr 2025,334000,210000,124000,167,East,Electronics\nMay 2025,289000,203000,86000,144,North,Pharma\nJun 2025,356000,218000,138000,178,West,Electronics\nJul 2025,401000,225000,176000,201,South,FMCG\nAug 2025,378000,219000,159000,189,East,Pharma\nSep 2025,412000,231000,181000,206,North,Electronics\nOct 2025,445000,242000,203000,223,West,Electronics\nNov 2025,389000,228000,161000,195,South,FMCG\nDec 2025,467000,251000,216000,234,North,Electronics`;
+    const blob = new Blob([sCSV], { type: 'text/csv' });
+    S.rawFile = new File([blob], "Sample Business P&L.csv", { type: 'text/csv' });
+    S.fileName = "Sample Business P&L.csv";
+    toast('Loading Sample Data...');
+    setTimeout(() => sendMsg(), 500);
   };
+
   const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Free · ~20 seconds · 12 months of data</span></div>` : '';
-  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v12 · ELITE AI ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSug('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSug('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
+  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v12 · ELITE AI ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSugAndSend('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSugAndSend('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
 }
 
 // ── FILE UPLOAD ──
 function loadFile(e){
   const f=e.target.files[0];if(!f)return;
-  // File size limit: 10MB
-  if(f.size > 10 * 1024 * 1024){ toast('❌ File too large (max 10MB). Try splitting into smaller files.'); e.target.value=''; return; }
-  if(f.size > 5 * 1024 * 1024){ toast('⚠️ Large file detected — JS will analyze ALL rows, AI gets full stats'); }
+  if(f.size > 20 * 1024 * 1024){ toast('❌ File too large (max 20MB).'); e.target.value=''; return; }
   S.fileName=f.name;
-  const ext=f.name.split('.').pop().toLowerCase();if(['xlsx','xls'].includes(ext)){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name);}catch(e){toast('Error reading Excel');}};r.readAsBinaryString(f);}else{const r=new FileReader();r.onload=ev=>{const txt=ev.target.result;if(ext==='json'){try{S.fileData='JSON: '+f.name+'\n'+JSON.stringify(JSON.parse(txt),null,2).slice(0,9000);S.csv=null;showFOk(f.name,null);}catch(e){toast('Invalid JSON');}}else {
-          // Smart delimiter detection
-          const firstLine = txt.split('\n')[0]||'';
-          const delim = firstLine.includes('\t') ? /\t/ : firstLine.includes(';') ? /;/ : /,/;
-          processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(delim).map(c=>c.trim().replace(/^"|"$/g,''))),f.name);
-        }};r.readAsText(f);}e.target.value='';}
-function processArr(rows,fname,isSecond){
-  if(!rows.length)return;
-  const hdrs=rows[0].map(h=>String(h||'').trim());
-  const data=rows.slice(1).filter(r=>r.some(c=>c&&String(c).trim()));
-  const csv={hdrs,data};
-  if(isSecond){S.csv2=csv;}else{S.csv=csv;}
-
-  // ═══ LAYER 1: JS PRE-COMPUTATION — ALL ROWS (truly unlimited) ═══
-  const facts={};
-  const numCols=[];
-  const catCols=[];
-
-  hdrs.forEach((h,hi)=>{
-    const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');
-    const nums=vals.map(v=>parseFloat(String(v).replace(/[,₹$%\s]/g,''))).filter(v=>!isNaN(v)&&isFinite(v));
-    if(nums.length>0&&nums.length/vals.length>0.7){
-      numCols.push({h,hi,nums});
-      const sorted=[...nums].sort((a,b)=>a-b);
-      const sum=nums.reduce((a,b)=>a+b,0);
-      const avg=sum/nums.length;
-      const median=sorted[Math.floor(sorted.length/2)];
-      const variance=nums.map(v=>(v-avg)**2).reduce((a,b)=>a+b,0)/nums.length;
-      const std=Math.sqrt(variance);
-      // Top/Bottom 5
-      const top5=[...sorted].reverse().slice(0,5);
-      const bot5=[...sorted].slice(0,5);
-      // IQR outliers
-      const q1=sorted[Math.floor(sorted.length*0.25)];
-      const q3=sorted[Math.floor(sorted.length*0.75)];
-      const iqr=q3-q1;
-      const outlierRows=data.reduce((acc,r,ri)=>{
-        const v=parseFloat(String(r[hi]||'').replace(/[,₹$%\s]/g,''));
-        if(!isNaN(v)&&(v<q1-1.5*iqr||v>q3+1.5*iqr))acc.push({row:ri+2,val:v});
-        return acc;
-      },[]);
-      const negCount=nums.filter(v=>v<0).length;
-      facts[h]={type:'numeric',count:nums.length,sum:sum,avg:avg,median:median,std:std,min:sorted[0],max:sorted[sorted[sorted.length-1]],q1,q3,top5,bot5,outlierCount:outlierRows.length,outlierRows:outlierRows.slice(0,5),negCount};
-    } else {
-      catCols.push({h,hi,vals});
-      const freq={};
-      vals.forEach(v=>{const k=String(v).trim();freq[k]=(freq[k]||0)+1;});
-      const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]);
-      facts[h]={type:'categorical',count:vals.length,unique:new Set(vals).size,top5:sorted.slice(0,5).map(([v,c])=>({val:v,count:c})),missing:data.length-vals.length};
-    }
-  });
-
-  // ═══ DUPLICATE DETECTION — ALL ROWS ═══
-  const dups=[];
-  // Find likely ID column
-  const idColIdx=hdrs.findIndex(h=>/\bid\b|code|no\b|num\b|cust|invoice|order|sku/i.test(h));
-  if(idColIdx>=0){
-    const idMap={};
-    data.forEach((r,ri)=>{
-      const v=String(r[idColIdx]||'').trim();
-      if(!v)return;
-      if(!idMap[v])idMap[v]=[];
-      idMap[v].push(ri+2);
-    });
-    Object.entries(idMap).forEach(([v,rows])=>{
-      if(rows.length>1)dups.push({id:v,col:hdrs[idColIdx],rows,count:rows.length});
-    });
-  }
-  // Full row duplicates
-  const rowHash={};
-  const fullRowDups=[];
-  data.forEach((r,ri)=>{
-    const key=r.map(c=>String(c||'').trim()).join('|');
-    if(!key.replace(/\|/g,''))return;
-    if(!rowHash[key])rowHash[key]=[];
-    rowHash[key].push(ri+2);
-  });
-  Object.entries(rowHash).forEach(([,rows])=>{if(rows.length>1)fullRowDups.push(rows);});
-
-  // ═══ FORMULA MISMATCH DETECTION — ALL ROWS ═══
-  const mismatches=[];
-  // ── NEXUS v12: FUZZY COLUMN MATCHING (works on real-world files) ──
-  const revIdx  = fuzzyFindCol(hdrs,[/^revenue$/i,/^sales$/i,/^amount$/i,/^total$/i,/total.rev/i,/net.sales/i,/gross.rev/i,/sale.amt/i,/turnover/i,/income/i]);
+  S.rawFile=f; // Store raw file for backend
+  toast('File prepared: ' + f.name);
+  // Auto-trigger analysis
+  setTimeout(()=>sendMsg(), 500);
+  e.target.value='';
+}
   const unitIdx = fuzzyFindCol(hdrs,[/^units?$/i,/^qty$/i,/^quantity$/i,/units.sold/i,/no.of.units/i,/pieces/i,/count/i]);
   const priceIdx= fuzzyFindCol(hdrs,[/^price$/i,/^rate$/i,/^mrp$/i,/unit.price/i,/selling.price/i,/sp$/i,/cost.price/i,/cp$/i]);
   const discIdx = fuzzyFindCol(hdrs,[/^discount$/i,/^disc/i,/^rebate/i,/off$/i,/promo/i]);
