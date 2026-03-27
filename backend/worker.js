@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════
-//  NEXUS-DATA ANALYST v6 — Cloudflare Worker Backend
+//  NEXUS v12 Backend — Cloudflare Worker API
 //  KV: NEXUS_KV
 //  Routes: /health /api/auth/google /api/user/me
 //          /api/user/deduct-credit /api/user/refund-credit
