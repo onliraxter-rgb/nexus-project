@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
-<title>NEXUS — AI Data Analyst for Indian Business | Free to Start</title>
+<title>NEXUS v12 Elite — AI Business Data Analyst | Free for Indian SMEs</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -494,6 +494,52 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .health-dot.red{background:#f87171}
 .health-txt{font-family:var(--fm);font-size:8px;color:var(--tx)}
 .health-score{font-family:var(--fm);font-size:8px;font-weight:700;margin-left:auto}
+
+
+/* ══ NEXUS v12 POLISH ══ */
+/* Smooth send button states */
+#sendbtn{transition:all .2s;transform-origin:center}
+#sendbtn:not(:disabled):hover{transform:scale(1.08);box-shadow:0 0 16px rgba(124,58,237,.5)}
+#sendbtn:disabled{opacity:.3;cursor:not-allowed}
+
+/* Better typing indicator */
+.dots span{background:var(--v)}
+
+/* Dataset card header row fix */
+.dc-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.05)}
+
+/* Input box focus glow */
+.inp-wrap:focus-within{border-color:rgba(124,58,237,.45);box-shadow:0 0 0 2px rgba(124,58,237,.12)}
+
+/* Module item hover smooth */
+.mod-item{transition:background .12s,border-color .12s}
+
+/* Verified chart block */
+.vc-card .chart-lbl{border-bottom:1px solid rgba(52,211,153,.1);padding-bottom:6px;margin-bottom:6px}
+
+/* Error state for input */
+.inp-wrap.error{border-color:rgba(248,113,113,.4);animation:shake .3s ease}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* Pulse animation for live badge */
+.chip-live{animation:livePulse 2s infinite}
+@keyframes livePulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(52,211,153,.4)}50%{opacity:.8;box-shadow:0 0 0 4px rgba(52,211,153,0)}}
+
+/* Better scrollbar for chat */
+.chat{scrollbar-width:thin;scrollbar-color:rgba(167,139,250,.2) transparent}
+.chat::-webkit-scrollbar{width:4px}
+.chat::-webkit-scrollbar-thumb{background:rgba(167,139,250,.2);border-radius:2px}
+.chat::-webkit-scrollbar-thumb:hover{background:rgba(167,139,250,.4)}
+
+/* Toast improvements */
+.toast{max-width:320px;word-break:break-word;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+
+/* KPI card hover */
+.kpi-card{transition:transform .15s,border-color .15s;cursor:default}
+.kpi-card:hover{transform:translateY(-2px);border-color:rgba(167,139,250,.2)}
+
+/* Depth button active */
+.depth-btn.active,.depth-btn:hover{background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.3);color:var(--v)}
 
 @media print{#view-dash .side,.topbar,.toolbar,.search-bar,.csv-preview,.anom-banner,.inp-zone,.pin-btn,.msg-acts,.credit-warn,.userbar,.av.u,.mrow.u{display:none!important}.bub.ai{border:none!important;padding:0!important}}
 @media(max-width:860px){nav{padding:12px 18px}.nlinks{display:none}h1{font-size:34px}.hero{padding:56px 18px 40px}.free-strip{padding:0 18px 30px}.fstrip-box{flex-direction:column;text-align:center}.fgrid,.pgrid,.tgrid{grid-template-columns:1fr}.sec{padding:46px 18px}.hstats{flex-direction:column}.hst{border-right:none;border-bottom:1px solid var(--br)}.hst:last-child{border-bottom:none}footer{flex-direction:column;gap:11px;text-align:center;padding:22px 18px}.ctabox{padding:30px 20px}.plansel{grid-template-columns:1fr}.hero-searchbox{padding:0 4px}}
@@ -1653,7 +1699,7 @@ function lockAndExit(){
 async function api(path,opts={}){const headers={"Content-Type":"application/json"};if(S.token)headers["x-nexus-token"]=S.token;const res=await fetch(BACKEND+path,{method:opts.method||(opts.body?"POST":"GET"),headers,body:opts.body?JSON.stringify(opts.body):undefined});const data=await res.json();if(!res.ok)throw new Error(data.error||"Request failed");return data;}
 
 // ── RATE + CREDITS ──
-function rateOk(){if(Date.now()-RATE.t>3600000){RATE.n=0;RATE.t=Date.now();}return ++RATE.n<=RATE.limit;}
+function rateOk(){if(Date.now()-RATE.t>3600000){RATE.n=0;RATE.t=Date.now();}return ++RATE.n<=300;}
 async function deductCredit(){if(S.credits===Infinity||S.token==='guest_token')return true;if(S.credits<=0){toast('No credits left. Please upgrade.');return false;}if(BACKEND_LIVE){const tok=sessionStorage.getItem('nx_tok');try{const res=await fetch(BACKEND+'/api/user/deduct-credit',{method:'POST',headers:{'Content-Type':'application/json','x-nexus-token':tok||''}});const data=await res.json();if(!res.ok){toast(data.error||'No credits left.');return false;}S.credits=data.credits===-1?Infinity:data.credits;}catch(e){S.credits--;console.warn('Backend unreachable, deducting locally');}}else{S.credits--;}updateDashCredits();return true;}
 function updateDashCredits(){const isInf=S.credits===Infinity;const cr=document.getElementById('crchip');if(cr)cr.textContent=isInf?'∞ Admin':S.credits+' cr';document.getElementById('userbar').style.display='flex';document.getElementById('ubName').textContent=S.user?.name||'—';document.getElementById('ubCredits').textContent=isInf?'Unlimited':S.credits+' credits left';document.getElementById('ubPlan').textContent=S.plan?'· '+S.plan.charAt(0).toUpperCase()+S.plan.slice(1)+' Plan':'';const warn=document.getElementById('creditWarn');if(warn){warn.style.display=(!isInf&&S.credits<=1)?'flex':'none';if(!isInf&&S.credits<=1)document.getElementById('cwTxt').textContent=S.credits===0?'⚠️ No credits — upgrade to continue':'⚠️ Last credit remaining — upgrade now';}}
 
@@ -2358,7 +2404,7 @@ async function sendMsg(){
   if(document.querySelector('.welcome'))chat.innerHTML='';
   addBub('user',raw,true);
   const tid=addTyp();
-  ta.value='';ta.style.height='auto';
+  ta.value='';ta.style.height='auto';ta.style.height='44px';
   document.getElementById('sendbtn').disabled=true;
 
   try{
@@ -2370,7 +2416,7 @@ async function sendMsg(){
       // ── STREAMING MODE ──
       const streamRes=await fetch(BACKEND+'/api/analyze',{
         method:'POST',
-        headers:{'Content-Type':'application/json','x-nexus-token':tok||'guest'},
+        headers:{'Content-Type':'application/json','x-nexus-token':tok||(S.token==='guest_token'?'guest_token':'guest')},
         signal:AbortSignal.timeout(120000),
         body:JSON.stringify({messages:S.messages,stream:true,token:tok||'guest'})
       });
@@ -2407,7 +2453,11 @@ async function sendMsg(){
                 bubEl = addBub('assistant', '', true, true);
                 bubGenerated = true;
               }
-              if (bubEl) bubEl.innerHTML = fullText.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>") + '<span class="streaming-cursor"></span>';
+              if (bubEl) {
+                // Show streaming text cleanly - preserve line breaks but escape HTML
+                const safeTxt = fullText.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+                bubEl.innerHTML = '<div style="white-space:pre-wrap;font-family:inherit">' + safeTxt + '</div><span class="streaming-cursor"></span>';
+              }
             }
           }catch(e){}
         }
@@ -2479,7 +2529,7 @@ async function sendMsg(){
         card.innerHTML = `<div class="chart-lbl"><span>✅ ${esc(vc.title)}</span><span class="vc-badge">JS-VERIFIED</span></div><canvas></canvas>`;
         grid.appendChild(card);
         const canvas = card.querySelector('canvas');
-        const COLORS=['#a78bfa','#60a5fa','#34d399','#f59e0b','#f87171','#38bdf8','#fb923c','#4ade80'];
+        const COLORS=['#a78bfa','#60a5fa','#34d399','#f59e0b','#f87171','#38bdf8','#fb923c','#4ade80','#e879f9','#fbbf24'];
         const labels = vc.data.map(d=>d.name);
         const vals = vc.data.map(d=>d.val);
         if (vc.type==='doughnut'||vc.type==='pie') {
@@ -2548,6 +2598,7 @@ async function sendMsg(){
 
   document.getElementById('sendbtn').disabled = false;
   isSending = false;
+  document.getElementById('sendbtn').disabled = false;
 }
 
 // ── CHAT UI ──
@@ -2721,10 +2772,14 @@ function renderContent(text){
   const pc=[];
   // ULTRA-RESILIENT Chart & KPI Matcher
   // 1. Standardize weird AI tags first
-  text = text.replace(/\[?(?:CHART|ART|CH)(bar|line|pie|doughnut|comparison|trend|of)?\]?:?\s*([\w\s]+)?\|/gi, (m, type, title) => {
-    const t = type || 'bar';
-    return `[CHART:${t}|${title||''}|`;
+  // Normalize non-standard chart tags to valid format
+  text = text.replace(/\[?(?:CHART|ART|CH)(bar|line|pie|doughnut|comparison|trend|of|scatter|area|column|histogram)?\]?:?\s*([\w\s&()-]+)?\|/gi, (m, type, title) => {
+    const typeMap = {comparison:'bar',column:'bar',histogram:'bar',area:'line',scatter:'line'};
+    const t = typeMap[type?.toLowerCase()] || type?.toLowerCase() || 'bar';
+    return `[CHART:${t}|${(title||'Analysis').trim()}|`;
   });
+  // Remove any chart tags without data
+  text = text.replace(/\[CHART:[^\]]*?\[\]\]/g, '');
   
   // 2. Final Parser
   text=text.replace(/\[CHART:([\w]*)\|(.*?)\|([\s\S]*?)\]/gi,(m,type,title,json)=>{
@@ -2781,7 +2836,7 @@ function showWelcome(){
   window.loadSampleData = function(){
     const rows=sCSV.split('\n').map(r=>r.split(','));
     processArr(rows,'Sample Business P&L.csv');
-    setTimeout(()=>setSugAndSend('Analyze this 6-month P&L completely — revenue trends, profit margins, best and worst months, 3 specific actions to improve profitability. Generate 3 charts.'),400);
+    setTimeout(()=>setSugAndSend('Give me a complete expert analysis of this 12-month business data. I want: 6 KPI cards with verified numbers, profit margin analysis, regional breakdown, anomaly detection, month-over-month trends with forecast, and 5 specific priority actions with ₹ impact estimates. Generate minimum 4 charts using actual data values.'),400);
   };
   const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Free · ~20 seconds · 12 months of data</span></div>` : '';
   document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v12 · ELITE AI ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSug('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSug('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
@@ -2794,7 +2849,12 @@ function loadFile(e){
   if(f.size > 10 * 1024 * 1024){ toast('❌ File too large (max 10MB). Try splitting into smaller files.'); e.target.value=''; return; }
   if(f.size > 5 * 1024 * 1024){ toast('⚠️ Large file detected — JS will analyze ALL rows, AI gets full stats'); }
   S.fileName=f.name;
-  const ext=f.name.split('.').pop().toLowerCase();if(['xlsx','xls'].includes(ext)){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name);}catch(e){toast('Error reading Excel');}};r.readAsBinaryString(f);}else{const r=new FileReader();r.onload=ev=>{const txt=ev.target.result;if(ext==='json'){try{S.fileData='JSON: '+f.name+'\n'+JSON.stringify(JSON.parse(txt),null,2).slice(0,9000);S.csv=null;showFOk(f.name,null);}catch(e){toast('Invalid JSON');}}else processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(/[,\t;]/)),f.name);};r.readAsText(f);}e.target.value='';}
+  const ext=f.name.split('.').pop().toLowerCase();if(['xlsx','xls'].includes(ext)){const r=new FileReader();r.onload=ev=>{try{const wb=XLSX.read(ev.target.result,{type:'binary'});processArr(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1}),f.name);}catch(e){toast('Error reading Excel');}};r.readAsBinaryString(f);}else{const r=new FileReader();r.onload=ev=>{const txt=ev.target.result;if(ext==='json'){try{S.fileData='JSON: '+f.name+'\n'+JSON.stringify(JSON.parse(txt),null,2).slice(0,9000);S.csv=null;showFOk(f.name,null);}catch(e){toast('Invalid JSON');}}else {
+          // Smart delimiter detection
+          const firstLine = txt.split('\n')[0]||'';
+          const delim = firstLine.includes('\t') ? /\t/ : firstLine.includes(';') ? /;/ : /,/;
+          processArr(txt.split('\n').filter(r=>r.trim()).map(r=>r.split(delim).map(c=>c.trim().replace(/^"|"$/g,''))),f.name);
+        }};r.readAsText(f);}e.target.value='';}
 function processArr(rows,fname,isSecond){
   if(!rows.length)return;
   const hdrs=rows[0].map(h=>String(h||'').trim());
@@ -3323,7 +3383,11 @@ function showFOk(fname,info){
   document.getElementById('sendbtn').disabled=false;
   const old=document.getElementById('dcCard');if(old)old.remove();
   const csvP=document.getElementById('csvPrev');if(csvP)csvP.style.display='none';
-  if(!info)return;
+  if(!info){
+    // Still show fileok chip even without detailed info
+    document.getElementById('sendbtn').disabled=false;
+    return;
+  }
 
   // Quality score now uses real pre-computed value
   const quality=info.qualityScore||Math.round(
@@ -3378,7 +3442,7 @@ function showFOk(fname,info){
     <div class="dc-stats">
       <div class="dc-stat"><div class="dc-sv" style="color:#34d399">${info.rows.toLocaleString('en-IN')}</div><div class="dc-sl">Rows</div></div>
       <div class="dc-stat"><div class="dc-sv" style="color:#60a5fa">${info.cols}</div><div class="dc-sl">Columns</div></div>
-      <div class="dc-stat"><div class="dc-sv" style="color:#a78bfa">${numCols}</div><div class="dc-sl">Numeric</div></div>
+      <div class="dc-stat"><div class="dc-sv" style="color:#a78bfa">${numColCount}</div><div class="dc-sl">Numeric</div></div>
       <div class="dc-stat"><div class="dc-sv" style="color:#f59e0b">${quality}%</div><div class="dc-sl">Quality</div></div>
     </div>
     <div class="dc-sec">💡 Quick Suggestions</div>
@@ -3702,7 +3766,21 @@ function setSugAndSend(txt){
 }
 function setSug(txt){const ta=document.getElementById('userinput');ta.value=txt;ta.focus();document.getElementById('sendbtn').disabled=false;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';}
 function rSamp(el){document.getElementById('userinput').value=el.getAttribute('data-txt');document.getElementById('sendbtn').disabled=false;sendMsg();}
-function newChat(){S.messages=[];S.fileData=null;S.fileName=null;S.csv=null;['fileok','csvPrev','anomBanner','livechip'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});showWelcome();}
+function newChat(){
+  S.messages=[];S.fileData=null;S.fileName=null;S.csv=null;S.csv2=null;
+  S.verifiedFacts=null;S.factsSummary='';S.anomalyFacts='';S.confidenceData=null;
+  S.verifiedCharts=null;S.schemaViolations=null;S.tsIssues=null;
+  S.correlationMatrix=null;S.duplicates=[];S.formulaMismatches=[];
+  isSending=false;
+  // Reset UI elements
+  ['fileok','csvPrev','anomBanner','livechip','schemaBanner','healthBar'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.style.display='none';if(id==='schemaBanner')el.classList.remove('show');if(id==='healthBar')el.classList.remove('show');}
+  });
+  const dcCard=document.getElementById('dcCard');if(dcCard)dcCard.remove();
+  document.getElementById('sendbtn').disabled=true;
+  showWelcome();
+}
 function showModal(title,msg,fn,hasInput){document.getElementById('mTitle').textContent=title;document.getElementById('mMsg').textContent=msg;const inp=document.getElementById('mInp');inp.style.display=hasInput?'':'none';inp.value='';document.getElementById('mConfirm').onclick=()=>{fn(inp.value);closeModal();};document.getElementById('modalBg').classList.add('show');if(hasInput)setTimeout(()=>inp.focus(),100);}
 function closeModal(){document.getElementById('modalBg').classList.remove('show');}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -3879,6 +3957,45 @@ document.addEventListener('click',function(e){
   const t=e.target.closest('[onclick],[data-action],.tb,.sug-chip,.dc-sug,.mod-item,.qk,.hist-item,.samp-item,.mab,.tab,.ct');
   if(t&&!t.disabled){const fn=t.getAttribute('onclick');if(fn&&typeof window[fn.split('(')[0]]==='function')return;}
 },{passive:true});
+
+// ══ NEXUS v12: Drag & Drop file support ══
+(function(){
+  const dropZone = document.getElementById('view-dash');
+  if (!dropZone) return;
+
+  let dragCounter = 0;
+  dropZone.addEventListener('dragenter', e => {
+    e.preventDefault();
+    dragCounter++;
+    dropZone.classList.add('drag-active');
+  });
+  dropZone.addEventListener('dragleave', e => {
+    dragCounter--;
+    if (dragCounter <= 0) { dragCounter = 0; dropZone.classList.remove('drag-active'); }
+  });
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); });
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dragCounter = 0;
+    dropZone.classList.remove('drag-active');
+    const files = e.dataTransfer?.files;
+    if (files && files[0]) {
+      const file = files[0];
+      const ext = file.name.split('.').pop().toLowerCase();
+      if (['csv','xlsx','xls','json','txt','tsv'].includes(ext)) {
+        // Simulate file input
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        const fi = document.getElementById('fileinput');
+        if (fi) { fi.files = dt.files; fi.dispatchEvent(new Event('change')); }
+        toast('📁 File dropped: ' + file.name);
+      } else {
+        toast('❌ Unsupported format. Use CSV, Excel, JSON, or TXT', true);
+      }
+    }
+  });
+})();
+
 loadSession();
 if(typeof google!=='undefined')initGoogleBtn();
 else document.querySelector("script[src*='accounts.google.com']")?.addEventListener('load', initGoogleBtn);
@@ -4065,21 +4182,54 @@ window.toggleTheme=function(){
   localStorage.setItem('nx_theme',S.theme);
 };
 
-// FIX 43: Paste CSV detection in textarea
+// NEXUS v12: Smart paste handler — works anywhere on dashboard
 document.addEventListener('paste',function(e){
-  const ta=document.getElementById('userinput');
-  if(document.activeElement!==ta)return;
-  const txt=e.clipboardData.getData('text');
-  if(!txt)return;
-  const lines=txt.trim().split('\n');
-  if(lines.length>3&&lines[0].includes(',')&&lines[1].includes(',')){
+  // Don't intercept paste inside input fields (for URLs, text input etc)
+  const active = document.activeElement;
+  const tag = active ? active.tagName.toLowerCase() : '';
+  const isInputField = tag === 'input' || (tag === 'textarea' && active.id !== 'userinput');
+  if (isInputField) return;
+
+  const txt = e.clipboardData ? e.clipboardData.getData('text') : '';
+  if (!txt || !txt.trim()) return;
+
+  const lines = txt.trim().split('\n').filter(l => l.trim());
+
+  // Detect CSV/TSV: has multiple lines with delimiters
+  const isCSV = lines.length >= 2 && (
+    (lines[0].includes(',') && lines[1].includes(',')) ||
+    (lines[0].includes('\t') && lines[1].includes('\t')) ||
+    (lines[0].includes(';') && lines[1].includes(';'))
+  );
+
+  if (isCSV && typeof processArr === 'function' && document.getElementById('view-dash')?.classList.contains('active')) {
     e.preventDefault();
-    const rows=lines.map(r=>r.split(','));
-    if(typeof processArr==='function'){
-      processArr(rows,'Pasted Data');
-      ta.value='Analyze this data completely with charts';
-      ta.dispatchEvent(new Event('input'));
-      toast('📋 CSV data detected! Press Enter to analyze.');
+    const delim = lines[0].includes('\t') ? '\t' : lines[0].includes(';') ? ';' : ',';
+    const rows = lines.map(r => r.split(delim).map(c => c.trim().replace(/^"|"$/g,'')));
+    processArr(rows, 'Pasted Data');
+    // Auto-send analysis after short delay for processArr to complete
+    setTimeout(() => {
+      const ta = document.getElementById('userinput');
+      if (ta && !ta.value.trim()) {
+        ta.value = 'Analyze this data completely — give me KPIs, charts, anomalies, and top 5 business actions';
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(ta.scrollHeight, 150) + 'px';
+        document.getElementById('sendbtn').disabled = false;
+      }
+      toast('📋 Data pasted! Analyzing now…');
+      sendMsg();
+    }, 600);
+  } else if (!isCSV && document.getElementById('view-dash')?.classList.contains('active')) {
+    // Non-CSV text paste — put in textarea if it's not focused
+    if (active?.id !== 'userinput') {
+      const ta = document.getElementById('userinput');
+      if (ta) {
+        ta.value = txt.slice(0, 2000);
+        ta.focus();
+        ta.style.height = 'auto';
+        ta.style.height = Math.min(ta.scrollHeight, 150) + 'px';
+        document.getElementById('sendbtn').disabled = false;
+      }
     }
   }
 });

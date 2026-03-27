@@ -418,8 +418,13 @@ export default {
 
     // ── /api/analyze ──────────────────────────────────────
     if (path === "/api/analyze" && method === "POST") {
-      let user = await getUser(request, env);
+      const tokenHdr = request.headers.get("x-nexus-token") || "";
+      let user = null;
+      if (tokenHdr && tokenHdr !== "guest" && tokenHdr !== "guest_token") {
+        user = await getUser(request, env);
+      }
       if (!user) {
+        // Trial/guest access — no auth required during testing phase
         user = { email: "guest@nexus.ai", name: "Trial User", plan: "unlimited", credits: -1 };
       }
 
