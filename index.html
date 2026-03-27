@@ -3194,7 +3194,6 @@ document.addEventListener('paste',function(e){
       const rows=lines.map(r=>r.split(bestDelim));
       if(typeof processArr==='function'){
         processArr(rows,'Pasted Data');
-        ta.value='Analyze this data completely with charts';
         ta.dispatchEvent(new Event('input'));
         toast('📋 ' + (bestDelim==='\t'?'TSV':'CSV') + ' data detected! Press Enter to analyze.');
       }
