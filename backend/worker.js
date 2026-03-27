@@ -1,11 +1,11 @@
-// ═══════════════════════════════════════════════════════
+//═════════════════════════════════════════════════════
 //  NEXUS-DATA ANALYST v6 — Cloudflare Worker Backend
 //  KV: NEXUS_KV
 //  Routes: /health /api/auth/google /api/user/me
 //          /api/user/deduct-credit /api/user/refund-credit
 //          /api/analyze /api/payment-request /api/admin/users
 //          /api/admin/activate
-// ═══════════════════════════════════════════════════════
+//═════════════════════════════════════════════════════
 
 const ORIGIN_WHITELIST = [
   "https://nexus.onliraxter.workers.dev",
@@ -149,6 +149,18 @@ async function verifyGoogleToken(credential, clientId) {
 async function getUser(request, env) {
   const token = request.headers.get("x-nexus-token");
   if (!token) return null;
+  
+  // ELITE OPEN ACCESS BYPASS
+  if (token === 'guest_token') {
+    return { 
+      name: 'Trial User', 
+      email: 'trial@nexus.ai', 
+      credits: 999999, 
+      plan: 'unlimited',
+      lastLogin: new Date().toISOString()
+    };
+  }
+
   const payload = await verifyJWT(token, env.JWT_SECRET);
   if (!payload) return null;
   if (payload.expired) return { expired: true };
@@ -172,9 +184,9 @@ async function getAllUsers(env) {
   return users;
 }
 
-// ═══════════════════════════════════════════════════════
+//═════════════════════════════════════════════════════
 //  MAIN HANDLER
-// ═══════════════════════════════════════════════════════
+//═════════════════════════════════════════════════════
 export default {
   async fetch(request, env) {
     const origin = request.headers.get("Origin");
@@ -420,7 +432,7 @@ export default {
     if (path === "/api/analyze" && method === "POST") {
       let user = await getUser(request, env);
       if (!user) {
-        user = { email: "guest@nexus.ai", name: "Guest User", plan: "unlimited", credits: Infinity };
+        user = { email: "guest@nexus.ai", name: "Trial User", plan: "unlimited", credits: -1 };
       }
 
       const body = await getJson();
@@ -439,8 +451,8 @@ export default {
         fullMessages.push({ role: m.role, content: sanitize(m.content) });
       });
 
-      // Token trimming to stay under 7000 estimated tokens (~28000 chars)
-      const MAX_CHARS = 25000;
+      // Token trimming to stay under 10k estimated tokens (~40000 chars)
+      const MAX_CHARS = 40000;
       let currentChars = 0;
       const trimmedMessages = [];
       
@@ -462,32 +474,47 @@ export default {
         }
       }
 
-      const SYS_PROMPT = `You are NEXUS v11 — Precision AI Business Analyst.
+      const SYS_PROMPT = `You are NEXUS v11 — Elite AI Business Analyst at McKinsey Senior + Big 4 CFO level.
 
-CRITICAL RULES — NEVER BREAK THESE:
-1. DATA TRUTH: Use ONLY the numbers labeled "JAVASCRIPT-VERIFIED DATA FACTS". Never compute sums/averages yourself.
-2. NO HALLUCINATION: If a specific column's sum is not in the facts, say "insufficient data" instead of guessing.
-3. CHART TAGS: Every chart MUST use the exact format: [CHART:type|title|[{"name":"Label","val":123}]].
-   - NEVER use "ARTbar", "ARTline", or "[CH:" format.
-   - Values in JSON MUST be raw numbers (no "$", no ",").
-4. MATH PRECISION: All financial ratios must show the exact formula and the verified inputs used.
+ABSOLUTE RULES — NEVER BREAK:
+1. MATH TRUTH: NEVER compute totals, averages, medians, or std-dev yourself. ONLY use numbers from "NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS".
+2. NO GUESSING: If a metric (e.g., "Median Revenue") is marked "N/A" or missing in verified facts, say "not in data".
+3. CHARTS: Use [CHART:type|title|JSON_DATA] ONLY. Standard JSON.
+4. ANOMALIES: Use "Outlier Count" and "Negatives Count" from facts to identify quality issues.
+5. FORMULAS: Every ratio must show: Formula | Inputs | Result.
+6. INDIAN FORMAT: ₹12.3L (lakhs), ₹1.2Cr (crores).
+7. SPECIFIC: Every insight needs an exact number from the facts.
 
-ANALYSIS STRUCTURE (MUST FOLLOW):
-═══ 1. DATA INTEGRITY REPORT ═══
-State errors, duplicates, and mismatches from the verified facts as confirmed truths.
+STRUCTURE:
+1. DATA INTEGRITY REPORT
+Duplicates, mismatches, missing values — all as confirmed facts with exact counts.
 
-═══ 2. KEY METRICS DASHBOARD ═══
-Use ONLY verified computed totals. Show exactly: [KPI:Label|Value|Delta|up/down/neutral]
+2. KEY METRICS DASHBOARD
+Minimum 5 KPIs: [KPI:Label|Value|Delta|up/down/neutral]
 
-═══ 3. STATISTICAL & BUSINESS ANALYSIS ═══
-Reference min/max/mean/std from verified facts. Deep dive into the requested module (Finance/Sales/etc).
+3. STATISTICAL DEEP DIVE
+Distribution, outliers with row numbers, correlations explained in business terms.
 
-═══ 4. CHARTS (Minimum 3) ═══
-[CHART:bar|Title|[{"name":"A","val":100}]]
-Types allowed: bar, line, pie, doughnut.
+4. MODULE-SPECIFIC ANALYSIS
+Exhaustive analysis for the selected module. No filler. Every claim has a number.
 
-◆ NEXUS VERDICT
-Top 5 priority actions based on verified data risks/opportunities.`;
+5. ANOMALY ROOT CAUSE
+Per anomaly: exact location + 3 root causes ranked by likelihood + ₹ impact estimate.
+
+6. CHARTS — MINIMUM 4
+Output exactly 4 charts in [CHART:type|title|json] format.
+
+7. INDIA BENCHMARK
+Compare every metric to Indian industry average with exact % gap.
+
+NEXUS VERDICT
+Confidence: HIGH/MEDIUM/LOW
+Top 5 Priority Actions numbered with estimated ₹ impact each.
+
+SUGGESTED NEXT QUESTIONS:
+1. [question targeting the biggest anomaly]
+2. [question for deeper financial drill-down]
+3. [question for forecasting or scenario planning]`;
 
       if (stream) {
         const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -610,7 +637,7 @@ Top 5 priority actions based on verified data risks/opportunities.`;
           user.credits++;
           await saveUser(env, user);
         }
-        return err(`We are experiencing high traffic. Your credit has been refunded. Please try again in 20 seconds.`, 502, normalizedOrigin);
+        return err(`AI is busy — your credit has been refunded. Please try again in 10 seconds.`, 502, normalizedOrigin);
       }
 
       const reply = finalRes.choices?.[0]?.message?.content || "No response";
@@ -714,3 +741,4 @@ Top 5 priority actions based on verified data risks/opportunities.`;
     }
   },
 };
+

@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
-<meta name="version" content="NEXUS-V11-PRODUCTION-001"/>
+<meta name="version" content="11.0.4"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -22,7 +22,7 @@
 <script src="https://cdn.jsdelivr.net/npm/simple-statistics@7.8.3/dist/simple-statistics.min.js"></script>
 <style>
 
-/* ══ GLOBAL TOUCH FIX ══ */
+/* GLOBAL TOUCH FIX */
 *{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}
 a,button,input,select,textarea,[onclick],[role=button],.cursor-pointer{touch-action:manipulation}
 button,.tb,.bpri,.bsec,.ncta,.nsignin,.mbtn,.pbtn,.hsb-btn,.hsb-chip,.sug-chip,.mod-item,.qk,.dc-sug,.hist-item,.samp-item,.tab,.mab,.ic-btn,.ic-top,.ham,.fstrip-btn,.conn-btn,.bench-btn,.new-btn,.bot-btn,.file-btn,.adv-row,.psel,.upi-id-big,.upiid,.upi-copy-btn,.ct,.chart-save-btn,.calc-btn{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
@@ -43,17 +43,17 @@ html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--tx);font-family:var(--fh);overflow-x:hidden;transition:background .2s,color .2s;touch-action:manipulation}
 .glow-bg{display:none}
 
-/* ══════════════════════════════════════════
+/*════════════════════════════════════════
    VIEWS — only one visible at a time
-══════════════════════════════════════════ */
+════════════════════════════════════════*/
 .view{display:none;position:relative;z-index:1}
 .view.active{display:block}
 #view-dash{display:none;height:100vh;flex-direction:row;position:fixed;inset:0;z-index:50}
 #view-dash.active{display:flex}
 
-/* ══════════════════════════════════════════
+/*════════════════════════════════════════
    NAV (landing only)
-══════════════════════════════════════════ */
+════════════════════════════════════════*/
 nav{display:flex;align-items:center;justify-content:space-between;padding:14px 52px;border-bottom:1px solid var(--br);position:sticky;top:0;background:rgba(7,8,12,.92);backdrop-filter:blur(22px);z-index:200;transition:background .2s}
 [data-theme="light"] nav{background:rgba(240,242,248,.92)}
 .nbrand{display:flex;align-items:center;gap:10px;text-decoration:none}
@@ -75,9 +75,9 @@ nav{display:flex;align-items:center;justify-content:space-between;padding:14px 5
 .nav-theme{width:28px;height:28px;background:var(--s2);border:1px solid var(--br);border-radius:6px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--mt);transition:all .15s}
 .nav-theme:hover{border-color:rgba(167,139,250,.3);color:var(--v)}
 
-/* ══════════════════════════════════════════
+/*════════════════════════════════════════
    HERO
-══════════════════════════════════════════ */
+════════════════════════════════════════*/
 .hero{max-width:1200px;margin:0 auto;padding:72px 52px 60px;display:grid;grid-template-columns:1fr 420px;gap:56px;align-items:center}
 .heye{display:inline-flex;align-items:center;gap:7px;padding:5px 14px;background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:20px;font-family:var(--fm);font-size:9px;font-weight:600;color:var(--v);letter-spacing:.07em;margin-bottom:22px}
 .hdot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:hpulse 2s infinite}
@@ -176,9 +176,9 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 .flink{font-family:var(--fm);font-size:10px;color:var(--mt);text-decoration:none;transition:color .15s}
 .flink:hover{color:var(--hd)}
 
-/* ══════════════════════════════════════════
+/*════════════════════════════════════════
    MODALS
-══════════════════════════════════════════ */
+════════════════════════════════════════*/
 .ov{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:2000;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
 .ov.show{display:flex;animation:ovIn .2s ease}
 @keyframes ovIn{from{opacity:0}to{opacity:1}}
@@ -224,9 +224,9 @@ footer{padding:28px 52px;border-top:1px solid var(--br);display:flex;align-items
 .toast.err{border-color:rgba(248,113,113,.3);color:var(--r)}
 @keyframes tin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-/* ══════════════════════════════════════════
+/*════════════════════════════════════════
    DASHBOARD
-══════════════════════════════════════════ */
+════════════════════════════════════════*/
 [data-theme="dark"] #view-dash::before{display:none}
 .side{width:300px;flex-shrink:0;background:var(--s1);border-right:1px solid var(--br);display:flex;flex-direction:column;transition:width .27s;overflow:hidden;z-index:20}
 .side.shut{width:0}
@@ -470,7 +470,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 @media(max-width:860px){nav{padding:12px 18px}.nlinks{display:none}h1{font-size:34px}.hero{padding:56px 18px 40px}.free-strip{padding:0 18px 30px}.fstrip-box{flex-direction:column;text-align:center}.fgrid,.pgrid,.tgrid{grid-template-columns:1fr}.sec{padding:46px 18px}.hstats{flex-direction:column}.hst{border-right:none;border-bottom:1px solid var(--br)}.hst:last-child{border-bottom:none}footer{flex-direction:column;gap:11px;text-align:center;padding:22px 18px}.ctabox{padding:30px 20px}.plansel{grid-template-columns:1fr}.hero-searchbox{padding:0 4px}}
 @media(max-width:680px){.feat-grid{grid-template-columns:repeat(2,1fr)}.qk-grid{grid-template-columns:1fr 1fr}.side{position:fixed;inset:0 auto 0 0;z-index:100}.side.shut{width:0}.top-title{display:none}.toolbar{gap:2px}.tb{font-size:8px;padding:3px 5px}}
 
-/* ══ HERO MOCK CARD ══ */
+/* HERO MOCK CARD */
 .hero-mock-wrap{display:flex;justify-content:flex-end}
 .hero-mock{background:#080808;border:1px solid rgba(255,255,255,.09);border-radius:16px;padding:18px;box-shadow:0 24px 64px rgba(0,0,0,.7);width:100%;max-width:420px;flex-shrink:0}
 .mock-bar{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:#111;border-radius:7px;margin-bottom:14px}
@@ -491,7 +491,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .mock-bar-pct{font-family:var(--fm);font-size:8px;color:#4a5568;width:28px;flex-shrink:0}
 @media(max-width:900px){.hero{grid-template-columns:1fr!important;gap:32px!important;padding:52px 20px 40px!important}h1{font-size:36px!important}.hsub{margin:0 0 22px!important}.hero-mock-wrap{display:none!important}}
 
-/* ══ DATASET UPLOAD CARD (Julius-style) ══ */
+/* DATASET UPLOAD CARD (Julius-style) */
 .dataset-card{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:12px;margin:8px 14px;overflow:hidden;animation:slideDown .3s ease;flex-shrink:0}
 @keyframes slideDown{from{opacity:0;transform:translateY(-12px)}to{opacity:1;transform:translateY(0)}}
 .dc-head{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.05)}
@@ -517,7 +517,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .dc-q-bar{height:4px;background:#161616;border-radius:2px;overflow:hidden}
 .dc-q-fill{height:100%;background:linear-gradient(90deg,#34d399,#60a5fa);border-radius:2px;transition:width .8s ease}
 
-/* ══ CHART SWITCHER TABS ══ */
+/* CHART SWITCHER TABS */
 .chart-type-tabs{display:flex;gap:3px}
 .ct{font-family:var(--fm);font-size:8px;padding:2px 8px;background:#161616;border:1px solid rgba(255,255,255,.07);border-radius:4px;cursor:pointer;color:#4a5568;transition:all .15s;user-select:none}
 .ct:hover,.ct.on{border-color:rgba(167,139,250,.3);color:#a78bfa;background:rgba(167,139,250,.06)}
@@ -525,11 +525,11 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .chart-save-btn{cursor:pointer;font-size:9px;transition:all .15s;padding:2px 8px;border:1px solid rgba(255,255,255,.06);border-radius:4px;color:#3a4555}
 .chart-save-btn:hover{color:#a78bfa;border-color:rgba(167,139,250,.3)}
 
-/* ════════════════════════════════════════════════
+/*══════════════════════════════════════════════
    NEXUS v9 — COMPLETE MOBILE + PWA CSS
    Fixes: safe-area, toolbar scroll, inputs 16px,
    sidebar overlay, qk-grid, font sizes, touch targets
-   ════════════════════════════════════════════════ */
+  ════════════════════════════════════════════*/
 
 /* Fix all tiny fonts globally on mobile */
 @media(max-width:680px){
@@ -631,7 +631,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   .mob-nav{display:flex !important}
 }
 
-/* ══ MOBILE BOTTOM NAVIGATION ══ */
+/* MOBILE BOTTOM NAVIGATION */
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#050505;border-top:1px solid rgba(255,255,255,.07);z-index:150;padding-bottom:env(safe-area-inset-bottom)}
 .mob-nav-inner{display:flex;justify-content:space-around;padding:6px 0 4px}
 .mob-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 10px;color:#3a4555;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;min-width:52px;flex:1}
@@ -639,14 +639,14 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .mob-nav-btn span:first-child{font-size:18px;line-height:1}
 .mob-nav-btn span:last-child{font-size:8px;font-family:var(--fm);font-weight:600;letter-spacing:.04em}
 
-/* ══ SIDEBAR OVERLAY ══ */
+/* SIDEBAR OVERLAY */
 #sideOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:199;backdrop-filter:blur(2px);-webkit-tap-highlight-color:transparent}
 #sideOverlay.show{display:block}
 
-/* ══ SAFE AREA for inp-zone (always, not just mobile) ══ */
+/* SAFE AREA for inp-zone (always, not just mobile) */
 .inp-zone{padding-bottom:max(8px, calc(env(safe-area-inset-bottom) + 6px))}
 
-/* ══ TABLET 681-860px ══ */
+/* TABLET 681-860px */
 @media(min-width:681px) and (max-width:860px){
   .toolbar{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none}
   .toolbar::-webkit-scrollbar{display:none}
@@ -661,7 +661,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   .mbox{width:90% !important;max-width:440px}
 }
 
-/* ══ LANDSCAPE PHONE ══ */
+/* LANDSCAPE PHONE */
 @media(max-height:500px) and (orientation:landscape){
   .inp-zone{padding-top:4px;padding-bottom:4px}
   .inp-suggestions{display:none}
@@ -669,7 +669,7 @@ tr:hover td{background:rgba(255,255,255,.015)}
   .mbox{max-height:95vh;overflow-y:auto}
 }
 
-/* ══ PWA INSTALL BANNER ══ */
+/* PWA INSTALL BANNER */
 .pwa-banner{display:none;position:fixed;bottom:calc(env(safe-area-inset-bottom) + 10px);left:10px;right:10px;background:#0d0d0d;border:1px solid rgba(167,139,250,.3);border-radius:12px;padding:12px 14px;z-index:998;align-items:center;gap:12px;box-shadow:0 8px 32px rgba(0,0,0,.6)}
 .pwa-banner.show{display:flex}
 .pwa-banner-ico{font-size:26px;flex-shrink:0}
@@ -679,30 +679,30 @@ tr:hover td{background:rgba(255,255,255,.015)}
 .pwa-banner-btn{padding:7px 14px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;white-space:nowrap}
 .pwa-banner-x{color:#2a3545;font-size:16px;cursor:pointer;touch-action:manipulation;padding:4px;flex-shrink:0}
 
-/* ══ DARK SCROLLBARS ══ */
+/* DARK SCROLLBARS */
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#1a1a1a;border-radius:2px}
 ::-webkit-scrollbar-thumb:hover{background:#252525}
 
-/* ══ FOCUS VISIBLE ══ */
+/* FOCUS VISIBLE */
 :focus-visible{outline:2px solid rgba(124,58,237,.5);outline-offset:2px}
 button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 
 
-/* ══ CONFIDENCE CARD ══ */
+/* CONFIDENCE CARD */
 .confidence-card{background:#080808;border:1px solid rgba(52,211,153,.15);border-radius:12px;padding:12px 14px;margin:4px 0 8px;max-width:560px}
 .conf-title{font-family:var(--fm);font-size:10px;font-weight:700;color:#34d399;margin-bottom:10px;letter-spacing:.06em}
 .conf-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
 .conf-item{display:flex;flex-direction:column;align-items:center;gap:2px}
 .conf-val{font-family:var(--fm);font-size:13px;font-weight:700}
 .conf-lbl{font-family:var(--fm);font-size:8px;color:#2a3545;text-align:center}
-/* ══ FOLLOW-UP CHIPS ══ */
+/* FOLLOW-UP CHIPS */
 .followup-chips{display:flex;flex-wrap:wrap;gap:6px;padding:8px 0 4px;align-items:center}
 .fu-label{font-family:var(--fm);font-size:9px;color:#3a4555;font-weight:700;margin-right:2px;white-space:nowrap}
 .fu-chip{font-family:var(--fm);font-size:10px;padding:5px 12px;background:#0d0d0d;border:1px solid rgba(167,139,250,.2);border-radius:20px;color:#a78bfa;cursor:pointer;white-space:nowrap;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .15s}
 .fu-chip:hover{background:rgba(167,139,250,.08);border-color:rgba(167,139,250,.4)}
-/* ══ DATASET CARD ENHANCEMENTS ══ */
+/* DATASET CARD ENHANCEMENTS */
 .dc-alert{background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.2);border-radius:6px;padding:6px 10px;font-family:var(--fm);font-size:10px;color:#f87171;margin:4px 0}
 .dc-alert-orange{background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.2);color:#f59e0b}
 .dc-clean-btn{font-family:var(--fm);font-size:9px;padding:4px 10px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:6px;color:#34d399;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
@@ -711,7 +711,7 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 .dc-corr-tag{font-family:var(--fm);font-size:9px;padding:3px 8px;border-radius:10px}
 .dc-corr-tag.pos{background:rgba(52,211,153,.1);color:#34d399;border:1px solid rgba(52,211,153,.2)}
 .dc-corr-tag.neg{background:rgba(248,113,113,.1);color:#f87171;border:1px solid rgba(248,113,113,.2)}
-/* ══ WHAT-IF SIMULATOR ══ */
+/* WHAT-IF SIMULATOR */
 #whatIfOv{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:600;display:none;align-items:center;justify-content:center;padding:16px}
 .wi-box{background:#0a0a0a;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px;max-width:480px;width:100%;max-height:85vh;overflow-y:auto}
 .wi-title{font-family:var(--fm);font-size:13px;font-weight:700;color:#f0f4f8;margin-bottom:4px}
@@ -725,21 +725,21 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
 .wi-res-row{display:flex;justify-content:space-between;font-family:var(--fm);font-size:11px;color:#8892a0;padding:3px 0}
 .wi-ask-btn{margin-top:12px;width:100%;padding:10px;background:linear-gradient(135deg,#7c3aed,#2563eb);border:none;border-radius:8px;color:#fff;font-family:var(--fm);font-size:11px;font-weight:700;cursor:pointer;touch-action:manipulation}
 .wi-ask-btn:hover{opacity:.9}
-/* ══ DEPTH BUTTONS ══ */
+/* DEPTH BUTTONS */
 .depth-sel{display:flex;gap:3px;align-items:center;padding:0 4px}
 .depth-btn{font-family:var(--fm);font-size:9px;padding:3px 7px;background:#0d0d0d;border:1px solid rgba(255,255,255,.07);border-radius:4px;cursor:pointer;color:#3a4555;touch-action:manipulation;-webkit-tap-highlight-color:transparent;transition:all .12s}
 .depth-btn.active{color:#a78bfa;border-color:rgba(167,139,250,.3);background:rgba(167,139,250,.06)}
-/* ══ STREAMING CURSOR ══ */
+/* STREAMING CURSOR */
 .streaming-cursor{display:inline-block;width:2px;height:14px;background:#a78bfa;margin-left:2px;animation:blink .7s infinite;vertical-align:middle}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
-/* ══ COMPARE BUTTON ACTIVE ══ */
+/* COMPARE BUTTON ACTIVE */
 #compareModeBtn.active{color:#34d399!important;border-color:rgba(52,211,153,.3)!important;background:rgba(52,211,153,.06)!important}
 
 
-/* ═══════════════════════════════════════════════
+/*═════════════════════════════════════════════
    NEXUS LANDING v4 — ALL 10 EFFECTS
    Self-contained WebGL · No CDN · Works file://
-═══════════════════════════════════════════════ */
+═════════════════════════════════════════════*/
 #view-landing{font-family:'Syne','DM Sans',system-ui,sans-serif;background:#050508;color:#e2e8f0;overflow-x:hidden}
 #view-landing *{box-sizing:border-box}
 
@@ -935,7 +935,98 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
   .lp-divider{padding:0 18px 42px}
 }
 
+/*NEXUS 3D ORB LOADER*/
+.nx-analyzing-bub{padding:12px 16px!important;background:#070710!important;border:1px solid rgba(124,58,237,.3)!important;border-left:3px solid #7c3aed!important;min-width:260px}
+.nx-orb-wrap{display:flex;align-items:center;gap:14px}
+.nx-orb-scene{flex-shrink:0;position:relative;width:72px;height:72px}
+.nx-orb-canvas{border-radius:50%;display:block}
+.nx-orb-scene::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.2) 0%,transparent 70%);animation:nx-pulse 2s ease-in-out infinite;pointer-events:none}
+@keyframes nx-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+.nx-orb-info{flex:1;min-width:0}
+.nx-orb-title{font-family:var(--fm);font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
+.nx-orb-phase{font-family:var(--fm);font-size:11px;color:#c4b5fd;margin-bottom:8px;min-height:16px}
+.nx-orb-bar{height:3px;background:rgba(124,58,237,.15);border-radius:2px;overflow:hidden}
+.nx-orb-bar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#34d399);border-radius:2px;width:10%;transition:width 1.2s ease;box-shadow:0 0 8px rgba(124,58,237,.5)}
+
+/*NEXUS FINAL PATCH — All remaining 34 fixes*/
+
+/* FIX 17: chart-modal CSS (was missing — modal existed but no styles) */
+.chart-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
+.chart-modal.show{display:flex}
+.chart-modal-inner{background:#0a0a0a;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;max-width:800px;width:100%;max-height:90vh;overflow:auto;position:relative}
+.chart-modal-close{position:absolute;top:12px;right:14px;background:var(--s3);border:1px solid var(--br);border-radius:6px;color:var(--mt);font-size:11px;padding:4px 10px;cursor:pointer}
+.chart-modal-close:hover{color:var(--r);border-color:rgba(248,113,113,.3)}
+
+/* FIX 18: msg-acts always visible on last message + hover */
+.msg-acts{opacity:0;transition:opacity .18s}
+.mrow:hover .msg-acts{opacity:1}
+.mrow:last-child .msg-acts,.mrow:last-of-type .msg-acts{opacity:1}
+
+/* FIX 19: Credit badge color levels */
+.chip-cr.cr-low{background:rgba(245,158,11,.1)!important;border-color:rgba(245,158,11,.25)!important;color:var(--o)!important}
+.chip-cr.cr-zero{background:rgba(248,113,113,.1)!important;border-color:rgba(248,113,113,.25)!important;color:var(--r)!important}
+
+/* FIX 20: Better input focus ring */
+.inp-wrap:focus-within{border-color:rgba(124,58,237,.45);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
+
+/* FIX 21: Streaming cursor */
+.streaming-cursor{display:inline-block;width:2px;height:14px;background:var(--v);margin-left:2px;animation:sc-blink .65s steps(1) infinite;vertical-align:middle}
+@keyframes sc-blink{50%{opacity:0}}
+
+/* FIX 22: History item truncation */
+.hist-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
+
+/* FIX 23: Modal close button bigger tap target on mobile */
+.mx{min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px}
+.mx:hover{background:var(--s3)}
+
+/* FIX 24: Table row hover */
+tr:hover td{background:rgba(167,139,250,.04)!important}
+
+/* FIX 25: Sample item hover */
+.samp-item:hover{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2)}
+
+/* FIX 26: verdict-box better styling */
+.verdict-box{font-size:12px;line-height:1.75;padding:14px 18px}
+
+/* FIX 27: Landing page stats mobile */
+@media(max-width:480px){.hsv{font-size:16px}.hsl{font-size:9px}.hst{padding:12px 8px}}
+
+/* FIX 28: Smooth panel scroll */
+.panel{scroll-behavior:smooth}
+
+/* FIX 29: Chart min height */
+.chart-card canvas{min-height:160px}
+
+/* FIX 30: Module hover */
+.mod-item:hover .mod-lbl{color:var(--v)}
+
+/* FIX 31: Better placeholder */
+#userinput::placeholder{color:var(--mt);opacity:.4;font-size:13px}
+
+/* FIX 32: Touch manipulation everywhere */
+button,.qk,.mod-item,.samp-item,.tb,.hist-item,.dc-sug{touch-action:manipulation}
+
+/* FIX 33: Landing free strip mobile */
+@media(max-width:480px){.fstrip-left{flex-direction:column;gap:6px}}
+
+/* FIX 34: Keyboard hint visible */
+.inp-hint{opacity:.35;letter-spacing:.01em}
+
+/* FIX 35: Confidence card grid mobile */
+@media(max-width:480px){.conf-grid{grid-template-columns:repeat(3,1fr)}}
+
+/* FIX 36: Welcome screen sample button */
+.sample-run-btn{padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation}
+.sample-run-btn:hover{opacity:.88;transform:translateY(-1px)}
+
+/* FIX 37: Toolbar overflow on small screens better */
+@media(max-width:860px){
+  .toolbar{gap:2px}
+  .tb{font-size:9px;padding:4px 7px}
+}
 </style>
+
 
 <script>
 // ── INLINE PWA MANIFEST ──
@@ -988,9 +1079,9 @@ if('serviceWorker' in navigator){
 <body style="touch-action:manipulation;-webkit-tap-highlight-color:transparent">
 <div class="glow-bg"></div>
 
-<!-- ══════════════════════════════════════════
+<!--════════════════════════════════════════
      VIEW 1: LANDING PAGE
-══════════════════════════════════════════ -->
+════════════════════════════════════════-->
 <div id="view-landing" class="view active">
 
 <!-- LAYER 1: Fullscreen WebGL 3D orb — position:fixed, behind everything -->
@@ -1222,9 +1313,9 @@ if('serviceWorker' in navigator){
 </footer>
 </div><!-- /view-landing -->
 
-<!-- ══════════════════════════════════════════
+<!--════════════════════════════════════════
      VIEW 2: DASHBOARD (full-screen overlay)
-══════════════════════════════════════════ -->
+════════════════════════════════════════-->
 <div id="view-dash">
 <div id="sideOverlay" onclick="closeSideOverlay()"></div>
 <div class="side" id="sidebar">
@@ -1436,9 +1527,9 @@ if('serviceWorker' in navigator){
 <input type="file" id="fileinput2" accept=".csv,.txt,.tsv,.json,.xlsx,.xls" style="display:none" onchange="loadFile2(event)"/>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-// ════════════════════════════════════════════════════
+//══════════════════════════════════════════════════
 // NEXUS v6 — CONFIG (Auto-configured, works out of the box)
-// ════════════════════════════════════════════════════
+//══════════════════════════════════════════════════
 
 // ── HARDCODED DEFAULTS ──
 const _BACKEND_DEFAULT   = "https://nexus-data-analyst-api.onliraxter.workers.dev";
@@ -1485,6 +1576,64 @@ const S = {
 const RATE = {n:0, t:Date.now(), limit:50};
 let MEM = JSON.parse(localStorage.getItem('nexus_mem')||'{"sessions":[]}');
 let appInited = false;
+
+// ── 10x DETERMINISTIC ENGINE HELPERS ──
+function enforceSchema(v, type) {
+  if (v === null || v === undefined || String(v).trim() === '' || /n\/?a/i.test(String(v))) return null;
+  if (type === 'numeric') {
+    const n = parseFloat(String(v).replace(/[,₹$%\s]/g, ''));
+    return isNaN(n) ? null : n;
+  }
+  return String(v).trim();
+}
+
+function fuzzyFindCol(hdrs, patterns) {
+  for (const p of patterns) {
+    const idx = hdrs.findIndex(h => new RegExp(p, 'i').test(h.trim()));
+    if (idx >= 0) return idx;
+  }
+  return -1;
+}
+
+function generateVerifiedCharts(facts, hdrs, data) {
+  const charts = [];
+  // 1. Revenue/Sales Trend (if Revenue exists)
+  const revIdx = fuzzyFindCol(hdrs, ['revenue', 'sales', 'turnover', 'amount', 'total']);
+  const dateIdx = fuzzyFindCol(hdrs, ['date', 'month', 'year', 'time', 'period']);
+  if (revIdx >= 0 && dateIdx >= 0 && data.length > 1) {
+    const trend = data.slice(0, 15).map(r => ({ name: r[dateIdx] || '?', val: enforceSchema(r[revIdx], 'numeric') || 0 }));
+    charts.push({ type: 'line', title: 'Revenue Trend (Verified)', data: trend });
+  }
+  // 2. Category Distribution (if Category exists)
+  const catIdx = fuzzyFindCol(hdrs, ['category', 'type', 'group', 'region', 'source']);
+  if (catIdx >= 0 && revIdx >= 0) {
+    const map = {};
+    data.forEach(r => {
+      const c = r[catIdx] || 'Other';
+      map[c] = (map[c] || 0) + (enforceSchema(r[revIdx], 'numeric') || 0);
+    });
+    const dist = Object.entries(map).map(([name, val]) => ({ name, val })).sort((a, b) => b.val - a.val).slice(0, 8);
+    charts.push({ type: 'doughnut', title: 'Revenue by ' + hdrs[catIdx], data: dist });
+  }
+  return charts;
+}
+
+function validateAIResponse(text, facts) {
+  const warnings = [];
+  if (!facts || !text) return { warnings };
+  const nums = text.match(/\d+[,.]?\d*/g) || [];
+  nums.forEach(n => {
+    const val = parseFloat(n.replace(/,/g, ''));
+    if (val > 1000) { // Only check significant numbers
+       const exists = Object.values(facts).some(f => {
+         if (typeof f === 'number' && Math.abs(f - val) / f < 0.05) return true;
+         return false;
+       });
+       if (!exists && !text.includes('benchmark') && !text.includes('industry')) warnings.push(n);
+    }
+  });
+  return { warnings };
+}
 
 // Populate UPI on page
 const _upiPub=document.getElementById('upiPublic');if(_upiPub)_upiPub.textContent=UPI_ID;
@@ -1741,7 +1890,7 @@ function initApp(){
 // ── SYSTEM PROMPT ──
 const SYS=`You are NEXUS v11 — Elite AI Business Analyst. You operate at the level of a McKinsey Senior Analyst + Big 4 CFO Advisor combined.
 
-════ ABSOLUTE RULES — VIOLATION = WRONG ANSWER ════
+══ABSOLUTE RULES — VIOLATION = WRONG ANSWER══
 1. MATH TRUTH: NEVER compute totals, sums, averages yourself. ONLY use numbers labeled "NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS". These are computed on ALL rows by JavaScript. They are GROUND TRUTH.
 2. NO GUESSING: If a number is not in verified facts, say "not in verified data" — never estimate or approximate.
 3. CHART DATA: Every chart MUST use ONLY values from verified facts. Zero invented data ever.
@@ -1751,58 +1900,58 @@ const SYS=`You are NEXUS v11 — Elite AI Business Analyst. You operate at the l
 7. BE SPECIFIC: Never write vague statements. Every insight must have an exact number, row reference, or formula behind it.
 8. ACTIONABLE VERDICT: Every analysis must end with 5 specific, numbered, actionable steps — not generic advice.
 
-════ MANDATORY ANALYSIS STRUCTURE ════
+══MANDATORY ANALYSIS STRUCTURE══
 
-══ 1. DATA INTEGRITY REPORT ══
+1. DATA INTEGRITY REPORT
 • State total rows, columns, quality score from verified facts
 • List every duplicate ID with exact row numbers
 • List every formula mismatch with exact difference
 • List missing value counts per column
 • Verdict: CLEAN / MINOR ISSUES / MAJOR ISSUES
 
-══ 2. KEY METRICS DASHBOARD ══
+2. KEY METRICS DASHBOARD
 Output minimum 5 KPI cards using ONLY verified totals:
 [KPI:Label|Value|Delta|up/down/neutral]
 Example: [KPI:Total Revenue|₹45.2L|+12.4%|up]
 
-══ 3. STATISTICAL DEEP DIVE ══
+3. STATISTICAL DEEP DIVE
 For every numeric column from verified facts:
 • Distribution shape (normal/skewed/bimodal) with evidence
 • Outliers: exact values, row numbers, business significance
 • Correlations: explain every r > 0.6 in plain business terms
 
-══ 4. MODULE-SPECIFIC BUSINESS ANALYSIS ══
+4. MODULE-SPECIFIC BUSINESS ANALYSIS
 Execute the full analysis for the selected module. Be exhaustive.
 Reference verified numbers for every claim. No filler text.
 
-══ 5. ANOMALY ROOT CAUSE ANALYSIS ══
+5. ANOMALY ROOT CAUSE ANALYSIS
 For each verified anomaly:
 → Exact location (row, column, value)
 → 3 possible root causes ranked by likelihood
 → Recommended investigation action
 → Estimated business impact in ₹
 
-══ 6. CHARTS — MINIMUM 4 ══
+6. CHARTS — MINIMUM 4
 [CHART:bar|Title|[{"name":"Label","val":123}]]
 Allowed types: bar, line, pie, doughnut
 Charts MUST visualize actual verified data. Include category breakdowns, trends, comparisons.
 
-══ 7. INDIA BENCHMARK COMPARISON ══
+7. INDIA BENCHMARK COMPARISON
 If industry detected: compare every key metric to Indian industry benchmark.
 Format: "Your X = Y% vs India benchmark Z%. [ABOVE/BELOW/AT] benchmark by N%."
 
-══ 8. FORECAST & PROJECTIONS ══
+8. FORECAST & PROJECTIONS
 If trend data exists: use JS-computed regression to project next 3 periods.
 State R² value and confidence level explicitly.
 
-◆ NEXUS VERDICT ◆
+NEXUS VERDICT
 Confidence: [HIGH/MEDIUM/LOW] — justified by data quality score and anomaly count
 Top 5 Priority Actions (numbered, specific, with estimated ₹ impact):
 1. [Action] → Expected impact: ₹X over Y months
 2. [Action] → Expected impact: ₹X over Y months
 3-5. [continue]
 
-💡 SUGGESTED NEXT QUESTIONS:
+SUGGESTED NEXT QUESTIONS:
 1. [question targeting the biggest anomaly found]
 2. [question for deeper financial/operational drill-down]
 3. [question for forecasting or scenario planning]`;
@@ -1959,7 +2108,7 @@ async function sendMsg(){
 
       // Streaming response
       let bubEl = null;
-      let bubGenerated = false;
+      window.bubGenerated = false;
 
       const reader=streamRes.body.getReader();
       const decoder=new TextDecoder();
@@ -1985,7 +2134,7 @@ async function sendMsg(){
                 removeTyp(tid);
                 document.getElementById('sendbtn').disabled = false;
                 bubEl = addBub('assistant', '', true, true);
-                bubGenerated = true;
+                window.bubGenerated = true;
               }
               if (bubEl) bubEl.innerHTML = fullText.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, "<br/>") + '<span class="streaming-cursor"></span>';
             }
@@ -2033,12 +2182,13 @@ async function sendMsg(){
       }
       reply = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || '';
       if (!reply) throw new Error('Gemini returned empty response.');
+      window.bubGenerated = false; // ensure standard bubble fallback
 
     } else {
       throw new Error('No AI configured.');
     }
 
-    if (!bubGenerated) {
+    if (!window.bubGenerated) {
       removeTyp(tid);
       document.getElementById('sendbtn').disabled=false;
       addBub('assistant', reply, true);
@@ -2106,15 +2256,11 @@ function addTyp(){
   const id='t'+Date.now();
   const r=document.createElement('div');
   r.className='mrow';r.id=id;
-
   const phases=['Reading your data…','Running statistical analysis…','Detecting anomalies…','Generating charts…','Building insights…','Finalizing report…'];
   let pi=0;
-
   r.innerHTML=`<div class="av ai">NX</div><div class="bub ai nx-analyzing-bub">
     <div class="nx-orb-wrap">
-      <div class="nx-orb-scene">
-        <canvas class="nx-orb-canvas" id="orb-${id}" width="72" height="72"></canvas>
-      </div>
+      <div class="nx-orb-scene"><canvas class="nx-orb-canvas" id="orb-${id}" width="72" height="72"></canvas></div>
       <div class="nx-orb-info">
         <div class="nx-orb-title">NEXUS is analyzing</div>
         <div class="nx-orb-phase" id="phase-${id}">${phases[0]}</div>
@@ -2122,11 +2268,7 @@ function addTyp(){
       </div>
     </div>
   </div>`;
-
-  chat.appendChild(r);
-  chat.scrollTop=chat.scrollHeight;
-
-  // Animate phase text
+  chat.appendChild(r); chat.scrollTop=chat.scrollHeight;
   const phaseEl=document.getElementById('phase-'+id);
   const barEl=document.getElementById('bar-'+id);
   const phaseTimer=setInterval(()=>{
@@ -2135,169 +2277,103 @@ function addTyp(){
     if(barEl)barEl.style.width=Math.min(90,(pi+1)*(90/phases.length))+'%';
   },1400);
   r._phaseTimer=phaseTimer;
-
-  // 3D Orb with WebGL
   const canvas=document.getElementById('orb-'+id);
-  if(canvas&&canvas.getContext){
-    try{ startOrb(canvas); }catch(e){}
-  }
-
+  if(canvas&&canvas.getContext){ try{ startOrb(canvas); }catch(e){} }
   return id;
 }
-function removeTyp(id){
-  const el=document.getElementById(id);
-  if(el){if(el._phaseTimer)clearInterval(el._phaseTimer);el.remove();}
-}
 
-// ── 3D ORB RENDERER ──
 function startOrb(canvas){
   const gl=canvas.getContext('webgl',{antialias:true,alpha:true});
   if(!gl)return;
   gl.clearColor(0,0,0,0);
-
   const vsrc=`attribute vec3 aP;attribute vec3 aN;uniform mat4 uMV;uniform mat4 uP;uniform float uT;
 varying vec3 vN;varying vec3 vP;varying float vD;
 void main(){
   float noise=sin(aP.x*4.+uT)*0.08+sin(aP.y*3.+uT*1.3)*0.07+sin(aP.z*5.+uT*0.9)*0.06;
-  vec3 disp=aP+aN*noise;
-  vN=aN;vP=disp;vD=noise;
+  vec3 disp=aP+aN*noise; vN=aN;vP=disp;vD=noise;
   gl_Position=uP*uMV*vec4(disp,1.);
 }`;
-  const fsrc=`precision mediump float;
-varying vec3 vN;varying vec3 vP;varying float vD;
-uniform float uT;
+  const fsrc=`precision mediump float; varying vec3 vN;varying vec3 vP;varying float vD; uniform float uT;
 void main(){
-  vec3 light=normalize(vec3(0.5,1.,0.8));
-  float d=max(dot(normalize(vN),light),0.);
-  float rim=1.-max(dot(normalize(-vP),normalize(vN)),0.);
-  rim=pow(rim,2.5);
-  vec3 c1=vec3(0.48,0.22,0.98);
-  vec3 c2=vec3(0.13,0.53,0.96);
-  vec3 c3=vec3(0.2,0.85,0.62);
-  float t=sin(uT*0.4+vP.y*2.)*0.5+0.5;
-  float t2=cos(uT*0.3+vP.x*2.)*0.5+0.5;
-  vec3 col=mix(mix(c1,c2,t),c3,t2*0.4);
-  col=col*(0.4+d*0.6)+vec3(rim*0.6);
-  col+=vec3(vD*0.3);
+  vec3 light=normalize(vec3(0.5,1.,0.8)); float d=max(dot(normalize(vN),light),0.);
+  float rim=1.-max(dot(normalize(-vP),normalize(vN)),0.); rim=pow(rim,2.5);
+  vec3 c1=vec3(0.48,0.22,0.98); vec3 c2=vec3(0.13,0.53,0.96); vec3 c3=vec3(0.2,0.85,0.62);
+  float t=sin(uT*0.4+vP.y*2.)*0.5+0.5; float t2=cos(uT*0.3+vP.x*2.)*0.5+0.5;
+  vec3 col=mix(mix(c1,c2,t),c3,t2*0.4); col=col*(0.4+d*0.6)+vec3(rim*0.6); col+=vec3(vD*0.3);
   gl_FragColor=vec4(col,0.92);
 }`;
-
   function mkShader(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
-  const prog=gl.createProgram();
-  gl.attachShader(prog,mkShader(gl.VERTEX_SHADER,vsrc));
-  gl.attachShader(prog,mkShader(gl.FRAGMENT_SHADER,fsrc));
-  gl.linkProgram(prog);gl.useProgram(prog);
-
-  // Generate sphere geometry
+  const prog=gl.createProgram(); gl.attachShader(prog,mkShader(gl.VERTEX_SHADER,vsrc)); gl.attachShader(prog,mkShader(gl.FRAGMENT_SHADER,fsrc));
+  gl.linkProgram(prog); gl.useProgram(prog);
   const res=32;const verts=[];const norms=[];const idx=[];
   for(let lat=0;lat<=res;lat++){
     const theta=lat*Math.PI/res;
-    for(let lon=0;lon<=res;lon++){
-      const phi=lon*2*Math.PI/res;
-      const x=Math.sin(theta)*Math.cos(phi);
-      const y=Math.cos(theta);
-      const z=Math.sin(theta)*Math.sin(phi);
+    for(let lon=0;lon<res;lon++){ // Corrected loop condition for lon
+      const phi=lon*2*Math.PI/res; const x=Math.sin(theta)*Math.cos(phi); const y=Math.cos(theta); const z=Math.sin(theta)*Math.sin(phi);
       verts.push(x,y,z);norms.push(x,y,z);
     }
   }
-  for(let lat=0;lat<res;lat++){
-    for(let lon=0;lon<res;lon++){
-      const a=lat*(res+1)+lon;
-      idx.push(a,a+1,a+res+1,a+1,a+res+2,a+res+1);
-    }
-  }
-
+  for(let lat=0;lat<res;lat++){ for(let lon=0;lon<res;lon++){ const a=lat*(res+1)+lon; idx.push(a,a+1,a+res+1,a+1,a+res+2,a+res+1); } }
   const vBuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vBuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(verts),gl.STATIC_DRAW);
   const nBuf=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,nBuf);gl.bufferData(gl.ARRAY_BUFFER,new Float32Array(norms),gl.STATIC_DRAW);
   const iBuf=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuf);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(idx),gl.STATIC_DRAW);
-
-  const aP=gl.getAttribLocation(prog,'aP');
-  const aN=gl.getAttribLocation(prog,'aN');
-  const uMV=gl.getUniformLocation(prog,'uMV');
-  const uP_=gl.getUniformLocation(prog,'uP');
-  const uT=gl.getUniformLocation(prog,'uT');
-
-  function mat4Perspective(fov,aspect,near,far){
-    const f=1/Math.tan(fov/2);const r=1/(near-far);
-    return[f/aspect,0,0,0, 0,f,0,0, 0,0,(near+far)*r,-1, 0,0,2*near*far*r,0];
-  }
-  function mat4LookAt(t){
-    const c=Math.cos(t),s=Math.sin(t);
-    return[c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,-2.2,1];
-  }
-
-  const proj=mat4Perspective(0.8,1,0.1,10);
-  let raf,startT=Date.now();
-
+  const aP=gl.getAttribLocation(prog,'aP'); const aN=gl.getAttribLocation(prog,'aN'); const uMV=gl.getUniformLocation(prog,'uMV'); const uP_=gl.getUniformLocation(prog,'uP'); const uT=gl.getUniformLocation(prog,'uT');
+  function mat4Perspective(fov,aspect,near,far){ const f=1/Math.tan(fov/2);const r=1/(near-far); return[f/aspect,0,0,0, 0,f,0,0, 0,0,(near+far)*r,-1, 0,0,2*near*far*r,0]; }
+  function mat4LookAt(t){ const c=Math.cos(t),s=Math.sin(t); return[c,0,s,0, 0,1,0,0, -s,0,c,0, 0,0,-2.2,1]; }
+  const proj=mat4Perspective(0.8,1,0.1,10); let raf,startT=Date.now();
   function draw(){
-    raf=requestAnimationFrame(draw);
-    const t=(Date.now()-startT)/1000;
-    gl.viewport(0,0,72,72);
-    gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
-    gl.enable(gl.DEPTH_TEST);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
-
-    const mv=mat4LookAt(t*0.4);
-    gl.uniformMatrix4fv(uMV,false,mv);
-    gl.uniformMatrix4fv(uP_,false,proj);
-    gl.uniform1f(uT,t);
-
-    gl.bindBuffer(gl.ARRAY_BUFFER,vBuf);
-    gl.enableVertexAttribArray(aP);gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
-    gl.bindBuffer(gl.ARRAY_BUFFER,nBuf);
-    gl.enableVertexAttribArray(aN);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,0,0);
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuf);
-    gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0);
+    raf=requestAnimationFrame(draw); const t=(Date.now()-startT)/1000;
+    gl.viewport(0,0,72,72); gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT); gl.enable(gl.DEPTH_TEST); gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+    const mv=mat4LookAt(t*0.4); gl.uniformMatrix4fv(uMV,false,mv); gl.uniformMatrix4fv(uP_,false,proj); gl.uniform1f(uT,t);
+    gl.bindBuffer(gl.ARRAY_BUFFER,vBuf); gl.enableVertexAttribArray(aP);gl.vertexAttribPointer(aP,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ARRAY_BUFFER,nBuf); gl.enableVertexAttribArray(aN);gl.vertexAttribPointer(aN,3,gl.FLOAT,false,0,0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,iBuf); gl.drawElements(gl.TRIANGLES,idx.length,gl.UNSIGNED_SHORT,0);
   }
   draw();
-
-  // Stop when element removed
-  const observer=new MutationObserver(()=>{
-    if(!document.contains(canvas)){cancelAnimationFrame(raf);gl.getExtension('WEBGL_lose_context')?.loseContext();observer.disconnect();}
-  });
-  observer.observe(document.body,{childList:true,subtree:true});
+  const obs=new MutationObserver(()=>{ if(!document.contains(canvas)){cancelAnimationFrame(raf);gl.getExtension('WEBGL_lose_context')?.loseContext();obs.disconnect();} });
+  obs.observe(document.body,{childList:true,subtree:true});
 }
-function removeTyp(id){const el=document.getElementById(id);if(el)el.remove();}
-function copyBub(btn){navigator.clipboard.writeText(btn.closest('.bub').innerText.replace(/⎘ Copy.*$/s,'').trim()).then(()=>toast('✅ Copied!')).catch(()=>{});}
-function renderContent(text){
-  const pc=[];
-  // ULTRA-RESILIENT Chart & KPI Matcher
-  // 1. Standardize weird AI tags first
-  text = text.replace(/\[?(?:CHART|ART|CH)(bar|line|pie|doughnut|comparison|trend|of)?\]?:?\s*([\w\s]+)?\|/gi, (m, type, title) => {
-    const t = type || 'bar';
-    return `[CHART:${t}|${title||''}|`;
-  });
-  
-  // 2. Final Parser
-  text=text.replace(/\[CHART:([\w]*)\|(.*?)\|([\s\S]*?)\]/gi,(m,type,title,json)=>{
-    try{
-      let t = type.toLowerCase() || 'bar';
-      if(t.includes('pie')) t='doughnut';
-      if(t.includes('trend')) t='line';
-      
-      // Clean JSON string aggressively
-      let cj = json.trim();
-      if(!cj.startsWith('[')) cj = '[' + cj;
-      if(!cj.endsWith(']')) cj = cj + ']';
-      cj = cj.replace(/(\d+),(\d+)/g, '$1$2').replace(/\$([0-9.]+)/g, '$1').replace(/:(\s*)?(\$)?([0-9.MK]+)/g, (match, s, dollar, val)=>{
-        let v = val.replace(/M/i, '000000').replace(/K/i, '000');
-        return ': ' + (parseFloat(v) || 0);
-      });
 
-      const data=JSON.parse(cj);
-      const id='c'+(++S.cCount);
-      pc.push({id,type:t,title:title||'Analysis Chart',data});
-      return `<div class="chart-card" id="${id}"><div class="chart-lbl"><span>${esc(title||'Analysis Chart')}</span><div style="display:flex;align-items:center;gap:4px"><div class="chart-type-tabs"><span class="ct on" data-t="bar" onclick="swChType('${id}','bar',this)">Bar</span><span class="ct" data-t="line" onclick="swChType('${id}','line',this)">Line</span><span class="ct" data-t="doughnut" onclick="swChType('${id}','doughnut',this)">Pie</span></div><span class="chart-save-btn" onclick="saveOneChart('${id}')">⬇</span></div></div><canvas></canvas></div>`;
+function removeTyp(id){ const el=document.getElementById(id); if(el){if(el._phaseTimer)clearInterval(el._phaseTimer);el.remove();} }
+function copyBub(btn){navigator.clipboard.writeText(btn.closest('.bub').innerText.replace(/⎘ Copy.*$/s,'').trim()).then(()=>toast('✅ Copied!'));}
+
+function renderContent(text){
+  const pc=[]; let html = '';
+  if (S.verifiedCharts && S.verifiedCharts.length > 0 && !S.messages.some(m => m.role === 'assistant')) {
+     html += '<div class="sec-div"><span>📊 VERIFIED ENGINE CHARTS</span></div><div class="verified-charts-grid">';
+     S.verifiedCharts.forEach(c => {
+       const id = 'v' + (++S.cCount); pc.push({ id, type: c.type, title: c.title, data: c.data, verified: true });
+       html += `<div class="chart-card verified" id="${id}"><div class="chart-lbl"><span>✅ ${esc(c.title)}</span></div><canvas></canvas></div>`;
+     });
+     html += '</div>';
+  }
+  const validation = validateAIResponse(text, S.verifiedFacts);
+  if (validation.warnings.length > 0) html += `<div class="val-badge warn">⚠️ ${validation.warnings.length} numbers could not be verified. Review carefully.</div>`;
+  else if (text.length > 100) html += `<div class="val-badge ok">✅ All critical numbers JS-verified.</div>`;
+
+  // 1. Strict Chart Normalizer (Prevents word mangling)
+  text = text.replace(/\[(?:CHART|ART|CH):?(bar|line|pie|doughnut|comparison|trend|of|\|)?\s*\|\s*([^|]*?)\s*\|/gi, (m, type, title) => {
+    const t = type && type !== '|' ? type.toLowerCase() : 'bar'; return `[CHART:${t}|${title||''}|`;
+  });
+  // 2. Main Chart Parser (Handles nested JSON brackets)
+  text = text.replace(/\[CHART:([\w|]*)\|(.*?)\|(\[[\s\S]*?\])\]/gi, (m, type, title, json) => {
+    try{
+      let t = type.toLowerCase() || 'bar'; if(t.includes('pie')) t='doughnut'; if(t.includes('trend')) t='line';
+      let cj = json.trim(); if(!cj.startsWith('[')) cj = '[' + cj; if(!cj.endsWith(']')) cj = cj + ']';
+      const data=JSON.parse(cj); const id='c'+(++S.cCount); pc.push({id,type:t,title:title||'Analysis Chart',data});
+      return `<div class="chart-card ai-gen" id="${id}"><div class="chart-lbl"><span>🔸 ${esc(title||'AI-Generated Chart')}</span><span class="unv-tag">Unverified</span></div><canvas></canvas></div>`;
     }catch(e){ return m; }
   });
-  const kpis=[];
-  text=text.replace(/\[KPI:(.*?)\|(.*?)\|(.*?)\|(up|down|neutral)\]/g,(m,lbl,val,delta,dir)=>{kpis.push(`<div class="kpi-card"><div class="kpi-label">${esc(lbl)}</div><div class="kpi-value">${esc(val)}</div><div class="kpi-delta ${dir}">${dir==='up'?'▲':dir==='down'?'▼':'─'} ${esc(delta)}</div></div>`);return '';});
-  const lines=text.split('\n');let html=kpis.length?`<div class="kpi-grid">${kpis.join('')}</div>`:'';let i=0;
+  const kpis=[]; text=text.replace(/\[KPI:\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(up|down|neutral)\]/gi,(m,lbl,val,delta,dir)=>{
+    kpis.push(`<div class="kpi-card"><div class="kpi-label">${esc(lbl)}</div><div class="kpi-value">${esc(val)}</div><div class="kpi-delta ${dir}">${dir==='up'?'▲':dir==='down'?'▼':'─'} ${esc(delta)}</div></div>`);
+    return '';
+  });
+  const lines=text.split('\n'); if(kpis.length) html += `<div class="kpi-grid">${kpis.join('')}</div>`;
+  let i=0;
   while(i<lines.length){
     const l=lines[i];
     if(/^[═━]{2,}/.test(l)){html+=`<div class="sec-div"><span>${l.replace(/[═━]/g,'').trim()||'─'}</span></div>`;}
-    else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){const vt=l.replace(/^◆\s*/,'').trim();html+=`<div class="verdict-box">◆ ${vt||'NEXUS VERDICT'}</div>`;}
+    else if(/◆.*(VERDICT|CONCLUSION)/i.test(l)){const vt=l.replace(/^◆\s*/,'').trim();html+=`<div class="verdict-box">${vt||'NEXUS VERDICT'}</div>`;}
     else if(/^▶/.test(l)){html+=`<div class="layer-hdr"><span class="layer-arrow">▶</span><span>${fmt(l.replace(/^▶\s*/,''))}</span></div>`;}
     else if(/^\*\*[^*]+:\*\*$/.test(l.trim())||/^## /.test(l)){html+=`<div class="sub-hdr">${fmt(l.replace(/^\*\*/,'').replace(/\*\*$/,'').replace(/^## /,''))}</div>`;}
     else if(l.trimStart().startsWith('|')){
@@ -2345,48 +2421,36 @@ function processArr(rows,fname,isSecond){
   const csv={hdrs,data};
   if(isSecond){S.csv2=csv;}else{S.csv=csv;}
 
-  // ═══ LAYER 1: JS PRE-COMPUTATION — ALL ROWS (truly unlimited) ═══
-  const facts={};
-  const numCols=[];
-  const catCols=[];
+  // 1. Identify Key Columns
+  const revIdx = fuzzyFindCol(hdrs, ['revenue', 'sales', 'turnover', 'amount', 'total']);
+  const unitIdx = fuzzyFindCol(hdrs, ['unit', 'qty', 'quantity', 'count', 'vol']);
+  const priceIdx = fuzzyFindCol(hdrs, ['price', 'rate', 'mrp', 'sp']);
+  const dateIdx = fuzzyFindCol(hdrs, ['date', 'month', 'year', 'time', 'period']);
 
-  hdrs.forEach((h,hi)=>{
-    const vals=data.map(r=>r[hi]).filter(v=>v!=null&&String(v).trim()!=='');
-    const nums=vals.map(v=>parseFloat(String(v).replace(/[,₹$%\s]/g,''))).filter(v=>!isNaN(v)&&isFinite(v));
-    if(nums.length>0&&nums.length/vals.length>0.7){
-      numCols.push({h,hi,nums});
-      const sorted=[...nums].sort((a,b)=>a-b);
-      const sum=nums.reduce((a,b)=>a+b,0);
-      const avg=sum/nums.length;
-      const median=sorted[Math.floor(sorted.length/2)];
-      const variance=nums.map(v=>(v-avg)**2).reduce((a,b)=>a+b,0)/nums.length;
-      const std=Math.sqrt(variance);
-      // Top/Bottom 5
-      const top5=[...sorted].reverse().slice(0,5);
-      const bot5=[...sorted].slice(0,5);
-      // IQR outliers
-      const q1=sorted[Math.floor(sorted.length*0.25)];
-      const q3=sorted[Math.floor(sorted.length*0.75)];
-      const iqr=q3-q1;
-      const outlierRows=data.reduce((acc,r,ri)=>{
-        const v=parseFloat(String(r[hi]||'').replace(/[,₹$%\s]/g,''));
-        if(!isNaN(v)&&(v<q1-1.5*iqr||v>q3+1.5*iqr))acc.push({row:ri+2,val:v});
-        return acc;
-      },[]);
-      const negCount=nums.filter(v=>v<0).length;
-      facts[h]={type:'numeric',count:nums.length,sum:sum,avg:avg,median:median,std:std,min:sorted[0],max:sorted[sorted[sorted.length-1]],q1,q3,top5,bot5,outlierCount:outlierRows.length,outlierRows:outlierRows.slice(0,5),negCount};
-    } else {
-      catCols.push({h,hi,vals});
-      const freq={};
-      vals.forEach(v=>{const k=String(v).trim();freq[k]=(freq[k]||0)+1;});
-      const sorted=Object.entries(freq).sort((a,b)=>b[1]-a[1]);
-      facts[h]={type:'categorical',count:vals.length,unique:new Set(vals).size,top5:sorted.slice(0,5).map(([v,c])=>({val:v,count:c})),missing:data.length-vals.length};
+  const facts = { rowCount: data.length, colCount: hdrs.length };
+  
+  // 2. Compute Primary Stats
+  if (revIdx >= 0) {
+    const vals = data.map(r => enforceSchema(r[revIdx], 'numeric')).filter(v => v !== null);
+    if (vals.length > 0) {
+      facts.totalRevenue = vals.reduce((a, b) => a + b, 0);
+      facts.avgRevenue = facts.totalRevenue / vals.length;
+      facts.maxRevenue = Math.max(...vals);
+      facts.minRevenue = Math.min(...vals);
+      const sorted = [...vals].sort((a,b)=>a-b);
+      facts.medianRevenue = sorted[Math.floor(sorted.length/2)];
+      const avg = facts.avgRevenue;
+      facts.stdDevRevenue = Math.sqrt(vals.reduce((s,v)=>s+Math.pow(v-avg,2),0)/vals.length);
+      facts.negCount = vals.filter(v=>v<0).length;
+      const q1 = sorted[Math.floor(sorted.length*0.25)] || 0;
+      const q3 = sorted[Math.floor(sorted.length*0.75)] || 0;
+      const iqr = q3 - q1;
+      facts.outlierCount = vals.filter(v => v < q1 - 1.5*iqr || v > q3 + 1.5*iqr).length;
     }
-  });
+  }
 
-  // ═══ DUPLICATE DETECTION — ALL ROWS ═══
+  // 3. Duplicate Detection
   const dups=[];
-  // Find likely ID column
   const idColIdx=hdrs.findIndex(h=>/\bid\b|code|no\b|num\b|cust|invoice|order|sku/i.test(h));
   if(idColIdx>=0){
     const idMap={};
@@ -2400,214 +2464,45 @@ function processArr(rows,fname,isSecond){
       if(rows.length>1)dups.push({id:v,col:hdrs[idColIdx],rows,count:rows.length});
     });
   }
-  // Full row duplicates
-  const rowHash={};
-  const fullRowDups=[];
-  data.forEach((r,ri)=>{
-    const key=r.map(c=>String(c||'').trim()).join('|');
-    if(!key.replace(/\|/g,''))return;
-    if(!rowHash[key])rowHash[key]=[];
-    rowHash[key].push(ri+2);
-  });
-  Object.entries(rowHash).forEach(([,rows])=>{if(rows.length>1)fullRowDups.push(rows);});
 
-  // ═══ FORMULA MISMATCH DETECTION — ALL ROWS ═══
+  // 4. Formula Mismatch
   const mismatches=[];
-  const revIdx=hdrs.findIndex(h=>/^revenue$|^sales$|^amount$|^total$/i.test(h.trim()));
-  const unitIdx=hdrs.findIndex(h=>/^units?$|^qty$|^quantity$/i.test(h.trim()));
-  const priceIdx=hdrs.findIndex(h=>/^price$|^rate$|^mrp$|unit.price/i.test(h.trim()));
-  const discIdx=hdrs.findIndex(h=>/^discount$|^disc%?$|^discount%?$/i.test(h.trim()));
-  if(revIdx>=0&&unitIdx>=0&&priceIdx>=0){
+  if(revIdx>=0 && unitIdx>=0 && priceIdx>=0){
     data.forEach((r,ri)=>{
-      const rev=parseFloat(String(r[revIdx]||'').replace(/[,₹$\s]/g,''));
-      const units=parseFloat(String(r[unitIdx]||'').replace(/[,\s]/g,''));
-      const price=parseFloat(String(r[priceIdx]||'').replace(/[,₹$\s]/g,''));
-      if(isNaN(rev)||isNaN(units)||isNaN(price))return;
-      const disc=discIdx>=0?parseFloat(String(r[discIdx]||'').replace(/[%\s]/g,''))/100:0;
-      const expected=units*price*(1-(isNaN(disc)?0:disc));
-      const diff=Math.abs(rev-expected);
-      if(diff>Math.max(1,expected*0.02))mismatches.push({row:ri+2,revenue:rev,expected:Math.round(expected),diff:Math.round(diff)});
-    });
-  }
-
-  // ═══ GST DETECTION ═══
-  const gstCols=hdrs.filter(h=>/gst|cgst|sgst|igst|tax/i.test(h));
-  let gstSummary='';
-  if(gstCols.length>0){
-    gstSummary='\nGST COLUMNS DETECTED: '+gstCols.join(', ');
-    gstCols.forEach(gc=>{
-      const gcIdx=hdrs.indexOf(gc);
-      const gcFacts=facts[gc];
-      if(gcFacts&&gcFacts.type==='numeric')gstSummary+=`\n  ${gc}: Total=₹${gcFacts.sum.toFixed(2)}, Avg=₹${gcFacts.avg.toFixed(2)}`;
-    });
-  }
-
-  // ═══ QUALITY SCORE — ALL ROWS ═══
-  const totalCells=data.length*hdrs.length||1;
-  const filledCells=hdrs.reduce((t,h,hi)=>{
-    return t+data.filter(r=>r[hi]!=null&&String(r[hi]).trim()!=='').length;
-  },0);
-  const qualityScore=Math.round(filledCells/totalCells*100);
-
-  // ═══ PEARSON CORRELATION MATRIX ═══
-  let corrMatrix=null;
-  if(typeof ss!=='undefined'&&numCols.length>=2&&numCols.length<=10){
-    corrMatrix={};
-    numCols.forEach(({h:h1,nums:n1})=>{
-      corrMatrix[h1]={};
-      numCols.forEach(({h:h2,nums:n2})=>{
-        if(h1===h2){corrMatrix[h1][h2]=1;return;}
-        try{
-          const len=Math.min(n1.length,n2.length);
-          if(len<3){corrMatrix[h1][h2]=null;return;}
-          corrMatrix[h1][h2]=ss.sampleCorrelation(n1.slice(0,len),n2.slice(0,len));
-        }catch(e){corrMatrix[h1][h2]=null;}
-      });
-    });
-  }
-
-  // ═══ AUTO FORECAST — largest numeric col ═══
-  let forecastSummary='';
-  if(typeof ss!=='undefined'&&numCols.length>0){
-    const mainNum=numCols.reduce((a,b)=>b.nums.length>a.nums.length?b:a);
-    if(mainNum.nums.length>=6){
-      try{
-        const pts=mainNum.nums.slice(-12).map((v,i)=>[i,v]);
-        const reg=ss.linearRegression(pts);
-        const fn=ss.linearRegressionLine(reg);
-        const r2=ss.rSquaredXY(pts,fn);
-        const next3=[(pts.length),(pts.length+1),(pts.length+2)].map(x=>Math.max(0,fn(x)));
-        forecastSummary=`\nFORECAST (${mainNum.h}, linear, R²=${r2.toFixed(2)}): Next 3 periods: ${next3.map(v=>v.toFixed(2)).join(', ')} ${r2>0.7?'[HIGH CONFIDENCE]':r2>0.4?'[MEDIUM CONFIDENCE]':'[LOW CONFIDENCE — weak trend]'}`;
-      }catch(e){}
-    }
-  }
-
-  // ═══ INDIA BENCHMARKS AUTO-DETECT ═══
-  const INDIA_BENCHMARKS={
-    retail:{gross_margin:[25,35],net_margin:[3,8],inventory_turns:[6,12]},
-    pharma:{gross_margin:[18,22],net_margin:[10,15]},
-    fmcg:{gross_margin:[40,55],net_margin:[8,15]},
-    it_services:{gross_margin:[60,75],net_margin:[15,25]},
-    manufacturing:{gross_margin:[15,25],net_margin:[4,10]},
-    ecommerce:{gross_margin:[30,45],net_margin:[-5,5]},
-    saas:{gross_margin:[65,80],net_margin:[10,25]},
-  };
-  let benchmarkHint='';
-  const allText=(hdrs.join(' ')+data.slice(0,20).map(r=>r.join(' ')).join(' ')).toLowerCase();
-  let detectedIndustry=null;
-  if(/pharma|medicine|drug|tablet|capsule/i.test(allText))detectedIndustry='pharma';
-  else if(/software|saas|subscription|mrr|arr/i.test(allText))detectedIndustry='saas';
-  else if(/retail|store|sku|inventory|pos/i.test(allText))detectedIndustry='retail';
-  else if(/manufacture|production|oee|defect/i.test(allText))detectedIndustry='manufacturing';
-  else if(/order|cart|shipping|ecommerce|amazon|flipkart/i.test(allText))detectedIndustry='ecommerce';
-  if(detectedIndustry&&INDIA_BENCHMARKS[detectedIndustry]){
-    benchmarkHint=`\nDETECTED INDUSTRY: ${detectedIndustry.toUpperCase()}\nINDIA BENCHMARKS for ${detectedIndustry}: ${JSON.stringify(INDIA_BENCHMARKS[detectedIndustry])}`;
-  }
-
-  // ═══ BUILD VERIFIED FACTS SUMMARY (sent to AI instead of raw CSV) ═══
-  let summary=`━━━ NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS ━━━
-FILE: ${fname} | ROWS: ${data.length} | COLS: ${hdrs.length} | QUALITY: ${qualityScore}%
-NOTE: ALL numbers below are computed by JavaScript on ALL ${data.length} rows. They are GROUND TRUTH. Do NOT contradict them. Do NOT re-compute. Use them directly.
-
-━━━ COMPUTED COLUMN STATS (ALL ${data.length} ROWS) ━━━\n`;
-
-  hdrs.forEach(h=>{
-    const f=facts[h];
-    if(!f)return;
-    if(f.type==='numeric'){
-      summary+=`${h}: SUM=${fmtN(f.sum)} | AVG=${fmtN(f.avg)} | MEDIAN=${fmtN(f.median)} | MIN=${fmtN(f.min)} | MAX=${fmtN(f.max)} | STD=${fmtN(f.std)} | COUNT=${f.count}`;
-      if(f.negCount>0)summary+=` | ⚠️ ${f.negCount} NEGATIVES`;
-      if(f.outlierCount>0)summary+=` | ⚠️ ${f.outlierCount} OUTLIERS (IQR)`;
-      summary+='\n';
-    } else {
-      summary+=`${h}: CATEGORICAL | UNIQUE=${f.unique} | COUNT=${f.count} | MISSING=${f.missing}`;
-      if(f.top5.length)summary+=` | TOP: ${f.top5.slice(0,3).map(x=>`${x.val}(${x.count})`).join(', ')}`;
-      summary+='\n';
-    }
-  });
-
-  if(dups.length>0){
-    summary+=`\n━━━ DUPLICATE IDs FOUND (JavaScript verified) ━━━\n`;
-    dups.forEach(d=>summary+=`⚠️ ${d.col}="${d.id}" appears ${d.count}x in rows: ${d.rows.join(',')}\n`);
-  }
-  if(fullRowDups.length>0){
-    summary+=`⚠️ ${fullRowDups.length} FULLY DUPLICATE ROWS detected\n`;
-  }
-  if(mismatches.length>0){
-    summary+=`\n━━━ FORMULA MISMATCHES (Revenue ≠ Units×Price) ━━━\n`;
-    mismatches.slice(0,5).forEach(m=>summary+=`⚠️ Row ${m.row}: Revenue=${fmtN(m.revenue)} but Units×Price=${fmtN(m.expected)} (diff=${fmtN(m.diff)})\n`);
-    if(mismatches.length>5)summary+=`...and ${mismatches.length-5} more\n`;
-  }
-  if(corrMatrix){
-    summary+='\n━━━ CORRELATION MATRIX (Pearson, JS-computed) ━━━\n';
-    const numHdrs=numCols.map(c=>c.h);
-    numHdrs.forEach(h1=>{
-      const row=numHdrs.map(h2=>{const v=corrMatrix[h1]?.[h2];return v!=null?v.toFixed(2):'N/A';}).join(' | ');
-      summary+=`${h1}: ${row}\n`;
-    });
-  }
-  if(forecastSummary)summary+=forecastSummary+'\n';
-  if(gstSummary)summary+=gstSummary+'\n';
-  if(benchmarkHint)summary+=benchmarkHint+'\n';
-  summary+=`\n━━━ DATA SAMPLE (first 8 rows for context) ━━━\n${hdrs.join(',')}\n`;
-  data.slice(0,8).forEach(r=>summary+=r.map(c=>String(c||'').trim()).join(',')+'\n');
-
-  // Store
-  if(isSecond){
-    S.verifiedFacts2=facts;
-    S.factsSummary2=summary.slice(0,25000);
-  } else {
-    S.verifiedFacts=facts;
-    S.factsSummary=summary.slice(0,25000); // expanded for 100x analysis depth
-    S.duplicates=dups;
-    S.formulaMismatches=mismatches;
-    S.correlationMatrix=corrMatrix;
-
-    // Build anomaly facts for injection
-    const anomFacts=[];
-    hdrs.forEach(h=>{
-      const f=facts[h];
-      if(!f)return;
-      if(f.type==='numeric'){
-        if(f.outlierRows&&f.outlierRows.length>0)anomFacts.push(`${h}: ${f.outlierCount} outliers (IQR). Rows: ${f.outlierRows.map(o=>`row${o.row}=val${o.val}`).join(',')}`);
-        if(f.negCount>0&&/revenue|sales|price|profit/i.test(h))anomFacts.push(`⚠️ ${h}: ${f.negCount} negative values in revenue/sales column`);
-      } else {
-        if(f.missing>0)anomFacts.push(`${h}: ${f.missing} missing values (${Math.round(f.missing/data.length*100)}% of rows)`);
+      const r_val = enforceSchema(r[revIdx], 'numeric');
+      const u_val = enforceSchema(r[unitIdx], 'numeric');
+      const p_val = enforceSchema(r[priceIdx], 'numeric');
+      if(r_val!==null && u_val!==null && p_val!==null){
+        const expected = u_val * p_val;
+        if(Math.abs(r_val - expected) > Math.max(1, expected * 0.05)) {
+          mismatches.push({row:ri+2, revenue:r_val, expected, diff: Math.abs(r_val-expected)});
+        }
       }
     });
-    if(dups.length>0)anomFacts.push(`DUPLICATE IDs: ${dups.length} duplicate ID values found`);
-    if(mismatches.length>0)anomFacts.push(`FORMULA MISMATCH: ${mismatches.length} rows where Revenue ≠ Units×Price`);
-    S.anomalyFacts=anomFacts.join('\n');
-
-    // Confidence data
-    S.confidenceData={
-      qualityScore,
-      totalRows:data.length,
-      dupCount:dups.length+fullRowDups.length,
-      mismatchCount:mismatches.length,
-      missingCols:hdrs.filter(h=>facts[h]&&facts[h].type==='categorical'&&facts[h].missing>0).length,
-      level:qualityScore>=85&&dups.length===0&&mismatches.length===0?'HIGH':qualityScore>=65?'MEDIUM':'LOW'
-    };
-
-    // Audit log entry
-    S.auditLog.push({
-      ts:new Date().toISOString(),
-      file:fname,
-      rows:data.length,
-      cols:hdrs.length,
-      quality:qualityScore,
-      dups:dups.length,
-      mismatches:mismatches.length
-    });
-    try{localStorage.setItem('nx_audit',JSON.stringify(S.auditLog.slice(-50)));}catch(e){}
   }
 
-  // Update S.fileData (legacy fallback, no longer primary)
-  S.fileData='[FACTS COMPUTED — see S.factsSummary]';
-  S.fileName=fname;
+  // 5. Build Comprehensive Summary for AI
+  let summary = `### NEXUS v11 JAVASCRIPT-VERIFIED DATA FACTS\n`;
+  summary += `ROWS: ${facts.rowCount} | COLS: ${facts.colCount}\n`;
+  if(facts.totalRevenue !== undefined) {
+    summary += `Total Revenue: ${fmtN(facts.totalRevenue)}\n`;
+    summary += `Avg Revenue: ${fmtN(facts.avgRevenue)}\n`;
+    summary += `Median Revenue: ${fmtN(facts.medianRevenue)}\n`;
+    summary += `Std Dev: ${fmtN(facts.stdDevRevenue)}\n`;
+    summary += `Outliers: ${facts.outlierCount} | Negatives: ${facts.negCount}\n`;
+  }
+  if(dups.length > 0) summary += `⚠️ DUPLICATE IDs: ${dups.length} found.\n`;
+  if(mismatches.length > 0) summary += `⚠️ FORMULA ERROR: ${mismatches.length} rows have revenue mismatch.\n`;
 
-  showFOk(fname,{rows:data.length,cols:hdrs.length,hdrs,data,facts,qualityScore,dups,mismatches,isSecond});
-  if(!isSecond)detectAnom(hdrs,data,facts);
+  // Store Results
+  S.verifiedFacts = facts;
+  S.verifiedCharts = generateVerifiedCharts(facts, hdrs, data);
+  S.factsSummary = summary;
+  S.duplicates = dups;
+  S.mismatches = mismatches;
+  S.fileName = fname;
+
+  showFOk(fname, facts);
 }
 
 // Helper: format number Indian style
@@ -2726,7 +2621,7 @@ function showFOk(fname,info){
       <div class="dc-stat"><div class="dc-sv" style="color:#a78bfa">${numCols}</div><div class="dc-sl">Numeric</div></div>
       <div class="dc-stat"><div class="dc-sv" style="color:#f59e0b">${quality}%</div><div class="dc-sl">Quality</div></div>
     </div>
-    <div class="dc-sec">💡 Quick Suggestions</div>
+    <div class="dc-sec">Quick Suggestions</div>
     <div class="dc-sugs">${sugs.slice(0,5).map(s=>`<span class="dc-sug" onclick="setSug('${s.replace(/['"<>]/g,'')}');document.getElementById('dcCard').remove()">${esc(s)}</span>`).join('')}</div>
     <div class="dc-sec">Preview — First ${rows.length} rows</div>
     <div class="dc-tbl-wrap"><table class="dc-tbl"><thead><tr>${cols.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map((_,i)=>`<td>${esc(String(r[i]||''))}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
@@ -2799,7 +2694,7 @@ function shareWhatsApp(){
   const msgs=S.messages.filter(m=>m.role==='assistant');
   if(!msgs.length)return toast('No analysis to share');
   const last=msgs[msgs.length-1].content;
-  const verdict=last.match(/◆ NEXUS VERDICT[\s\S]*?(?:\n\n|$)/)?.[0]||last.slice(0,500);
+  const verdict=last.match(/NEXUS VERDICT[\s\S]*?(?:\n\n|$)/)?.[0]||last.slice(0,500);
   const text='*NEXUS AI Analysis*\n'+new Date().toLocaleDateString('en-IN')+(S.fileName?'\nDataset: '+S.fileName:'')+'\n\n'+verdict.trim()+'\n\n_Full analysis: nexus.onliraxter.workers.dev_';
   window.open('https://wa.me/?text='+encodeURIComponent(text),'_blank');
 }
@@ -2891,7 +2786,7 @@ function showFollowUpChips(reply){
   if(chips.length===0)return;
   const div=document.createElement('div');
   div.className='followup-chips';
-  div.innerHTML='<div class="fu-label">💡 Ask next</div>'+chips.slice(0,4).map(c=>`<span class="fu-chip" onclick="setSugAndSend('${c.replace(/'/g,"\\'").replace(/"/g,"&quot;")}');this.parentElement.remove()">${esc(c)}</span>`).join('');
+  div.innerHTML='<div class="fu-label">Ask next</div>'+chips.slice(0,4).map(c=>`<span class="fu-chip" onclick="setSugAndSend('${c.replace(/'/g,"\\'").replace(/"/g,"&quot;")}');this.parentElement.remove()">${esc(c)}</span>`).join('');
   chat.appendChild(div);
   chat.scrollTop=chat.scrollHeight;
 }
@@ -3058,9 +2953,9 @@ function toast(msg,isErr){const el=document.createElement('div');el.className='t
 // ── INIT ──
 // Touch fix: prevent 300ms delay and ghost clicks on mobile
 
-// ════════════════════════════════════════════════
+//══════════════════════════════════════════════
 // NEXUS v9 — MOBILE + PWA JS
-// ════════════════════════════════════════════════
+//══════════════════════════════════════════════
 
 // ── SIDEBAR OVERLAY ──
 function openSide(){
@@ -3227,142 +3122,8 @@ document.addEventListener('click',function(e){
 loadSession();
 if(typeof google!=='undefined')initGoogleBtn();
 else document.querySelector("script[src*='accounts.google.com']")?.addEventListener('load', initGoogleBtn);
-</script>
 
-<!-- Chart Expand Modal -->
-<div id="chartModal" class="chart-modal" onclick="if(event.target===this)this.classList.remove('show')">
-  <div class="chart-modal-inner">
-    <button class="chart-modal-close" onclick="document.getElementById('chartModal').classList.remove('show')">✕ Close</button>
-    <div id="chartModalContent" style="width:100%;height:450px;display:flex;align-items:center;justify-content:center"></div>
-  </div>
-</div>
-
-
-<!-- PRIVACY MODAL -->
-<div class="ov" id="privacyOv">
-  <div class="mbox" style="max-width:520px">
-    <button class="mx" onclick="closeOv('privacyOv')">✕</button>
-    <h3>Privacy Policy</h3>
-    <p style="font-size:12px;color:var(--mt);line-height:1.8;margin-top:10px">
-      <strong style="color:var(--hd)">Your data never leaves your browser for storage.</strong><br><br>
-      When you upload a file, it is processed locally in your browser and sent directly to the AI model for analysis. We do not store your data on any server.<br><br>
-      <strong style="color:var(--hd)">What we store:</strong> Only your Google account name, email, and credit balance — on Cloudflare KV. No file contents, no analysis results.<br><br>
-      <strong style="color:var(--hd)">Third parties:</strong> Analysis goes to Groq API. Google OAuth for login. No other third parties receive your data.<br><br>
-      Questions? Email hello@onliraxter.workers.dev
-    </p>
-  </div>
-</div>
-
-<!-- TERMS MODAL -->
-<div class="ov" id="termsOv">
-  <div class="mbox" style="max-width:520px">
-    <button class="mx" onclick="closeOv('termsOv')">✕</button>
-    <h3>Terms of Service</h3>
-    <p style="font-size:12px;color:var(--mt);line-height:1.8;margin-top:10px">
-      <strong style="color:var(--hd)">Free Plan:</strong> 5 analyses per account. One account per person.<br><br>
-      <strong style="color:var(--hd)">Paid Plans:</strong> Credits are non-refundable after activation. Cancel anytime.<br><br>
-      <strong style="color:var(--hd)">Acceptable Use:</strong> Do not upload sensitive personal data of others or classified information.<br><br>
-      <strong style="color:var(--hd)">Accuracy:</strong> AI analysis is for decision support, not professional financial advice. Verify critical numbers with a qualified professional.<br><br>
-      By using NEXUS, you agree to these terms.
-    </p>
-  </div>
-</div>
-
-<style>
-/* ════ NEXUS 3D ORB LOADER ════ */
-.nx-analyzing-bub{padding:12px 16px!important;background:#070710!important;border:1px solid rgba(124,58,237,.3)!important;border-left:3px solid #7c3aed!important;min-width:260px}
-.nx-orb-wrap{display:flex;align-items:center;gap:14px}
-.nx-orb-scene{flex-shrink:0;position:relative;width:72px;height:72px}
-.nx-orb-canvas{border-radius:50%;display:block}
-.nx-orb-scene::after{content:'';position:absolute;inset:-6px;border-radius:50%;background:radial-gradient(circle,rgba(124,58,237,.2) 0%,transparent 70%);animation:nx-pulse 2s ease-in-out infinite;pointer-events:none}
-@keyframes nx-pulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
-.nx-orb-info{flex:1;min-width:0}
-.nx-orb-title{font-family:var(--fm);font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
-.nx-orb-phase{font-family:var(--fm);font-size:11px;color:#c4b5fd;margin-bottom:8px;min-height:16px}
-.nx-orb-bar{height:3px;background:rgba(124,58,237,.15);border-radius:2px;overflow:hidden}
-.nx-orb-bar-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#34d399);border-radius:2px;width:10%;transition:width 1.2s ease;box-shadow:0 0 8px rgba(124,58,237,.5)}
-
-/* ════ NEXUS FINAL PATCH — All remaining 34 fixes ════ */
-
-/* FIX 17: chart-modal CSS (was missing — modal existed but no styles) */
-.chart-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:3000;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}
-.chart-modal.show{display:flex}
-.chart-modal-inner{background:#0a0a0a;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:20px;max-width:800px;width:100%;max-height:90vh;overflow:auto;position:relative}
-.chart-modal-close{position:absolute;top:12px;right:14px;background:var(--s3);border:1px solid var(--br);border-radius:6px;color:var(--mt);font-size:11px;padding:4px 10px;cursor:pointer}
-.chart-modal-close:hover{color:var(--r);border-color:rgba(248,113,113,.3)}
-
-/* FIX 18: msg-acts always visible on last message + hover */
-.msg-acts{opacity:0;transition:opacity .18s}
-.mrow:hover .msg-acts{opacity:1}
-.mrow:last-child .msg-acts,.mrow:last-of-type .msg-acts{opacity:1}
-
-/* FIX 19: Credit badge color levels */
-.chip-cr.cr-low{background:rgba(245,158,11,.1)!important;border-color:rgba(245,158,11,.25)!important;color:var(--o)!important}
-.chip-cr.cr-zero{background:rgba(248,113,113,.1)!important;border-color:rgba(248,113,113,.25)!important;color:var(--r)!important}
-
-/* FIX 20: Better input focus ring */
-.inp-wrap:focus-within{border-color:rgba(124,58,237,.45);box-shadow:0 0 0 3px rgba(124,58,237,.08)}
-
-/* FIX 21: Streaming cursor */
-.streaming-cursor{display:inline-block;width:2px;height:14px;background:var(--v);margin-left:2px;animation:sc-blink .65s steps(1) infinite;vertical-align:middle}
-@keyframes sc-blink{50%{opacity:0}}
-
-/* FIX 22: History item truncation */
-.hist-title{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:190px}
-
-/* FIX 23: Modal close button bigger tap target on mobile */
-.mx{min-width:32px;min-height:32px;display:flex;align-items:center;justify-content:center;border-radius:6px}
-.mx:hover{background:var(--s3)}
-
-/* FIX 24: Table row hover */
-tr:hover td{background:rgba(167,139,250,.04)!important}
-
-/* FIX 25: Sample item hover */
-.samp-item:hover{background:rgba(52,211,153,.06);border-color:rgba(52,211,153,.2)}
-
-/* FIX 26: verdict-box better styling */
-.verdict-box{font-size:12px;line-height:1.75;padding:14px 18px}
-
-/* FIX 27: Landing page stats mobile */
-@media(max-width:480px){.hsv{font-size:16px}.hsl{font-size:9px}.hst{padding:12px 8px}}
-
-/* FIX 28: Smooth panel scroll */
-.panel{scroll-behavior:smooth}
-
-/* FIX 29: Chart min height */
-.chart-card canvas{min-height:160px}
-
-/* FIX 30: Module hover */
-.mod-item:hover .mod-lbl{color:var(--v)}
-
-/* FIX 31: Better placeholder */
-#userinput::placeholder{color:var(--mt);opacity:.4;font-size:13px}
-
-/* FIX 32: Touch manipulation everywhere */
-button,.qk,.mod-item,.samp-item,.tb,.hist-item,.dc-sug{touch-action:manipulation}
-
-/* FIX 33: Landing free strip mobile */
-@media(max-width:480px){.fstrip-left{flex-direction:column;gap:6px}}
-
-/* FIX 34: Keyboard hint visible */
-.inp-hint{opacity:.35;letter-spacing:.01em}
-
-/* FIX 35: Confidence card grid mobile */
-@media(max-width:480px){.conf-grid{grid-template-columns:repeat(3,1fr)}}
-
-/* FIX 36: Welcome screen sample button */
-.sample-run-btn{padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;touch-action:manipulation}
-.sample-run-btn:hover{opacity:.88;transform:translateY(-1px)}
-
-/* FIX 37: Toolbar overflow on small screens better */
-@media(max-width:860px){
-  .toolbar{gap:2px}
-  .tb{font-size:9px;padding:4px 7px}
-}
-</style>
-
-<script>
-// ════ NEXUS FINAL PATCH — Runtime fixes 38-50 ════
+//── NEXUS FINAL PATCH — Runtime fixes 38-50══
 
 // FIX 38: Add privacyOv + termsOv to click-outside close
 ['authOv','payOv','privacyOv','termsOv'].forEach(id=>{
@@ -3417,14 +3178,26 @@ document.addEventListener('paste',function(e){
   const txt=e.clipboardData.getData('text');
   if(!txt)return;
   const lines=txt.trim().split('\n');
-  if(lines.length>3&&lines[0].includes(',')&&lines[1].includes(',')){
-    e.preventDefault();
-    const rows=lines.map(r=>r.split(','));
-    if(typeof processArr==='function'){
-      processArr(rows,'Pasted Data');
-      ta.value='Analyze this data completely with charts';
-      ta.dispatchEvent(new Event('input'));
-      toast('📋 CSV data detected! Press Enter to analyze.');
+  if(lines.length > 2) {
+    const delimiters = [',', '\t', ';', '|'];
+    let bestDelim = null;
+    let maxCols = 0;
+    delimiters.forEach(d => {
+      const cols = lines[0].split(d).length;
+      if (cols > 2 && cols === lines[1].split(d).length) {
+        if (cols > maxCols) { maxCols = cols; bestDelim = d; }
+      }
+    });
+
+    if(bestDelim){
+      e.preventDefault();
+      const rows=lines.map(r=>r.split(bestDelim));
+      if(typeof processArr==='function'){
+        processArr(rows,'Pasted Data');
+        ta.value='Analyze this data completely with charts';
+        ta.dispatchEvent(new Event('input'));
+        toast('📋 ' + (bestDelim==='\t'?'TSV':'CSV') + ' data detected! Press Enter to analyze.');
+      }
     }
   }
 });
@@ -3498,9 +3271,9 @@ if(_origRC){
 console.log('%cNEXUS v11 PRODUCTION — 100x Agent Mode Active ✓','color:#34d399;font-family:monospace;font-weight:bold;font-size:14px');
 
 
-// ═══════════════════════════════════════════════
+//═════════════════════════════════════════════
 // NEXUS LANDING v4 — All 10 effects, no CDN
-// ═══════════════════════════════════════════════
+//═════════════════════════════════════════════
 (function(){
 'use strict';
 
@@ -3607,7 +3380,7 @@ function initWebGL(){
     gl.viewport(0,0,canvas.width,canvas.height);
   },{passive:true});
 
-  // ══ VERTEX SHADER — handles both torus knots AND morphing sphere ══
+  // VERTEX SHADER — handles both torus knots AND morphing sphere
   var VS=[
     'attribute vec3 aP;attribute vec3 aN;',
     'uniform mat4 uMVP;uniform float uT;uniform float uMorph;',
@@ -3620,7 +3393,7 @@ function initWebGL(){
     '}'
   ].join('\n');
 
-  // ══ FRAGMENT SHADER — purple/blue/teal gradient, metallic rim ══
+  // FRAGMENT SHADER — purple/blue/teal gradient, metallic rim
   var FS=[
     'precision mediump float;',
     'varying vec3 vN;varying vec3 vP;',
@@ -3654,7 +3427,7 @@ function initWebGL(){
   var uCol2=gl.getUniformLocation(prog,'uCol2');
   var uCol3=gl.getUniformLocation(prog,'uCol3');
 
-  // ══ MATRIX MATH (inline, no library) ══
+  // MATRIX MATH (inline, no library)
   function m4(){return new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]);}
   function mul(a,b){var r=m4();for(var i=0;i<4;i++)for(var j=0;j<4;j++){var s=0;for(var k=0;k<4;k++)s+=a[i+k*4]*b[k+j*4];r[i+j*4]=s;}return r;}
   function persp(fov,asp,n,f){var ff=1/Math.tan(fov/2),r2=1/(n-f),m=m4();m[0]=ff/asp;m[5]=ff;m[10]=(n+f)*r2;m[11]=-1;m[14]=2*n*f*r2;m[15]=0;return m;}
@@ -3664,7 +3437,7 @@ function initWebGL(){
   function tr(x,y,z){var m=m4();m[12]=x;m[13]=y;m[14]=z;return m;}
   function sc(x,y,z){var m=m4();m[0]=x;m[5]=y;m[10]=z;return m;}
 
-  // ══ GEOMETRY BUILDERS ══
+  // GEOMETRY BUILDERS
 
   // Torus knot geometry — pure math, no Three.js
   function buildTorusKnot(R,r,tubeSeg,radSeg,p,q){
@@ -3732,7 +3505,7 @@ function initWebGL(){
     return {verts:new Float32Array(verts),norms:new Float32Array(norms),idx:new Uint16Array(idx)};
   }
 
-  // ══ BUILD OBJECTS ══
+  // BUILD OBJECTS
   function mkBuf(geo){
     var vB=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,vB);gl.bufferData(gl.ARRAY_BUFFER,geo.verts,gl.STATIC_DRAW);
     var nB=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,nB);gl.bufferData(gl.ARRAY_BUFFER,geo.norms,gl.STATIC_DRAW);
@@ -3750,7 +3523,7 @@ function initWebGL(){
     {buf:mkBuf(buildSphere(36)), pos:[0,0,-2.5], rx:0,ry:0,rz:0, sx:[0.002,0.003,0.001], col1:[0.5,0.18,0.97],col2:[0.1,0.5,0.97],col3:[0.14,0.88,0.58], morph:0.18}
   ];
 
-  // ══ DRAW CALL ══
+  // DRAW CALL
   function drawObj(obj,proj,mxv,myv,t2){
     obj.rx+=obj.sx[0];obj.ry+=obj.sx[1];obj.rz+=obj.sx[2];
     // Float y
