@@ -10,7 +10,10 @@ id = "6c1a280596a8453fa4893dd7de5f7700"
 FREE_CREDITS = "10"
 GOOGLE_CLIENT_ID = "152785926177-ani51o00pe8k7uttjipnheg1mqijvchq.apps.googleusercontent.com"
 
-# SECURE SECRETS (Set these via: wrangler secret put [NAME])
-# JWT_SECRET = "nexus_secret_771"
-# ADMIN_SECRET = "admin123nexus"
-
+# ── SECURE SECRETS — Set via Cloudflare Dashboard, NOT here ──
+# dash.cloudflare.com → Workers → nexus-data-analyst-api → Settings → Variables & Secrets
+# Add as ENCRYPTED secrets (not plain vars):
+#   GROQ_API_KEY     = your Groq API key (console.groq.com)
+#   GEMINI_API_KEY   = your Gemini key (aistudio.google.com) — optional fallback
+#   JWT_SECRET       = any long random string (min 32 chars)
+#   ADMIN_SECRET     = your private admin password
