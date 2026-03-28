@@ -1307,7 +1307,7 @@ if('serviceWorker' in navigator){
     <div class="brand-mark">NX</div>
     <div><div class="brand-name">NEXUS</div><div class="brand-sub" id="dashBrandSub">AI ANALYST</div></div>
    </div>
-   <div class="ver" id="dashVer">v12 · ELITE</div>
+   <div class="ver" id="dashVer">v14 · ELITE</div>
   </div>
   <div class="tabs">
    <div class="tab on" id="t-mod" onclick="swTab('mod')">MODULES</div>
@@ -1525,7 +1525,7 @@ localStorage.setItem('nx_cp_backend', _BACKEND_DEFAULT);
 if (!localStorage.getItem('nx_cp_google_id')) localStorage.setItem('nx_cp_google_id', _GOOGLE_ID_DEFAULT);
 
 // Live config
-const BACKEND          = localStorage.getItem('nx_cp_backend') || 'http://localhost:8000';
+const BACKEND          = localStorage.getItem('nx_cp_backend') || 'https://nexus-data-analyst-api.onliraxter.workers.dev';
 const GOOGLE_CLIENT_ID = localStorage.getItem('nx_cp_google_id')|| _GOOGLE_ID_DEFAULT;
 const UPI_ID           = localStorage.getItem('nx_cp_upi')      || _UPI_DEFAULT;
 const GEMINI_KEY       = localStorage.getItem('nx_cp_anthropic')|| '';
@@ -2368,100 +2368,301 @@ async function sendMsg(){
   try {
     const formData = new FormData();
     if(S.rawFile) {
-        formData.append('file', S.rawFile);
+      formData.append('file', S.rawFile);
     } else {
-        // If no file, create a dummy one or handle text-only (handled by backend later)
-        const blob = new Blob([S.csv?.data.map(r=>r.join(',')).join('\n') || ""], { type: 'text/csv' });
-        formData.append('file', blob, S.fileName || 'data.csv');
+      const blob = new Blob([S.csv?.data.map(r=>r.join(',')).join('\n') || ''], { type: 'text/csv' });
+      formData.append('file', blob, S.fileName || 'data.csv');
     }
+    formData.append('question', raw || 'Analyze this dataset completely');
+    formData.append('mode', S.mode || 'universal');
 
     const res = await fetch(BACKEND + '/api/analyze', {
-        method: 'POST',
-        headers: {
-            'x-nexus-token': S.token === 'guest_token' ? 'guest_token' : (S.token || 'guest')
-        },
-        body: formData
+      method: 'POST',
+      headers: { 'x-nexus-token': S.token === 'guest_token' ? 'guest_token' : (S.token || 'guest') },
+      body: formData
     });
 
-    if(!res.ok) throw new Error(`Backend Error: ${res.status}`);
-    
+    if(!res.ok) {
+      let em = 'Backend Error: ' + res.status;
+      try { const ed = await res.json(); em = ed.error || em; } catch {}
+      throw new Error(em);
+    }
+
     const data = await res.json();
     S.analysisResult = data;
-    
     removeTyp(tid);
-    const bubEl = addBub('assistant', data.insight, true);
-    
-    // Render deterministic metrics above the insight
-    renderDeterministicMetrics(bubEl, data);
-    
-    if (data.metrics.revenue_trend) {
-        renderChartsFromBackend(bubEl, data.metrics.revenue_trend);
-    }
+    const bubEl = addBub('assistant', data.insight || '(No narrative returned)', true);
+    renderAnalyticsPanel(bubEl, data);
 
   } catch(e) {
     removeTyp(tid);
-    addBub('assistant', '⚠️ Analysis Failed: ' + e.message + '\n\nPlease ensure your Python backend is running at ' + BACKEND);
+    addBub('assistant', '\u26a0\ufe0f Analysis Failed: ' + e.message + '\n\nCheck your connection or re-upload the file.');
   } finally {
     isSending = false;
     document.getElementById('sendbtn').disabled = false;
   }
 }
 
-function renderDeterministicMetrics(container, data) {
-    const m = data.metrics;
-    const grid = document.createElement('div');
-    grid.className = 'kpi-grid';
-    grid.innerHTML = `
-        <div class="kpi-card">
-            <div class="kpi-label">Total Revenue</div>
-            <div class="kpi-value">₹${fmtN(m.revenue)}</div>
-            <div class="kpi-delta ${m.growth >= 0 ? 'up' : 'down'}">${m.growth >= 0 ? '▲' : '▼'} ${m.growth}%</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Orders</div>
-            <div class="kpi-value">${m.orders}</div>
-            <div class="kpi-delta neutral">Total Count</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">AOV</div>
-            <div class="kpi-value">₹${fmtN(m.aov)}</div>
-            <div class="kpi-delta neutral">Per Order</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">Data Quality</div>
-            <div class="kpi-value">${data.confidence}</div>
-            <div class="kpi-delta ${data.confidence === 'HIGH' ? 'up' : 'down'}">${data.data_quality.rows_after} Rows</div>
-        </div>
-    `;
-    container.insertBefore(grid, container.firstChild);
+// ── NEXUS v14 Intelligence Layer ─────────────────────────
+function nx_signals(m, anom, cohorts) {
+  return {
+    hasTrend:    m.revenue_trend  && m.revenue_trend.length >= 3,
+    hasMonthly:  m.monthly_trend  && m.monthly_trend.length >= 3,
+    hasCat:      m.category_breakdown && m.category_breakdown.length >= 2,
+    hasUsers:    m.unique_users   != null,
+    hasAnomaly:  anom && anom.count > 0,
+    hasCohort:   cohorts && cohorts.retention_matrix && Object.keys(cohorts.retention_matrix).length >= 2,
+    hasProducts: m.top_products   && m.top_products.length >= 2,
+    hasDist:     m.revenue_stats  && m.revenue_stats.n >= 10,
+    hasDow:      m.day_of_week    && m.day_of_week.some(d => d.val > 0),
+  };
 }
 
-function renderChartsFromBackend(container, trendData) {
-    const id = 'chart_' + Date.now();
-    const card = document.createElement('div');
-    card.className = 'chart-card';
-    card.innerHTML = `<div class="chart-lbl"><span>📈 Revenue Trend (Verified)</span></div><canvas id="${id}"></canvas>`;
-    container.appendChild(card);
-    
-    const ctx = document.getElementById(id);
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: trendData.map(d => d.name),
-            datasets: [{
-                label: 'Daily Revenue',
-                data: trendData.map(d => d.val),
-                borderColor: '#a78bfa',
-                backgroundColor: 'rgba(167,139,250,0.1)',
-                fill: true,
-                tension: 0.4
-            }]
-        },
-        options: {
-            responsive: true,
-            scales: { y: { beginAtZero: true } }
-        }
+function renderAnalyticsPanel(container, data) {
+  const m    = data.metrics        || {};
+  const dq   = data.data_quality   || {};
+  const anom = data.anomalies      || { anomalies: [], count: 0 };
+  const coh  = data.cohorts;
+  const conf = data.confidence     || 'MEDIUM';
+  const dst  = data.dataset_type   || 'generic';
+  const det  = data.detected_cols  || {};
+  const sch  = data.schema         || {};
+  const sig  = nx_signals(m, anom, coh);
+  const cc   = conf === 'HIGH' ? '#34d399' : conf === 'MEDIUM' ? '#f59e0b' : '#f87171';
+  const crgb = conf === 'HIGH' ? '52,211,153' : conf === 'MEDIUM' ? '245,158,11' : '248,113,113';
+
+  // Header bar
+  const panel = document.createElement('div');
+  panel.style.cssText = 'margin-bottom:10px';
+  panel.innerHTML =
+    '<div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;padding:8px 11px;' +
+    'background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:9px;flex-wrap:wrap">' +
+    '<span style="font-family:var(--fm);font-size:8px;padding:2px 8px;border-radius:10px;' +
+    'background:rgba(167,139,250,.12);border:1px solid rgba(167,139,250,.28);color:#a78bfa;font-weight:700;letter-spacing:.05em">' +
+    dst.toUpperCase() + '</span>' +
+    '<span style="font-family:var(--fm);font-size:8px;padding:2px 8px;border-radius:10px;' +
+    'background:rgba(' + crgb + ',.08);border:1px solid rgba(' + crgb + ',.25);color:' + cc + ';font-weight:700">' +
+    conf + ' CONFIDENCE</span>' +
+    '<span style="font-family:var(--fm);font-size:8px;color:var(--mt)">' +
+    (sch.clean_count || m.orders || 0).toLocaleString('en-IN') + ' rows · ' +
+    (dq.rows_before || 0).toLocaleString('en-IN') + ' raw</span>' +
+    (anom.count > 0 ? '<span style="font-family:var(--fm);font-size:8px;color:#f87171;font-weight:700">\u26a0 ' + anom.count + ' anomal' + (anom.count === 1 ? 'y' : 'ies') + '</span>' : '') +
+    (sig.hasCohort ? '<span style="font-family:var(--fm);font-size:8px;color:#60a5fa">\ud83d\udc65 Cohorts</span>' : '') +
+    (dq.issues && dq.issues.length ? '<span style="font-family:var(--fm);font-size:8px;color:#f59e0b">\u26a0 ' + dq.issues.length + ' quality issue' + (dq.issues.length > 1 ? 's' : '') + '</span>' : '<span style="font-family:var(--fm);font-size:8px;color:#34d399">\u2713 Clean</span>') +
+    '</div>';
+
+  // KPI cards
+  const kpis = [];
+  function kpi(label, val, delta, dir) {
+    return '<div class="kpi-card"><div class="kpi-label">' + label + '</div>' +
+      '<div class="kpi-value" style="font-size:17px">' + val + '</div>' +
+      '<div class="kpi-delta ' + dir + '">' + (dir==='up'?'\u25b2':dir==='down'?'\u25bc':'\u2015') + ' ' + delta + '</div></div>';
+  }
+  if (m.revenue   != null) kpis.push(kpi('Revenue',    fmtN(m.revenue),    Math.abs(m.growth||0)+'% WoW', (m.growth||0)>=0?'up':'down'));
+  if (m.orders    != null) kpis.push(kpi('Transactions',(m.orders||0).toLocaleString('en-IN'), 'Total', 'neutral'));
+  if (m.aov       != null) kpis.push(kpi('AOV',         fmtN(m.aov),        'Per order', 'neutral'));
+  if (m.median_order != null) kpis.push(kpi('Median Order', fmtN(m.median_order), m.revenue_stats && m.aov > m.median_order*1.3 ? 'Right-skewed' : 'Symmetric', 'neutral'));
+  if (sig.hasUsers) {
+    kpis.push(kpi('Users', (m.unique_users||0).toLocaleString('en-IN'), 'Unique', 'neutral'));
+    if (m.repeat_rate != null) kpis.push(kpi('Repeat Rate', m.repeat_rate+'%', m.repeat_rate>=20?'Strong':m.repeat_rate>=10?'Fair':'Weak', m.repeat_rate>=15?'up':'down'));
+  }
+  if (m.avg_daily_revenue != null) kpis.push(kpi('Daily Revenue', fmtN(m.avg_daily_revenue), '/day avg', 'neutral'));
+  if (m.pareto_concentration != null) kpis.push(kpi('Pareto', m.pareto_concentration+'%', 'Top 20\u2192Rev', m.pareto_concentration>=80?'down':'neutral'));
+  if (m.revenue_stats) kpis.push(kpi('P90 Order', fmtN(m.revenue_stats.p90), 'CV '+(m.revenue_stats.mean>0?Math.round(m.revenue_stats.std/m.revenue_stats.mean*100):0)+'%', 'neutral'));
+  kpis.push(kpi('Quality', (dq.clean_rate||100)+'%', conf, conf==='HIGH'?'up':conf==='MEDIUM'?'neutral':'down'));
+
+  if (kpis.length) {
+    const kg = document.createElement('div');
+    kg.className = 'kpi-grid';
+    kg.style.cssText = 'margin-bottom:10px;display:flex;flex-wrap:wrap;gap:5px';
+    kg.innerHTML = kpis.join('');
+    panel.appendChild(kg);
+  }
+
+  container.insertBefore(panel, container.firstChild);
+  setTimeout(function() { nx_charts(container, m, anom, coh, sig, det, dq, data); }, 100);
+}
+
+function nx_charts(container, m, anom, coh, sig, det, dq, data) {
+  var PAL = ['#a78bfa','#34d399','#60a5fa','#f59e0b','#f87171','#fb923c','#2dd4bf','#e879f9','#84cc16','#38bdf8'];
+  var TIP = { backgroundColor:'#0c0f18', borderColor:'rgba(167,139,250,.2)', borderWidth:1,
+    titleColor:'#94a3b8', bodyColor:'#cbd5e1', padding:10,
+    titleFont:{family:'IBM Plex Mono',size:10}, bodyFont:{family:'IBM Plex Mono',size:10} };
+  var SX = {
+    x:{ ticks:{color:'#3a4a5a',font:{size:9},maxRotation:38}, grid:{color:'rgba(255,255,255,.04)'} },
+    y:{ ticks:{color:'#3a4a5a',font:{size:9}}, grid:{color:'rgba(255,255,255,.04)'}, beginAtZero:true }
+  };
+
+  function card(title, badge) {
+    var el = document.createElement('div');
+    el.className = 'chart-card';
+    var id = 'nxc_' + Math.random().toString(36).slice(2,8);
+    el.innerHTML = '<div class="chart-lbl"><span>' + title + '</span>' +
+      '<span style="color:#34d399;font-size:7px;font-weight:700;letter-spacing:.05em">' + (badge||'\u2713 COMPUTED') + '</span></div>' +
+      '<canvas id="' + id + '" style="max-height:220px"></canvas>';
+    container.appendChild(el);
+    return id;
+  }
+
+  function draw(id, type, labels, datasets, extra) {
+    requestAnimationFrame(function() {
+      var canvas = document.getElementById(id);
+      if (!canvas) return;
+      try {
+        var opts = Object.assign({ responsive:true, maintainAspectRatio:true,
+          animation:{duration:550,easing:'easeOutQuart'},
+          plugins:{legend:{display:false},tooltip:TIP} }, extra || {});
+        if (type !== 'doughnut' && type !== 'pie') opts.scales = SX;
+        if (type === 'doughnut') opts.cutout = '60%';
+        new Chart(canvas, { type:type, data:{ labels:labels, datasets:datasets }, options:opts });
+      } catch(e) { console.warn('chart err', id, e.message); }
     });
+  }
+
+  function barDS(vals, clr) {
+    return [{ data:vals, backgroundColor:PAL.map(function(c){return c+'55';}), borderColor:clr||'#a78bfa', borderWidth:0, borderRadius:5, barPercentage:0.75 }];
+  }
+  function lineDS(vals, clr) {
+    return [{ data:vals, borderColor:clr||'#a78bfa', backgroundColor:(clr||'#a78bfa')+'18',
+      fill:true, tension:0.42, pointRadius:2.5, pointBackgroundColor:clr||'#a78bfa', borderWidth:2 }];
+  }
+
+  // 1. Revenue trend
+  if (sig.hasTrend) {
+    var useMo = sig.hasMonthly && m.revenue_trend.length > 45;
+    var src = useMo ? m.monthly_trend : m.revenue_trend;
+    var step = Math.max(1, Math.floor(src.length / 32));
+    var pts = src.filter(function(_,i){ return i % step === 0 || i === src.length-1; });
+    draw(card('\ud83d\udcc8 ' + (useMo?'Monthly':'Daily') + ' Revenue Trend'),
+      'line', pts.map(function(d){return d.name;}), lineDS(pts.map(function(d){return d.val;})));
+  }
+
+  // 2. Category breakdown
+  if (sig.hasCat) {
+    var cats = m.category_breakdown.slice(0,10);
+    var topShare = cats[0].val / ((m.revenue||1));
+    var ctype = cats.length <= 5 && topShare > 0.25 ? 'doughnut' : 'bar';
+    var cid = card('\ud83d\udce6 Revenue by ' + (det.category||'Category'));
+    if (ctype === 'doughnut') {
+      draw(cid, 'doughnut', cats.map(function(c){return c.name;}),
+        [{ data:cats.map(function(c){return c.val;}), backgroundColor:PAL, borderWidth:0, hoverOffset:6 }],
+        { plugins:{ legend:{ display:true, position:'right', labels:{color:'#4a5568',font:{size:9},boxWidth:10} }, tooltip:TIP } });
+    } else {
+      draw(cid, 'bar', cats.map(function(c){return c.name;}), barDS(cats.map(function(c){return c.val;})));
+    }
+  }
+
+  // 3. Day of week (only if >15% variance)
+  if (sig.hasDow) {
+    var dvals = m.day_of_week.map(function(d){return d.val;});
+    var dmx = Math.max.apply(null, dvals), dmn = Math.min.apply(null, dvals.filter(function(v){return v>0;}));
+    if (dmx > 0 && (dmx-dmn)/dmx > 0.15) {
+      draw(card('\ud83d\udcc5 Revenue by Day of Week'), 'bar',
+        m.day_of_week.map(function(d){return d.name;}),
+        [{ data:dvals, backgroundColor:dvals.map(function(v){return v===dmx?'#a78bfa99':v===dmn?'#f8717199':'#60a5fa44';}), borderRadius:5, barPercentage:0.75, borderWidth:0 }]);
+    }
+  }
+
+  // 4. Top products
+  if (sig.hasProducts) {
+    var prods = m.top_products.slice(0,8);
+    draw(card('\ud83c\udfc6 Top Products by Revenue'), 'bar',
+      prods.map(function(p){return p.name.length>18?p.name.slice(0,17)+'\u2026':p.name;}),
+      barDS(prods.map(function(p){return p.val;}), '#34d399'));
+  }
+
+  // 5. Revenue distribution
+  if (sig.hasDist) {
+    var rs = m.revenue_stats;
+    var buckets = [
+      {name:'Min\u2192P25', val:Math.max(0,rs.p25-rs.min)},
+      {name:'P25\u2192P50', val:Math.max(0,rs.median-rs.p25)},
+      {name:'P50\u2192P75', val:Math.max(0,rs.p75-rs.median)},
+      {name:'P75\u2192P90', val:Math.max(0,rs.p90-rs.p75)},
+      {name:'P90\u2192P99', val:Math.max(0,rs.p99-rs.p90)},
+      {name:'P99\u2192Max', val:Math.max(0,rs.max-rs.p99)},
+    ].filter(function(b){return b.val>0;});
+    if (buckets.length >= 3) {
+      draw(card('\ud83d\udcca Order Value Distribution'), 'bar',
+        buckets.map(function(b){return b.name;}),
+        [{ data:buckets.map(function(b){return b.val;}),
+          backgroundColor:['#34d39955','#60a5fa55','#a78bfa55','#f59e0b55','#f8717155','#e879f955'],
+          borderRadius:5, barPercentage:0.8, borderWidth:0 }]);
+    }
+  }
+
+  // 6. Monthly + MoM growth dual axis
+  if (sig.hasMonthly && m.monthly_trend.length >= 4) {
+    var mo = m.monthly_trend;
+    var gr = mo.map(function(d,i){
+      if(!i) return 0;
+      var p=mo[i-1].val; return p>0?Math.round((d.val-p)/p*100):0;
+    });
+    draw(card('\ud83d\udcc9 Monthly Revenue + MoM Growth'), 'bar',
+      mo.map(function(d){return d.name;}),
+      [
+        { type:'bar',  data:mo.map(function(d){return d.val;}), backgroundColor:'#a78bfa44', borderRadius:4, barPercentage:0.6, borderWidth:0, yAxisID:'y' },
+        { type:'line', data:gr, borderColor:'#34d399', backgroundColor:'transparent', tension:0.4, pointRadius:3, borderWidth:2, yAxisID:'y1', pointBackgroundColor:'#34d399' }
+      ],
+      { plugins:{ legend:{ display:true, labels:{color:'#4a5568',font:{size:9},boxWidth:10} }, tooltip:TIP },
+        scales:{ y:Object.assign({},SX.y,{position:'left'}), y1:{ticks:{color:'#34d399',font:{size:9}},grid:{drawOnChartArea:false},position:'right'}, x:SX.x } });
+  }
+
+  // 7. Anomaly panel
+  if (sig.hasAnomaly) {
+    var sclr = {HIGH:'#f87171',MEDIUM:'#f59e0b',LOW:'#60a5fa'};
+    var sbg  = {HIGH:'rgba(248,113,113,.12)',MEDIUM:'rgba(245,158,11,.1)',LOW:'rgba(96,165,250,.08)'};
+    var ap = document.createElement('div');
+    ap.style.cssText = 'margin:10px 0;background:rgba(248,113,113,.03);border:1px solid rgba(248,113,113,.14);border-radius:9px;padding:10px 13px';
+    var highCount = anom.anomalies.filter(function(a){return a.severity==='HIGH';}).length;
+    ap.innerHTML = '<div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#f87171;margin-bottom:9px;letter-spacing:.07em">' +
+      '\u26a0 ' + anom.count + ' ANOMAL' + (anom.count===1?'Y':'IES') + ' DETECTED' +
+      (highCount ? ' <span style="font-size:7px;padding:2px 7px;background:rgba(248,113,113,.15);border-radius:8px">' + highCount + ' HIGH</span>' : '') + '</div>' +
+      anom.anomalies.slice(0,8).map(function(a) {
+        return '<div style="display:flex;gap:9px;margin-bottom:6px;padding:6px 9px;background:rgba(0,0,0,.2);border-radius:7px;border-left:2px solid ' + (sclr[a.severity]||'#f59e0b') + '">' +
+          '<span style="font-family:var(--fm);font-size:7px;padding:2px 7px;border-radius:9px;background:' + (sbg[a.severity]||sbg.LOW) + ';color:' + (sclr[a.severity]||'#60a5fa') + ';font-weight:700;white-space:nowrap;flex-shrink:0">' + a.severity + '</span>' +
+          '<div><div style="font-family:var(--fm);font-size:9px;color:#e2e8f0;font-weight:600;margin-bottom:2px">' + esc(a.type.replace(/_/g,' ')) + '</div>' +
+          '<div style="font-family:var(--fm);font-size:8px;color:#4a5568;line-height:1.4">' + esc(a.reason) + '</div>' +
+          (a.impact > 0 ? '<div style="font-family:var(--fm);font-size:8px;color:#f59e0b;margin-top:2px;font-weight:600">Impact: ' + fmtN(a.impact) + '</div>' : '') + '</div></div>';
+      }).join('') +
+      (anom.count > 8 ? '<div style="font-family:var(--fm);font-size:8px;color:#3a4a5a;margin-top:4px">+' + (anom.count-8) + ' more in analysis above</div>' : '');
+    container.appendChild(ap);
+  }
+
+  // 8. Cohort heatmap
+  if (sig.hasCohort) {
+    var cohortKeys = Object.keys(coh.retention_matrix).sort().slice(-8);
+    var maxP = Math.min(7, Math.max.apply(null, cohortKeys.map(function(k){return Object.keys(coh.retention_matrix[k]).length;})));
+    var cp = document.createElement('div');
+    cp.className = 'chart-card';
+    var hdrs2 = '';
+    for(var pi=0;pi<maxP;pi++) hdrs2+='<th style="font-family:var(--fm);font-size:7px;color:#3a4a5a;padding:0 5px 6px;text-align:center;min-width:40px">M'+pi+'</th>';
+    var rows2 = cohortKeys.map(function(co) {
+      var row = coh.retention_matrix[co];
+      var sz = coh.cohort_sizes[co]||1;
+      var cells = '';
+      for(var p=0;p<maxP;p++){
+        var v=row[p]||0;
+        var bg=v>=70?'rgba(52,211,153,'+(0.1+v/200)+')':v>=40?'rgba(245,158,11,'+(0.08+v/300)+')':v>0?'rgba(248,113,113,'+(0.06+v/400)+')':'rgba(255,255,255,.02)';
+        var fc=v>=40?'#e2e8f0':v>0?'#6a7a8a':'#2a3545';
+        cells+='<td style="text-align:center;padding:5px 4px;background:'+bg+';border-radius:4px;font-family:var(--fm);font-size:8px;color:'+fc+';font-weight:'+(v>=50?'700':'400')+'">'+(v>0?v+'%':'\u2013')+'</td>';
+      }
+      return '<tr><td style="font-family:var(--fm);font-size:8px;color:#4a5568;padding-right:10px;white-space:nowrap;padding-bottom:4px">'+co+'<br><span style="font-size:7px;color:#2a3545">n='+sz+'</span></td>'+cells+'</tr>';
+    }).join('');
+    cp.innerHTML = '<div class="chart-lbl"><span>\ud83d\udc65 Cohort Retention Heatmap</span><span style="color:#60a5fa;font-size:7px;font-weight:700">\u2713 COMPUTED</span></div>' +
+      '<div style="overflow-x:auto;margin-top:4px"><table style="border-collapse:separate;border-spacing:3px;width:100%"><thead><tr><th style="font-family:var(--fm);font-size:7px;color:#2a3545;text-align:left;padding-bottom:6px">Cohort</th>'+hdrs2+'</tr></thead><tbody>'+rows2+'</tbody></table></div>' +
+      '<div style="display:flex;gap:10px;margin-top:7px;justify-content:flex-end"><span style="font-family:var(--fm);font-size:7px;color:#34d399">&#9632; \u226570%</span><span style="font-family:var(--fm);font-size:7px;color:#f59e0b">&#9632; 40-70%</span><span style="font-family:var(--fm);font-size:7px;color:#f87171">&#9632; &lt;40%</span></div>';
+    container.appendChild(cp);
+  }
+
+  // 9. Data quality issues
+  if (dq.issues && dq.issues.length > 0) {
+    var dqp = document.createElement('div');
+    dqp.style.cssText = 'margin:8px 0;background:rgba(245,158,11,.03);border:1px solid rgba(245,158,11,.12);border-radius:8px;padding:9px 12px';
+    dqp.innerHTML = '<div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#f59e0b;margin-bottom:7px;letter-spacing:.05em">\ud83d\udd0d DATA QUALITY REPORT</div>' +
+      dq.issues.map(function(i2){ return '<div style="font-family:var(--fm);font-size:8px;color:#4a5568;margin-bottom:4px;display:flex;gap:7px"><span style="color:#f59e0b;flex-shrink:0">\u2022</span><span>'+esc(i2)+'</span></div>'; }).join('');
+    container.appendChild(dqp);
+  }
 }
 
 // ── CHAT UI ──
@@ -2707,7 +2908,7 @@ function showWelcome(){
   };
 
   const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Free · ~20 seconds · 12 months of data</span></div>` : '';
-  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v12 · ELITE AI ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSugAndSend('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSugAndSend('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
+  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v14 · ELITE AI ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSugAndSend('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSugAndSend('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
 }
 
 // ── FILE UPLOAD ──
@@ -2720,259 +2921,6 @@ function loadFile(e){
   // Auto-trigger analysis
   setTimeout(()=>sendMsg(), 500);
   e.target.value='';
-}
-  const unitIdx = fuzzyFindCol(hdrs,[/^units?$/i,/^qty$/i,/^quantity$/i,/units.sold/i,/no.of.units/i,/pieces/i,/count/i]);
-  const priceIdx= fuzzyFindCol(hdrs,[/^price$/i,/^rate$/i,/^mrp$/i,/unit.price/i,/selling.price/i,/sp$/i,/cost.price/i,/cp$/i]);
-  const discIdx = fuzzyFindCol(hdrs,[/^discount$/i,/^disc/i,/^rebate/i,/off$/i,/promo/i]);
-  if(revIdx>=0&&unitIdx>=0&&priceIdx>=0){
-    data.forEach((r,ri)=>{
-      const rev=parseFloat(String(r[revIdx]||'').replace(/[,₹$\s]/g,''));
-      const units=parseFloat(String(r[unitIdx]||'').replace(/[,\s]/g,''));
-      const price=parseFloat(String(r[priceIdx]||'').replace(/[,₹$\s]/g,''));
-      if(isNaN(rev)||isNaN(units)||isNaN(price))return;
-      const disc=discIdx>=0?parseFloat(String(r[discIdx]||'').replace(/[%\s]/g,''))/100:0;
-      const expected=units*price*(1-(isNaN(disc)?0:disc));
-      const diff=Math.abs(rev-expected);
-      if(diff>Math.max(1,expected*0.02))mismatches.push({row:ri+2,revenue:rev,expected:Math.round(expected),diff:Math.round(diff)});
-    });
-  }
-
-  // ═══ GST DETECTION ═══
-  const gstCols=hdrs.filter(h=>/gst|cgst|sgst|igst|tax/i.test(h));
-  let gstSummary='';
-  if(gstCols.length>0){
-    gstSummary='\nGST COLUMNS DETECTED: '+gstCols.join(', ');
-    gstCols.forEach(gc=>{
-      const gcIdx=hdrs.indexOf(gc);
-      const gcFacts=facts[gc];
-      if(gcFacts&&gcFacts.type==='numeric')gstSummary+=`\n  ${gc}: Total=₹${gcFacts.sum.toFixed(2)}, Avg=₹${gcFacts.avg.toFixed(2)}`;
-    });
-  }
-
-  // ═══ QUALITY SCORE — ALL ROWS ═══
-  const totalCells=data.length*hdrs.length||1;
-  const filledCells=hdrs.reduce((t,h,hi)=>{
-    return t+data.filter(r=>r[hi]!=null&&String(r[hi]).trim()!=='').length;
-  },0);
-  const qualityScore=Math.round(filledCells/totalCells*100);
-
-  // ═══ PEARSON CORRELATION MATRIX ═══
-  let corrMatrix=null;
-  if(typeof ss!=='undefined'&&numCols.length>=2&&numCols.length<=10){
-    corrMatrix={};
-    numCols.forEach(({h:h1,nums:n1})=>{
-      corrMatrix[h1]={};
-      numCols.forEach(({h:h2,nums:n2})=>{
-        if(h1===h2){corrMatrix[h1][h2]=1;return;}
-        try{
-          const len=Math.min(n1.length,n2.length);
-          if(len<3){corrMatrix[h1][h2]=null;return;}
-          corrMatrix[h1][h2]=ss.sampleCorrelation(n1.slice(0,len),n2.slice(0,len));
-        }catch(e){corrMatrix[h1][h2]=null;}
-      });
-    });
-  }
-
-  // ═══ AUTO FORECAST — largest numeric col ═══
-  let forecastSummary='';
-  if(typeof ss!=='undefined'&&numCols.length>0){
-    const mainNum=numCols.reduce((a,b)=>b.nums.length>a.nums.length?b:a);
-    if(mainNum.nums.length>=6){
-      try{
-        const pts=mainNum.nums.slice(-12).map((v,i)=>[i,v]);
-        const reg=ss.linearRegression(pts);
-        const fn=ss.linearRegressionLine(reg);
-        const r2=ss.rSquaredXY(pts,fn);
-        const next3=[(pts.length),(pts.length+1),(pts.length+2)].map(x=>Math.max(0,fn(x)));
-        forecastSummary=`\nFORECAST (${mainNum.h}, linear, R²=${r2.toFixed(2)}): Next 3 periods: ${next3.map(v=>v.toFixed(2)).join(', ')} ${r2>0.7?'[HIGH CONFIDENCE]':r2>0.4?'[MEDIUM CONFIDENCE]':'[LOW CONFIDENCE — weak trend]'}`;
-      }catch(e){}
-    }
-  }
-
-  // ═══ INDIA BENCHMARKS AUTO-DETECT ═══
-  const INDIA_BENCHMARKS={
-    retail:{gross_margin:[25,35],net_margin:[3,8],inventory_turns:[6,12]},
-    pharma:{gross_margin:[18,22],net_margin:[10,15]},
-    fmcg:{gross_margin:[40,55],net_margin:[8,15]},
-    it_services:{gross_margin:[60,75],net_margin:[15,25]},
-    manufacturing:{gross_margin:[15,25],net_margin:[4,10]},
-    ecommerce:{gross_margin:[30,45],net_margin:[-5,5]},
-    saas:{gross_margin:[65,80],net_margin:[10,25]},
-  };
-  let benchmarkHint='';
-  const allText=(hdrs.join(' ')+data.slice(0,20).map(r=>r.join(' ')).join(' ')).toLowerCase();
-  let detectedIndustry=null;
-  if(/pharma|medicine|drug|tablet|capsule/i.test(allText))detectedIndustry='pharma';
-  else if(/software|saas|subscription|mrr|arr/i.test(allText))detectedIndustry='saas';
-  else if(/retail|store|sku|inventory|pos/i.test(allText))detectedIndustry='retail';
-  else if(/manufacture|production|oee|defect/i.test(allText))detectedIndustry='manufacturing';
-  else if(/order|cart|shipping|ecommerce|amazon|flipkart/i.test(allText))detectedIndustry='ecommerce';
-  if(detectedIndustry&&INDIA_BENCHMARKS[detectedIndustry]){
-    benchmarkHint=`\nDETECTED INDUSTRY: ${detectedIndustry.toUpperCase()}\nINDIA BENCHMARKS for ${detectedIndustry}: ${JSON.stringify(INDIA_BENCHMARKS[detectedIndustry])}`;
-  }
-
-  // ═══ BUILD VERIFIED FACTS SUMMARY (sent to AI instead of raw CSV) ═══
-  let summary=`━━━ NEXUS v12 JAVASCRIPT-VERIFIED DATA FACTS ━━━
-FILE: ${fname} | ROWS: ${data.length} | COLS: ${hdrs.length} | QUALITY: ${qualityScore}%
-JAVASCRIPT ENGINE: Processed ALL ${data.length} rows. Fuzzy column matching. Schema validated. Geo normalised.
-AI INSTRUCTION: Use ONLY these numbers. Do NOT recompute. Do NOT estimate. If a metric is not here, say 'not in verified data'.
-
-━━━ COMPUTED COLUMN STATS (ALL ${data.length} ROWS) ━━━\n`;
-
-  hdrs.forEach(h=>{
-    const f=facts[h];
-    if(!f)return;
-    if(f.type==='numeric'){
-      summary+=`${h}: SUM=${fmtN(f.sum)} | AVG=${fmtN(f.avg)} | MEDIAN=${fmtN(f.median)} | MIN=${fmtN(f.min)} | MAX=${fmtN(f.max)} | STD=${fmtN(f.std)} | COUNT=${f.count}`;
-      if(f.negCount>0)summary+=` | ⚠️ ${f.negCount} NEGATIVES`;
-      if(f.outlierCount>0)summary+=` | ⚠️ ${f.outlierCount} OUTLIERS (IQR)`;
-      summary+='\n';
-    } else {
-      summary+=`${h}: CATEGORICAL | UNIQUE=${f.unique} | COUNT=${f.count} | MISSING=${f.missing}`;
-      if(f.top5.length)summary+=` | TOP: ${f.top5.slice(0,3).map(x=>`${x.val}(${x.count})`).join(', ')}`;
-      summary+='\n';
-    }
-  });
-
-  if(dups.length>0){
-    summary+=`\n━━━ DUPLICATE IDs FOUND (JavaScript verified) ━━━\n`;
-    dups.forEach(d=>summary+=`⚠️ ${d.col}="${d.id}" appears ${d.count}x in rows: ${d.rows.join(',')}\n`);
-  }
-  if(fullRowDups.length>0){
-    summary+=`⚠️ ${fullRowDups.length} FULLY DUPLICATE ROWS detected\n`;
-  }
-  if(mismatches.length>0){
-    summary+=`\n━━━ FORMULA MISMATCHES (Revenue ≠ Units×Price) ━━━\n`;
-    mismatches.slice(0,5).forEach(m=>summary+=`⚠️ Row ${m.row}: Revenue=${fmtN(m.revenue)} but Units×Price=${fmtN(m.expected)} (diff=${fmtN(m.diff)})\n`);
-    if(mismatches.length>5)summary+=`...and ${mismatches.length-5} more\n`;
-  }
-  if(corrMatrix){
-    summary+='\n━━━ CORRELATION MATRIX (Pearson, JS-computed) ━━━\n';
-    const numHdrs=numCols.map(c=>c.h);
-    numHdrs.forEach(h1=>{
-      const row=numHdrs.map(h2=>{const v=corrMatrix[h1]?.[h2];return v!=null?v.toFixed(2):'N/A';}).join(' | ');
-      summary+=`${h1}: ${row}\n`;
-    });
-  }
-  if(forecastSummary)summary+=forecastSummary+'\n';
-  if(gstSummary)summary+=gstSummary+'\n';
-  if(benchmarkHint)summary+=benchmarkHint+'\n';
-  // ── NEXUS v12: Add schema + timestamp violations to AI context ──
-  const _schemaV = enforceSchema(hdrs, data);
-  const _tsV = validateTimestamps(hdrs, data);
-  if(_schemaV.length>0){
-    summary+=`\n━━━ SCHEMA VIOLATIONS (JS-detected) ━━━\n`;
-    _schemaV.forEach(v=>summary+=`⚠️ ${v.col}: ${v.type}${v.sample?' — sample: '+v.sample:''}${v.fix?' — fix: '+v.fix:''}\n`);
-  }
-  if(_tsV.length>0){
-    summary+=`\n━━━ TIMESTAMP ISSUES (JS-detected) ━━━\n`;
-    _tsV.forEach(t=>summary+=`⚠️ ${t.col}: ${t.invalid} invalid dates (${t.pct}% fail rate)${t.mixed?' MIXED FORMATS: '+t.formats.join(', '):''}\n`);
-  }
-  summary+=`\n━━━ DATA SAMPLE (first 8 rows for context) ━━━\n${hdrs.join(',')}\n`;
-  data.slice(0,8).forEach(r=>summary+=r.map(c=>String(c||'').trim()).join(',')+'\n');
-
-  // Store
-  if(isSecond){
-    S.verifiedFacts2=facts;
-    S.factsSummary2=summary.slice(0,25000);
-  } else {
-    S.verifiedFacts=facts;
-    S.factsSummary=summary.slice(0,25000); // expanded for 100x analysis depth
-    S.duplicates=dups;
-    S.formulaMismatches=mismatches;
-    S.correlationMatrix=corrMatrix;
-
-    // Build anomaly facts for injection
-    const anomFacts=[];
-    hdrs.forEach(h=>{
-      const f=facts[h];
-      if(!f)return;
-      if(f.type==='numeric'){
-        if(f.outlierRows&&f.outlierRows.length>0)anomFacts.push(`${h}: ${f.outlierCount} outliers (IQR). Rows: ${f.outlierRows.map(o=>`row${o.row}=val${o.val}`).join(',')}`);
-        if(f.negCount>0&&/revenue|sales|price|profit/i.test(h))anomFacts.push(`⚠️ ${h}: ${f.negCount} negative values in revenue/sales column`);
-      } else {
-        if(f.missing>0)anomFacts.push(`${h}: ${f.missing} missing values (${Math.round(f.missing/data.length*100)}% of rows)`);
-      }
-    });
-    if(dups.length>0)anomFacts.push(`DUPLICATE IDs: ${dups.length} duplicate ID values found`);
-    if(mismatches.length>0)anomFacts.push(`FORMULA MISMATCH: ${mismatches.length} rows where Revenue ≠ Units×Price`);
-
-    // ── NEXUS v12: Schema + Timestamp validation ──
-    const schemaViolations = enforceSchema(hdrs, data);
-    const tsIssues = validateTimestamps(hdrs, data);
-    schemaViolations.forEach(v => anomFacts.push(`SCHEMA: ${v.col} — ${v.type}: ${v.sample||v.fix||''}`));
-    tsIssues.forEach(t => anomFacts.push(`TIMESTAMP: ${t.col} — ${t.invalid} invalid dates (${t.pct}%)${t.mixed?' MIXED FORMATS:'+t.formats.join(','):''}`));
-    S.schemaViolations = schemaViolations;
-    S.tsIssues = tsIssues;
-
-    // ── NEXUS v12: Geo normalisation ──
-    const geoColIdx = hdrs.findIndex(h => /city|state|region|location|geo|country|district|zone/i.test(h));
-    if (geoColIdx >= 0 && facts[hdrs[geoColIdx]]) {
-      const gf = facts[hdrs[geoColIdx]];
-      if (gf.top5) gf.top5 = gf.top5.map(x => ({...x, val: normalizeGeo(x.val)}));
-    }
-
-    // ── NEXUS v12: Generate verified charts immediately ──
-    S.verifiedCharts = generateVerifiedCharts(facts, hdrs, data);
-
-    S.anomalyFacts=anomFacts.join('\n');
-
-    // Confidence data
-    S.confidenceData={
-      qualityScore,
-      totalRows:data.length,
-      dupCount:dups.length+fullRowDups.length,
-      mismatchCount:mismatches.length,
-      missingCols:hdrs.filter(h=>facts[h]&&facts[h].type==='categorical'&&facts[h].missing>0).length,
-      level:qualityScore>=85&&dups.length===0&&mismatches.length===0?'HIGH':qualityScore>=65?'MEDIUM':'LOW'
-    };
-
-    // Audit log entry
-    S.auditLog.push({
-      ts:new Date().toISOString(),
-      file:fname,
-      rows:data.length,
-      cols:hdrs.length,
-      quality:qualityScore,
-      dups:dups.length,
-      mismatches:mismatches.length
-    });
-    try{localStorage.setItem('nx_audit',JSON.stringify(S.auditLog.slice(-50)));}catch(e){}
-  }
-
-  // Update S.fileData (legacy fallback, no longer primary)
-  S.fileData='[FACTS COMPUTED — see S.factsSummary]';
-  S.fileName=fname;
-
-  showFOk(fname,{rows:data.length,cols:hdrs.length,hdrs,data,facts,qualityScore,dups,mismatches,isSecond});
-  if(!isSecond){
-    detectAnom(hdrs,data,facts);
-    // Show schema violations if any
-    if(S.schemaViolations&&S.schemaViolations.length>0){
-      const sb=document.getElementById('schemaBanner');
-      if(sb){
-        sb.classList.add('show');
-        sb.innerHTML=`<div class="schema-title">⚠️ SCHEMA ISSUES DETECTED</div>`+
-          S.schemaViolations.map(v=>`<div class="schema-tag">• ${esc(v.col)}: ${esc(v.type)}${v.sample?' (e.g. '+esc(v.sample)+')':''}</div>`).join('');
-      }
-    }
-    // Show timestamp issues if any
-    if(S.tsIssues&&S.tsIssues.length>0){
-      S.tsIssues.forEach(t=>toast(`⚠️ Date column "${t.col}": ${t.invalid} invalid dates${t.mixed?' — mixed formats':''}`,true));
-    }
-    // Update data health bar
-    const hb=document.getElementById('healthBar');
-    if(hb&&S.confidenceData){
-      hb.classList.add('show');
-      const lvl=S.confidenceData.level;
-      const dot=hb.querySelector('.health-dot');
-      if(dot){dot.className='health-dot '+(lvl==='HIGH'?'green':lvl==='MEDIUM'?'amber':'red');}
-      const htxt=hb.querySelector('.health-txt');
-      if(htxt)htxt.textContent=`Data Health: ${lvl} — ${S.confidenceData.totalRows.toLocaleString('en-IN')} rows processed`;
-      const hscore=hb.querySelector('.health-score');
-      if(hscore)hscore.textContent=`${S.confidenceData.qualityScore}% quality`;
-    }
-  }
 }
 
 // Helper: format number Indian style
@@ -3920,6 +3868,291 @@ button,.qk,.mod-item,.samp-item,.tb,.hist-item,.dc-sug{touch-action:manipulation
   .toolbar{gap:2px}
   .tb{font-size:9px;padding:4px 7px}
 }
+
+/* ════════════════════════════════════════
+   NEXUS v14 — ENHANCED MOBILE CSS
+   Complete mobile-first responsive design
+   ════════════════════════════════════════ */
+
+/* ── Base mobile touch improvements ── */
+* { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+/* ── Safe area for notch/island phones ── */
+.inp-zone {
+  padding-bottom: max(10px, env(safe-area-inset-bottom, 10px)) !important;
+}
+#view-dash {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* ── Prevent iOS zoom on input focus ── */
+input, textarea, select {
+  font-size: 16px !important;
+}
+@media (min-width: 681px) {
+  input, textarea, select { font-size: inherit !important; }
+  #userinput { font-size: 14px !important; }
+}
+
+/* ── Mobile: main layout ── */
+@media (max-width: 680px) {
+  /* Sidebar: full overlay on mobile */
+  .side {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important; bottom: 0 !important;
+    width: 280px !important;
+    z-index: 300 !important;
+    transform: translateX(0) !important;
+    transition: transform .25s cubic-bezier(.4,0,.2,1) !important;
+    background: var(--bg) !important;
+    border-right: 1px solid rgba(255,255,255,.07) !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .side.shut {
+    transform: translateX(-100%) !important;
+    box-shadow: none !important;
+  }
+  .side:not(.shut) {
+    box-shadow: 4px 0 32px rgba(0,0,0,.6) !important;
+  }
+  #sideOverlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.55);
+    z-index: 299;
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+  }
+  #sideOverlay.show { display: block; }
+
+  /* Main content full width */
+  .main { margin-left: 0 !important; width: 100% !important; }
+
+  /* Topbar */
+  .topbar { padding: 6px 12px !important; gap: 6px !important; }
+  .top-title { display: none !important; }
+  .chip { font-size: 8px !important; padding: 2px 6px !important; }
+
+  /* Toolbar: horizontal scroll */
+  .toolbar {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important;
+    scrollbar-width: none !important;
+    padding: 4px 10px 6px !important;
+    gap: 4px !important;
+  }
+  .toolbar::-webkit-scrollbar { display: none !important; }
+  .tb { flex-shrink: 0 !important; font-size: 9px !important; padding: 5px 9px !important; min-height: 32px !important; min-width: 40px !important; }
+
+  /* Chat area */
+  .chat { padding: 8px 8px 0 !important; }
+  .mrow { padding: 6px 8px !important; gap: 7px !important; }
+  .bub { font-size: 13px !important; padding: 10px 12px !important; max-width: calc(100vw - 70px) !important; }
+  .bub.u { max-width: calc(100vw - 60px) !important; }
+  .av { width: 26px !important; height: 26px !important; font-size: 9px !important; flex-shrink: 0 !important; }
+
+  /* Input zone */
+  .inp-zone { padding: 8px 10px max(10px, env(safe-area-inset-bottom, 10px)) !important; }
+  .inp-wrap { border-radius: 12px !important; padding: 8px 10px !important; gap: 7px !important; }
+  #userinput { min-height: 22px !important; max-height: 120px !important; }
+  #sendbtn { width: 40px !important; height: 40px !important; border-radius: 10px !important; flex-shrink: 0 !important; }
+
+  /* Suggestion chips */
+  .inp-suggestions {
+    overflow-x: auto !important; overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important; scrollbar-width: none !important;
+    padding: 4px 10px 6px !important; gap: 6px !important;
+  }
+  .inp-suggestions::-webkit-scrollbar { display: none !important; }
+  .sug-chip { flex-shrink: 0 !important; font-size: 11px !important; padding: 6px 13px !important; }
+
+  /* KPI grid: 2 columns */
+  .kpi-grid { grid-template-columns: repeat(2, 1fr) !important; display: grid !important; gap: 5px !important; }
+  .kpi-card { min-width: 0 !important; }
+  .kpi-value { font-size: 16px !important; }
+  .kpi-label { font-size: 7px !important; }
+
+  /* Charts */
+  .chart-card { padding: 10px !important; margin: 8px 0 !important; }
+  .chart-card canvas { max-height: 170px !important; }
+  .chart-lbl { font-size: 8px !important; }
+
+  /* Welcome screen */
+  .welcome { padding: 10px 10px !important; }
+  .w-badge { font-size: 7px !important; }
+  .w-h1 { font-size: 20px !important; }
+  .w-sub { font-size: 12px !important; }
+  .qk-grid { grid-template-columns: 1fr 1fr !important; gap: 6px !important; }
+  .qk { padding: 9px 8px !important; min-height: 52px !important; }
+  .qk-t { font-size: 11px !important; }
+  .qk-d { font-size: 9px !important; }
+
+  /* Dataset card */
+  .dc-stats { grid-template-columns: repeat(2, 1fr) !important; }
+  .dc-tbl-wrap { max-height: 100px !important; }
+
+  /* Modals */
+  .ov { padding: 8px !important; align-items: flex-end !important; }
+  .mbox {
+    width: 100% !important;
+    max-width: 100% !important;
+    border-radius: 16px 16px 0 0 !important;
+    padding: 20px 16px max(20px, env(safe-area-inset-bottom, 20px)) !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+  }
+  .mx { top: 12px !important; right: 14px !important; }
+
+  /* Msg actions */
+  .msg-acts { flex-wrap: wrap !important; gap: 4px !important; }
+  .mab { font-size: 8px !important; padding: 3px 7px !important; }
+
+  /* Bottom mobile nav */
+  .mob-nav { display: flex !important; }
+  .inp-zone { padding-bottom: max(60px, calc(50px + env(safe-area-inset-bottom, 10px))) !important; }
+
+  /* Health bar */
+  .health-bar { display: none !important; }
+
+  /* User bar */
+  .userbar { padding: 4px 10px !important; font-size: 10px !important; gap: 6px !important; }
+  .userbar .ubpic { width: 20px !important; height: 20px !important; }
+
+  /* Credit warn */
+  .credit-warn { font-size: 10px !important; padding: 5px 10px !important; }
+
+  /* Module panel */
+  .mod-item { padding: 8px 10px !important; }
+  .mod-lbl { font-size: 12px !important; }
+  .mod-desc { font-size: 10px !important; }
+
+  /* Tabs */
+  .tabs { gap: 2px !important; }
+  .tab { font-size: 9px !important; padding: 5px 8px !important; }
+
+  /* Pin button */
+  .pin-btn { display: none !important; }
+
+  /* Expanded chat: no side overlap */
+  #view-dash.active .main { width: 100% !important; }
+}
+
+/* ── Extra small phones (< 380px) ── */
+@media (max-width: 380px) {
+  .w-h1 { font-size: 17px !important; }
+  .kpi-value { font-size: 14px !important; }
+  .bub { font-size: 12px !important; padding: 9px 10px !important; }
+  .qk-t { font-size: 10px !important; }
+  .qk-d { display: none !important; }
+  .tb { font-size: 8px !important; padding: 4px 7px !important; }
+}
+
+/* ── Landscape phone ── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .inp-zone { padding-top: 4px !important; padding-bottom: max(4px, env(safe-area-inset-bottom)) !important; }
+  .inp-suggestions { display: none !important; }
+  .mob-nav { display: none !important; }
+  .topbar { padding: 3px 10px !important; }
+  .chart-card canvas { max-height: 130px !important; }
+}
+
+/* ── Tablet 681–860px ── */
+@media (min-width: 681px) and (max-width: 860px) {
+  .side { width: 220px !important; }
+  .toolbar { overflow-x: auto !important; flex-wrap: nowrap !important; scrollbar-width: none !important; }
+  .toolbar::-webkit-scrollbar { display: none !important; }
+  .tb { flex-shrink: 0 !important; }
+  .kpi-grid { display: flex !important; flex-wrap: wrap !important; }
+  .kpi-value { font-size: 17px !important; }
+  .mbox { width: 88% !important; max-width: 460px !important; }
+}
+
+/* ── Mobile bottom nav ── */
+.mob-nav {
+  display: none;
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: #050505;
+  border-top: 1px solid rgba(255,255,255,.07);
+  z-index: 200;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.mob-nav-inner {
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 0 5px;
+}
+.mob-nav-btn {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 2px; padding: 4px 8px;
+  color: #3a4555; cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  min-width: 48px; flex: 1;
+  transition: color .15s;
+}
+.mob-nav-btn.active,
+.mob-nav-btn:active { color: #a78bfa; }
+.mob-nav-btn span:first-child { font-size: 19px; line-height: 1; }
+.mob-nav-btn span:last-child { font-size: 8px; font-family: var(--fm); font-weight: 600; letter-spacing: .04em; }
+
+/* ── Scrollbar thin on mobile ── */
+@media (max-width: 860px) {
+  ::-webkit-scrollbar { width: 3px; height: 3px; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 2px; }
+}
+
+/* ── PWA install banner ── */
+.pwa-banner {
+  display: none;
+  position: fixed;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 8px);
+  left: 10px; right: 10px;
+  background: #0d0d0d;
+  border: 1px solid rgba(167,139,250,.28);
+  border-radius: 13px;
+  padding: 12px 14px;
+  z-index: 500;
+  align-items: center; gap: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.7);
+  animation: slideUp .3s ease;
+}
+.pwa-banner.show { display: flex; }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.pwa-banner-ico { font-size: 24px; flex-shrink: 0; }
+.pwa-banner-txt { flex: 1; }
+.pwa-banner-title { font-family: var(--fm); font-size: 11px; font-weight: 700; color: #f0f4f8; margin-bottom: 2px; }
+.pwa-banner-sub { font-family: var(--fm); font-size: 9px; color: #4a5568; line-height: 1.4; }
+.pwa-banner-btn {
+  padding: 7px 13px;
+  background: linear-gradient(135deg,#7c3aed,#2563eb);
+  border: none; border-radius: 8px;
+  color: #fff; font-family: var(--fm); font-size: 10px; font-weight: 700;
+  cursor: pointer; touch-action: manipulation; white-space: nowrap;
+}
+.pwa-banner-x { color: #3a4555; font-size: 16px; cursor: pointer; padding: 4px; flex-shrink: 0; }
+
+/* ── Smooth scrolling everywhere ── */
+* { scroll-behavior: smooth; -webkit-overflow-scrolling: touch; }
+
+/* ── Better tap targets on mobile ── */
+@media (max-width: 680px) {
+  a, button, [onclick], [role=button] {
+    min-height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mab, .chip, .sug-chip, .tb, .tab { min-height: 32px !important; }
+  .mob-nav-btn { min-height: 44px !important; }
+}
+/* END NEXUS v14 MOBILE CSS */
 </style>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
@@ -4395,4 +4628,18 @@ function initWebGL(){
     gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
     gl.enable(gl.DEPTH_TEST);
     gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_AL
+    gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+
+    var t2=t*1.2;
+    objects.forEach(function(obj){ drawObj(obj,proj,mxv,myv,t2); });
+  }
+  draw();
+}
+
+initParticles();
+initWebGL();
+
+})();
+</script>
+</body>
+</html>
