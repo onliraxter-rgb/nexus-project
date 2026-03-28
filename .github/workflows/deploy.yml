@@ -1,0 +1,25 @@
+name: Full System Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy Backend (Worker)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: "a8e1e29d41a302508f3252d9bed676ce"
+          workingDirectory: backend
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          
+      - name: Deploy Frontend (Pages)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: "a8e1e29d41a302508f3252d9bed676ce"
+          command: pages deploy . --project-name=nexus-data-analyst-web

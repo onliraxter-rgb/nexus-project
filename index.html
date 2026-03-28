@@ -1088,14 +1088,8 @@ if('serviceWorker' in navigator){
     <a href="#lp-pricing" class="lp-nlink">Pricing</a>
   </div>
   <div class="lp-nav-right">
-    <div class="user-pill" id="userPill" onclick="goDash()" style="display:none">
-      <div class="u-av" id="uAv">U</div>
-      <span class="u-name" id="uName">User</span>
-      <span class="u-credits" id="uCredits">5</span>
-    </div>
-    <button class="lp-btn-ghost" id="navSignin" onclick="openAuth()">Sign In</button>
-    <button class="lp-btn-pri" onclick="openAuth()">
-      Start Free <span class="lp-arrow">&#8594;</span>
+    <button class="lp-btn-pri" onclick="goDash()">
+      Open Dashboard <span class="lp-arrow">&#8594;</span>
       <span class="lp-shine"></span>
     </button>
   </div>
@@ -1126,7 +1120,7 @@ if('serviceWorker' in navigator){
     </h1>
     <p class="lp-sub">Upload your Excel or CSV. Ask anything. Get <strong>professional charts, profit insights,</strong> and specific actions &mdash; in 30 seconds.</p>
     <div class="lp-btns">
-      <button class="lp-cta" onclick="openAuth()">
+      <button class="lp-cta" onclick="goDash()">
         <span>Get Started Free</span>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         <span class="lp-cta-shine"></span>
@@ -1452,27 +1446,7 @@ if('serviceWorker' in navigator){
 </div><!-- /view-dash -->
 
 <!-- MODALS -->
-<div class="ov" id="authOv">
-  <div class="mbox">
-    <button class="mx" onclick="closeOv('authOv')">✕</button>
-    <h3>Sign in to NEXUS</h3>
-    <p id="authModalDesc">Sign in with Google to unlock 5 free analyses instantly.</p>
-    <div class="credits-info">
-      <div class="cit">WHAT YOU GET FREE</div>
-      <div class="cib">✓ <strong>5 complete analyses</strong> — full charts, KPIs, anomaly detection<br/>✓ All 13 analysis modules available<br/>✓ PDF, Excel, WhatsApp export<br/>✓ No card · No spam · No commitment</div>
-    </div>
-    <div id="googleBtnWrap" style="display:flex;justify-content:center;min-height:44px;margin-bottom:9px"></div>
-    <button class="mbtn" id="gFallback" onclick="doGoogleSignIn()" style="display:none">
-      <span id="gBtnTxt">Continue with Google</span>
-      <span class="loading-dots" id="gLoading" style="display:none"><span></span><span></span><span></span></span>
-    </button>
-    <div class="divdr">or get notified</div>
-    <input class="minp" id="authEmail" type="email" placeholder="Your email — we'll send access link"/>
-    <button class="mbtn secondary" onclick="emailNotify()">Notify Me When Ready →</button>
-    <div class="merr" id="authErr"></div>
-    <div class="auth-note">🔒 Secured · Data never stored · No spam</div>
-  </div>
-</div>
+<!-- Auth Modal Removed -->
 
 <div class="ov" id="payOv">
   <div class="mbox">
@@ -1663,27 +1637,24 @@ function loadSession(){
         });
       }
     }
-    // ── OPEN ACCESS MODE — testing phase (remove before launch) ──
-    if (!S.user) {
-      S.user = { name: 'Trial User', email: 'trial@nexus.ai', credits: Infinity, plan: 'unlimited' };
-      S.token = 'guest_token';
-      S.credits = Infinity;
-      S.plan = 'unlimited';
-    }
+    // ── PERMANENT UNLIMITED GUEST MODE ──
+    S.user = { name: 'Guest User', email: 'guest@nexus.ai', credits: Infinity, plan: 'unlimited' };
+    S.token = 'guest_token';
+    S.credits = Infinity;
+    S.plan = 'unlimited';
     updateNavUI();
   } catch(e) {
-    sessionStorage.removeItem('nx_tok');
-    sessionStorage.removeItem('nx_usr');
+    console.error('Session error:', e);
   }
 }
 
 function updateNavUI(){
-  if(!S.user)return;
+  // UI updated for No-Sign/No-Credit Mode
   document.getElementById('userPill').style.display='flex';
-  document.getElementById('navSignin').style.display='none';
-  document.getElementById('uAv').textContent=(S.user.name||'U')[0].toUpperCase();
-  document.getElementById('uName').textContent=S.user.name;
-  document.getElementById('uCredits').textContent=S.credits===Infinity?'∞ credits':S.credits+' credits';
+  const ns = document.getElementById('navSignin'); if(ns) ns.style.display='none';
+  document.getElementById('uAv').textContent='G';
+  document.getElementById('uName').textContent='Guest Mode';
+  document.getElementById('uCredits').style.display='none'; // Hide credit counter
   const fb=document.getElementById('heroFallback'); if(fb)fb.style.display='none';
 }
 function lockAndExit(){
@@ -1703,7 +1674,15 @@ async function api(path,opts={}){const headers={"Content-Type":"application/json
 // ── RATE + CREDITS ──
 function rateOk(){if(Date.now()-RATE.t>3600000){RATE.n=0;RATE.t=Date.now();}return ++RATE.n<=300;}
 async function deductCredit(){if(S.credits===Infinity||S.token==='guest_token')return true;if(S.credits<=0){toast('No credits left. Please upgrade.');return false;}if(BACKEND_LIVE){const tok=sessionStorage.getItem('nx_tok');try{const res=await fetch(BACKEND+'/api/user/deduct-credit',{method:'POST',headers:{'Content-Type':'application/json','x-nexus-token':tok||''}});const data=await res.json();if(!res.ok){toast(data.error||'No credits left.');return false;}S.credits=data.credits===-1?Infinity:data.credits;}catch(e){S.credits--;console.warn('Backend unreachable, deducting locally');}}else{S.credits--;}updateDashCredits();return true;}
-function updateDashCredits(){const isInf=S.credits===Infinity;const cr=document.getElementById('crchip');if(cr)cr.textContent=isInf?'∞ Admin':S.credits+' cr';document.getElementById('userbar').style.display='flex';document.getElementById('ubName').textContent=S.user?.name||'—';document.getElementById('ubCredits').textContent=isInf?'Unlimited':S.credits+' credits left';document.getElementById('ubPlan').textContent=S.plan?'· '+S.plan.charAt(0).toUpperCase()+S.plan.slice(1)+' Plan':'';const warn=document.getElementById('creditWarn');if(warn){warn.style.display=(!isInf&&S.credits<=1)?'flex':'none';if(!isInf&&S.credits<=1)document.getElementById('cwTxt').textContent=S.credits===0?'⚠️ No credits — upgrade to continue':'⚠️ Last credit remaining — upgrade now';}}
+function updateDashCredits(){
+  // Credit counters removed for Unlimited Mode
+  const cr=document.getElementById('crchip'); if(cr) cr.style.display='none';
+  document.getElementById('userbar').style.display='flex';
+  document.getElementById('ubName').textContent='Guest User';
+  document.getElementById('ubCredits').style.display='none';
+  document.getElementById('ubPlan').textContent='· Unlimited Access';
+  const warn=document.getElementById('creditWarn'); if(warn) warn.style.display='none';
+}
 
 // ── HERO SEARCH ──
 function heroSearch(){const q=document.getElementById('heroInp').value.trim();if(!q){document.getElementById('heroInp').focus();return;}sessionStorage.setItem('nx_search_query',q);goDash();}
@@ -1786,16 +1765,10 @@ async function submitPay(){const name=document.getElementById('payName').value.t
 function emailNotify(){const email=document.getElementById('authEmail').value.trim();if(!email.includes('@')){setAuthErr('Enter valid email');return;}if(BACKEND_LIVE)fetch(BACKEND+'/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});closeOv('authOv');toast('Got it! We will email '+email+' when ready.');}
 
 // ── MODAL HELPERS ──
-function openAuth(){
-  // Bypassed login popup for unrestricted guest access
-  saveSession("guest_token", {name: "Trial User", email: "guest@nexus.ai", credits: -1, plan: "unlimited"});
-  loadSession();
-  toast("Unlimited Guest Access Enabled");
-  setTimeout(() => goDash(true), 100);
-}
-function openOv(id){document.getElementById(id).classList.add('show');}
+function openAuth(){ goDash(); }
+function openOv(id){if(id==='authOv')return; document.getElementById(id).classList.add('show');}
 function closeOv(id){document.getElementById(id).classList.remove('show');}
-['authOv','payOv'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeOv(id);});});
+['authOv','payOv'].forEach(id=>{const el=document.getElementById(id); if(el)el.addEventListener('click',function(e){if(e.target===this)closeOv(id);});});
 
 // ── DASHBOARD INIT ──
 function initApp(){
