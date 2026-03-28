@@ -1786,7 +1786,13 @@ async function submitPay(){const name=document.getElementById('payName').value.t
 function emailNotify(){const email=document.getElementById('authEmail').value.trim();if(!email.includes('@')){setAuthErr('Enter valid email');return;}if(BACKEND_LIVE)fetch(BACKEND+'/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});closeOv('authOv');toast('Got it! We will email '+email+' when ready.');}
 
 // ── MODAL HELPERS ──
-function openAuth(){openOv('authOv');}
+function openAuth(){
+  // Bypassed login popup for unrestricted guest access
+  saveSession("guest_token", {name: "Trial User", email: "guest@nexus.ai", credits: -1, plan: "unlimited"});
+  loadSession();
+  toast("Unlimited Guest Access Enabled");
+  setTimeout(() => goDash(true), 100);
+}
 function openOv(id){document.getElementById(id).classList.add('show');}
 function closeOv(id){document.getElementById(id).classList.remove('show');}
 ['authOv','payOv'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeOv(id);});});
