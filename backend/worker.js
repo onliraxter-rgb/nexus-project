@@ -839,6 +839,13 @@ export default{
           }
         }
 
+        // Smart Data Fallback: If 'file' is missing but 'question' looks like a dataset (multiple lines + delimiters)
+        if((!csvText || csvText.trim().length < 5) && userQuestion.length > 20) {
+          if((userQuestion.includes(',') || userQuestion.includes('|')) && userQuestion.includes('\n')) {
+            csvText = userQuestion;
+          }
+        }
+
         if(!csvText||csvText.trim().length<5)return err("No data provided. Upload a CSV file or enter your data.",400,nOrigin);
 
         // Try CSV parsing first

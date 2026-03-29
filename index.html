@@ -2384,7 +2384,7 @@ async function sendMsg(){
     : raw;
   addBub('user', bubText || "Analyze this file", true);
   const tid=addTyp();
-  ta.value='';ta.style.height='auto';ta.style.height='44px';
+  // ta.value = ''; // Moved later to prevent race conditions during FormData build
   document.getElementById('sendbtn').disabled=true;
 
   try {
@@ -2401,6 +2401,7 @@ async function sendMsg(){
     }
     formData.append('question', raw || 'Analyze this dataset completely');
     formData.append('mode', S.mode || 'universal');
+    ta.value='';ta.style.height='auto';ta.style.height='44px';
 
     const res = await fetch(BACKEND + '/api/analyze', {
       method: 'POST',
