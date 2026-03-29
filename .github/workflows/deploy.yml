@@ -11,15 +11,15 @@ jobs:
       - name: Deploy Backend (Worker)
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: "a8e1e29d41a302508f3252d9bed676ce"
           workingDirectory: backend
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           
       - name: Deploy Frontend (Pages)
         uses: cloudflare/wrangler-action@v3
         with:
-          apiToken: ${{ secrets.CF_API_TOKEN }}
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: "a8e1e29d41a302508f3252d9bed676ce"
           command: pages deploy . --project-name=nexus-data-analyst-web
