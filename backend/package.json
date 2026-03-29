@@ -1,0 +1,1 @@
+{ "name": "nexus-data-analyst-api", "version": "1.0.0", "description": "Nexus Data Analyst Worker", "main": "worker.js", "type": "module", "scripts": { "dev": "wrangler dev", "deploy": "wrangler deploy" }, "dependencies": {}, "devDependencies": { "wrangler": "latest" } }
