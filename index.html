@@ -1010,6 +1010,9 @@ button:focus:not(:focus-visible),div:focus:not(:focus-visible){outline:none}
   .lp-divider{padding:0 18px 42px}
 }
 
+
+#authOv{display:none!important}
+.nsignin{display:none!important}
 </style>
 
 <script>
@@ -1088,8 +1091,14 @@ if('serviceWorker' in navigator){
     <a href="#lp-pricing" class="lp-nlink">Pricing</a>
   </div>
   <div class="lp-nav-right">
+    <div class="user-pill" id="userPill" onclick="goDash()" style="display:none">
+      <div class="u-av" id="uAv">U</div>
+      <span class="u-name" id="uName">User</span>
+      <span class="u-credits" id="uCredits">5</span>
+    </div>
+    <button class="lp-btn-ghost" id="navSignin" onclick="goDash()">Sign In</button>
     <button class="lp-btn-pri" onclick="goDash()">
-      Open Dashboard <span class="lp-arrow">&#8594;</span>
+      Start Free <span class="lp-arrow">&#8594;</span>
       <span class="lp-shine"></span>
     </button>
   </div>
@@ -1230,7 +1239,7 @@ if('serviceWorker' in navigator){
       <div class="lp-pcprice">&#8377;0</div>
       <div class="lp-pccycle">Forever free &middot; No card required</div>
       <ul class="lp-pclist"><li>5 analyses per month</li><li>All 13 analysis modules</li><li>PDF export</li><li>CSV and Excel upload</li><li>Email support</li></ul>
-      <button class="lp-pcbtn" onclick="openAuth()">Start Free &rarr;</button>
+      <button class="lp-pcbtn" onclick="goDash()">Start Free &rarr;</button>
     </div>
     <div class="lp-pc lp-pc-feat lp-rv" style="--rd:.1s">
       <div class="lp-pcbadge">RECOMMENDED</div>
@@ -1268,7 +1277,7 @@ if('serviceWorker' in navigator){
     <div class="lp-kicker">// GET STARTED</div>
     <h2 class="lp-cta-h">Start analyzing<br/><span class="lp-sho">today.</span></h2>
     <p class="lp-ssub" style="margin-bottom:32px">Sign in with Google. Upload your first file. Get 5 free analyses &mdash; no card required.</p>
-    <button class="lp-cta lp-cta-lg" onclick="openAuth()">
+    <button class="lp-cta lp-cta-lg" onclick="goDash()">
       <span>Get 5 Free Analyses</span>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       <span class="lp-cta-shine"></span>
@@ -1446,7 +1455,27 @@ if('serviceWorker' in navigator){
 </div><!-- /view-dash -->
 
 <!-- MODALS -->
-<!-- Auth Modal Removed -->
+<div class="ov" id="authOv">
+  <div class="mbox">
+    <button class="mx" onclick="closeOv('authOv')">✕</button>
+    <h3>Sign in to NEXUS</h3>
+    <p id="authModalDesc">Free unlimited access — no signup required.</p>
+    <div class="credits-info">
+      <div class="cit">WHAT YOU GET FREE</div>
+      <div class="cib">✓ <strong>5 complete analyses</strong> — full charts, KPIs, anomaly detection<br/>✓ All 13 analysis modules available<br/>✓ PDF, Excel, WhatsApp export<br/>✓ No card · No spam · No commitment</div>
+    </div>
+    <div id="googleBtnWrap" style="display:flex;justify-content:center;min-height:44px;margin-bottom:9px"></div>
+    <button class="mbtn" id="gFallback" onclick="doGoogleSignIn()" style="display:none">
+      <span id="gBtnTxt">Continue with Google</span>
+      <span class="loading-dots" id="gLoading" style="display:none"><span></span><span></span><span></span></span>
+    </button>
+    <div class="divdr">or get notified</div>
+    <input class="minp" id="authEmail" type="email" placeholder="Your email — we'll send access link"/>
+    <button class="mbtn secondary" onclick="emailNotify()">Notify Me When Ready →</button>
+    <div class="merr" id="authErr"></div>
+    <div class="auth-note">🔒 Secured · Data never stored · No spam</div>
+  </div>
+</div>
 
 <div class="ov" id="payOv">
   <div class="mbox">
@@ -1637,24 +1666,27 @@ function loadSession(){
         });
       }
     }
-    // ── PERMANENT UNLIMITED GUEST MODE ──
-    S.user = { name: 'Guest User', email: 'guest@nexus.ai', credits: Infinity, plan: 'unlimited' };
-    S.token = 'guest_token';
-    S.credits = Infinity;
-    S.plan = 'unlimited';
+    // ── OPEN ACCESS MODE — testing phase (remove before launch) ──
+    if (!S.user) {
+      S.user = { name: 'Trial User', email: 'trial@nexus.ai', credits: Infinity, plan: 'unlimited' };
+      S.token = 'guest_token';
+      S.credits = Infinity;
+      S.plan = 'unlimited';
+    }
     updateNavUI();
   } catch(e) {
-    console.error('Session error:', e);
+    sessionStorage.removeItem('nx_tok');
+    sessionStorage.removeItem('nx_usr');
   }
 }
 
 function updateNavUI(){
-  // UI updated for No-Sign/No-Credit Mode
+  if(!S.user)return;
   document.getElementById('userPill').style.display='flex';
-  const ns = document.getElementById('navSignin'); if(ns) ns.style.display='none';
-  document.getElementById('uAv').textContent='G';
-  document.getElementById('uName').textContent='Guest Mode';
-  document.getElementById('uCredits').style.display='none'; // Hide credit counter
+  document.getElementById('navSignin').style.display='none';
+  document.getElementById('uAv').textContent=(S.user.name||'U')[0].toUpperCase();
+  document.getElementById('uName').textContent=S.user.name;
+  document.getElementById('uCredits').textContent=S.credits===Infinity?'∞ credits':S.credits+' credits';
   const fb=document.getElementById('heroFallback'); if(fb)fb.style.display='none';
 }
 function lockAndExit(){
@@ -1673,16 +1705,8 @@ async function api(path,opts={}){const headers={"Content-Type":"application/json
 
 // ── RATE + CREDITS ──
 function rateOk(){if(Date.now()-RATE.t>3600000){RATE.n=0;RATE.t=Date.now();}return ++RATE.n<=300;}
-async function deductCredit(){if(S.credits===Infinity||S.token==='guest_token')return true;if(S.credits<=0){toast('No credits left. Please upgrade.');return false;}if(BACKEND_LIVE){const tok=sessionStorage.getItem('nx_tok');try{const res=await fetch(BACKEND+'/api/user/deduct-credit',{method:'POST',headers:{'Content-Type':'application/json','x-nexus-token':tok||''}});const data=await res.json();if(!res.ok){toast(data.error||'No credits left.');return false;}S.credits=data.credits===-1?Infinity:data.credits;}catch(e){S.credits--;console.warn('Backend unreachable, deducting locally');}}else{S.credits--;}updateDashCredits();return true;}
-function updateDashCredits(){
-  // Credit counters removed for Unlimited Mode
-  const cr=document.getElementById('crchip'); if(cr) cr.style.display='none';
-  document.getElementById('userbar').style.display='flex';
-  document.getElementById('ubName').textContent='Guest User';
-  document.getElementById('ubCredits').style.display='none';
-  document.getElementById('ubPlan').textContent='· Unlimited Access';
-  const warn=document.getElementById('creditWarn'); if(warn) warn.style.display='none';
-}
+async function deductCredit(){return true;}
+function updateDashCredits(){const isInf=S.credits===Infinity;const cr=document.getElementById('crchip');if(cr)cr.textContent=isInf?'∞ Admin':S.credits+' cr';document.getElementById('userbar').style.display='flex';document.getElementById('ubName').textContent=S.user?.name||'—';document.getElementById('ubCredits').textContent='Unlimited Free';document.getElementById('ubPlan').textContent='· Free Plan';const warn=document.getElementById('creditWarn');if(warn)warn.style.display='none';}
 
 // ── HERO SEARCH ──
 function heroSearch(){const q=document.getElementById('heroInp').value.trim();if(!q){document.getElementById('heroInp').focus();return;}sessionStorage.setItem('nx_search_query',q);goDash();}
@@ -1691,7 +1715,7 @@ function chipSearch(q){document.getElementById('heroInp').value=q;heroSearch();}
 // ── PAYMENT ──
 let curPlan='starter';
 function openPay(p){
-  if(!S.user){toast('Sign in to upgrade your plan');openAuth();return;}
+  
   curPlan=p||'starter';
   // Try Razorpay if key is set
   const rzpKey=localStorage.getItem('nx_cp_rzp_key')||'';
@@ -1765,10 +1789,10 @@ async function submitPay(){const name=document.getElementById('payName').value.t
 function emailNotify(){const email=document.getElementById('authEmail').value.trim();if(!email.includes('@')){setAuthErr('Enter valid email');return;}if(BACKEND_LIVE)fetch(BACKEND+'/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});closeOv('authOv');toast('Got it! We will email '+email+' when ready.');}
 
 // ── MODAL HELPERS ──
-function openAuth(){ goDash(); }
-function openOv(id){if(id==='authOv')return; document.getElementById(id).classList.add('show');}
+function openAuth(){/* auth disabled - free unlimited */;goDash();}
+function openOv(id){document.getElementById(id).classList.add('show');}
 function closeOv(id){document.getElementById(id).classList.remove('show');}
-['authOv','payOv'].forEach(id=>{const el=document.getElementById(id); if(el)el.addEventListener('click',function(e){if(e.target===this)closeOv(id);});});
+['authOv','payOv'].forEach(id=>{document.getElementById(id).addEventListener('click',function(e){if(e.target===this)closeOv(id);});});
 
 // ── DASHBOARD INIT ──
 function initApp(){
@@ -2887,7 +2911,7 @@ function showWelcome(){
   };
 
   const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Free · ~20 seconds · 12 months of data</span></div>` : '';
-  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v14 · ELITE AI ANALYST</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSugAndSend('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSugAndSend('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
+  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v14 · FREE · NO SIGNUP NEEDED</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSugAndSend('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSugAndSend('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
 }
 
 // ── FILE UPLOAD ──
@@ -3712,9 +3736,13 @@ document.addEventListener('click',function(e){
   });
 })();
 
+// Auto-initialize as unlimited guest - no auth required
+S.token = 'guest_token';
+S.credits = Infinity;
+S.user = { name: 'Analyst', email: 'guest@nexus.ai', plan: 'unlimited' };
 loadSession();
-if(typeof google!=='undefined')initGoogleBtn();
-else document.querySelector("script[src*='accounts.google.com']")?.addEventListener('load', initGoogleBtn);
+// Skip Google auth init - not needed
+
 </script>
 
 <!-- Chart Expand Modal -->
@@ -4165,7 +4193,7 @@ window.updateDashCredits=function(){
   const chip=document.getElementById('crchip');
   if(!chip)return;
   chip.classList.remove('cr-low','cr-zero');
-  if(S.credits===Infinity){chip.textContent='∞ credits';return;}
+  chip.textContent='∞ Free';return;
   chip.textContent=S.credits+' cr';
   if(S.credits<=1)chip.classList.add('cr-zero');
   else if(S.credits<=3)chip.classList.add('cr-low');
