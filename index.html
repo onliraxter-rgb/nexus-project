@@ -2363,7 +2363,10 @@ async function sendMsg(){
 
   const chat=document.getElementById('chat');
   if(document.querySelector('.welcome'))chat.innerHTML='';
-  addBub('user', raw || "Analyze this file", true);
+  const bubText = (raw.length > 300 && raw.includes('\n') && (raw.includes(',') || raw.includes('|'))) 
+    ? raw.split('\n')[0] + "\n\n[Raw Dataset Send to Engine...]" 
+    : raw;
+  addBub('user', bubText || "Analyze this file", true);
   const tid=addTyp();
   ta.value='';ta.style.height='auto';ta.style.height='44px';
   document.getElementById('sendbtn').disabled=true;
@@ -3515,7 +3518,9 @@ function setSugAndSend(txt){
 function setSug(txt){const ta=document.getElementById('userinput');ta.value=txt;ta.focus();document.getElementById('sendbtn').disabled=false;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';}
 function rSamp(el){
   S.rawFile = null; S.csv = null; S.fileName = "Sample-Analysis.csv";
-  document.getElementById('userinput').value = el.getAttribute('data-txt');
+  // Unescape backslash-n to real newlines
+  const txt = el.getAttribute('data-txt').replace(/\\n/g, '\n');
+  document.getElementById('userinput').value = txt;
   document.getElementById('sendbtn').disabled = false;
   sendMsg();
 }

@@ -119,7 +119,7 @@ async function getAllUsers(env){
 //  LAYER 1 — CSV PARSER
 // ═══════════════════════════════════════════════════════
 function parseCSV(text){
-  const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  const lines=text.replace(/\\n/g,'\n').replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
   const rows=[];
   for(const line of lines){
     if(!line.trim())continue;
