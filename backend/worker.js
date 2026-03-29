@@ -36,6 +36,7 @@ function err(msg,status=400,origin=null){return json({error:msg},status,origin);
 function sanitize(s){return typeof s==='string'?s.replace(/<[^>]*>/g,'').replace(/script/gi,''):s;}
 
 async function logActivity(env,ip,type,details={}){
+  if(!env.NEXUS_KV)return;
   const ts=Date.now();
   await env.NEXUS_KV.put(`log:${ts}:${ip}`,JSON.stringify({ts,ip,type,...details}),{expirationTtl:604800});
   const list=await env.NEXUS_KV.list({prefix:"log:"});
@@ -45,6 +46,7 @@ async function logActivity(env,ip,type,details={}){
   }
 }
 async function checkRateLimit(env,ip,type,max){
+  if(!env.NEXUS_KV)return true;
   const key=`ratelimit:${type}:${ip}`;
   const count=parseInt(await env.NEXUS_KV.get(key)||"0")+1;
   if(count>max)return false;
@@ -52,6 +54,7 @@ async function checkRateLimit(env,ip,type,max){
   return true;
 }
 async function isBlacklisted(env,ip){
+  if(!env.NEXUS_KV)return false;
   if(await env.NEXUS_KV.get(`blacklist:${ip}`))return true;
   const hourKey=`hourly:${ip}`;
   const count=parseInt(await env.NEXUS_KV.get(hourKey)||"0")+1;

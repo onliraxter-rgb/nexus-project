@@ -2372,9 +2372,13 @@ async function sendMsg(){
     const formData = new FormData();
     if(S.rawFile) {
       formData.append('file', S.rawFile);
-    } else {
-      const blob = new Blob([S.csv?.data.map(r=>r.join(',')).join('\n') || ''], { type: 'text/csv' });
+    } else if(S.csv && S.csv.data.length > 0) {
+      const blob = new Blob([S.csv.data.map(r=>r.join(',')).join('\n')], { type: 'text/csv' });
       formData.append('file', blob, S.fileName || 'data.csv');
+    } else {
+      // Fallback: Use the text prompt as data if no real file is present.
+      // This allows samples and direct data pastes to work seamlessly.
+      formData.append('file', raw || "Analysis Request");
     }
     formData.append('question', raw || 'Analyze this dataset completely');
     formData.append('mode', S.mode || 'universal');
@@ -2394,7 +2398,7 @@ async function sendMsg(){
     const data = await res.json();
     S.analysisResult = data;
     removeTyp(tid);
-    const bubEl = addBub('assistant', data.insight || '(No narrative returned)', true);
+    const bubEl = addBub('assistant', data.insight || '(No narrative returned)', true, true);
     renderAnalyticsPanel(bubEl, data);
 
   } catch(e) {
@@ -2482,6 +2486,10 @@ function renderAnalyticsPanel(container, data) {
     panel.appendChild(kg);
   }
 
+  if (!container) {
+    console.warn('renderAnalyticsPanel: container is null');
+    return;
+  }
   container.insertBefore(panel, container.firstChild);
   setTimeout(function() { nx_charts(container, m, anom, coh, sig, det, dq, data); }, 100);
 }
@@ -3505,7 +3513,12 @@ function setSugAndSend(txt){
   setTimeout(sendMsg,200);
 }
 function setSug(txt){const ta=document.getElementById('userinput');ta.value=txt;ta.focus();document.getElementById('sendbtn').disabled=false;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';}
-function rSamp(el){document.getElementById('userinput').value=el.getAttribute('data-txt');document.getElementById('sendbtn').disabled=false;sendMsg();}
+function rSamp(el){
+  S.rawFile = null; S.csv = null; S.fileName = "Sample-Analysis.csv";
+  document.getElementById('userinput').value = el.getAttribute('data-txt');
+  document.getElementById('sendbtn').disabled = false;
+  sendMsg();
+}
 function newChat(){
   S.messages=[];S.fileData=null;S.fileName=null;S.csv=null;S.csv2=null;
   S.verifiedFacts=null;S.factsSummary='';S.anomalyFacts='';S.confidenceData=null;
