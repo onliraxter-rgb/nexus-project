@@ -839,19 +839,28 @@ export default{
           }
         }
 
-        // Omni-Field Data Detection: Scan all fields if primary 'file' is missing
+        // Omni-Field Data Detection: Scan all fields safely if primary 'file' is missing
         if(!csvText || csvText.trim().length < 5) {
-          for(const [k, v] of fd.entries()) {
-            if(typeof v === 'string' && v.length > 15 && v.includes(',')) {
-              if (v.includes('\n') || (v.split(',').length > 5)) {
-                csvText = v;
-                break;
+          // 1. Check userQuestion (already extracted from any request type)
+          if(userQuestion && userQuestion.length > 20 && (userQuestion.includes(',') || userQuestion.includes('|'))) {
+             if(userQuestion.includes('\n') || (userQuestion.split(',').length > 5)) {
+               csvText = userQuestion;
+             }
+          }
+          // 2. Check FormData entries safely
+          if(!csvText && ct.includes("multipart/form-data") && typeof fd !== 'undefined') {
+            for(const [k, v] of fd.entries()) {
+              if(typeof v === 'string' && v.length > 15 && v.includes(',')) {
+                if (v.includes('\n') || (v.split(',').length > 5)) {
+                  csvText = v;
+                  break;
+                }
               }
             }
           }
         }
 
-        if(!csvText||csvText.trim().length<5)return err("No data provided. Upload a CSV file or enter your data.",400,nOrigin);
+        if(!csvText||csvText.trim().length<5) return err("No data provided. Upload a CSV file or enter your data.",400,nOrigin);
 
         // Try CSV parsing first
         const{headers,records}=parseInput(csvText.slice(0,5_000_000));
