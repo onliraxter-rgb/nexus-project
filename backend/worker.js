@@ -115,11 +115,28 @@ async function getAllUsers(env){
   return users;
 }
 
-// ═══════════════════════════════════════════════════════
-//  LAYER 1 — CSV PARSER
-// ═══════════════════════════════════════════════════════
+function detectDelimiter(firstLine){
+  const candidates=[',','\t','|',';'];
+  let best=',',bestCount=0;
+  for(const d of candidates){
+    const c=(firstLine.match(new RegExp(d==='|'?'\\|':d,'g'))||[]).length;
+    if(c>bestCount){bestCount=c;best=d;}
+  }
+  return best;
+}
+
 function parseCSV(text){
-  const lines=text.replace(/\\n/g,'\n').replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  // Strip BOM
+  if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
+  // Unescape literal \n from HTML attributes or form submissions
+  text=text.replace(/\\n/g,'\n');
+  const lines=text.replace(/\r\n/g,'\n').replace(/\r/g,'\n').split('\n');
+  const nonEmpty=lines.filter(l=>l.trim());
+  if(nonEmpty.length<2)return{headers:[],records:[]};
+
+  // Auto-detect delimiter from first line
+  const delim=detectDelimiter(nonEmpty[0]);
+
   const rows=[];
   for(const line of lines){
     if(!line.trim())continue;
@@ -127,16 +144,17 @@ function parseCSV(text){
     for(let i=0;i<line.length;i++){
       const ch=line[i];
       if(ch==='"'){if(inQ&&line[i+1]==='"'){cur+='"';i++;}else inQ=!inQ;}
-      else if(ch===','&&!inQ){row.push(cur.trim());cur='';}
+      else if(ch===delim&&!inQ){row.push(cur.trim());cur='';}
       else cur+=ch;
     }
     row.push(cur.trim());
     rows.push(row);
   }
   if(rows.length<2)return{headers:[],records:[]};
-  const headers=rows[0].map(h=>h.replace(/^"|"$/g,'').trim());
+  const headers=rows[0].map(h=>h.replace(/^"|"$/g,'').trim()).filter(h=>h);
+  if(headers.length===0)return{headers:[],records:[]};
   const records=[];
-  for(let i=1;i<rows.length;i++){
+  for(let i=1;i<Math.min(rows.length,100001);i++){
     if(rows[i].every(c=>!c))continue;
     const rec={};
     headers.forEach((h,j)=>{rec[h]=rows[i][j]!==undefined?rows[i][j]:'';});
@@ -144,6 +162,27 @@ function parseCSV(text){
   }
   return{headers,records};
 }
+
+function parseInput(text){
+  // Try JSON array first
+  const trimmed=text.trim();
+  if(trimmed.startsWith('[')){
+    try{
+      const arr=JSON.parse(trimmed);
+      if(Array.isArray(arr)&&arr.length>0&&typeof arr[0]==='object'){
+        const headers=Object.keys(arr[0]);
+        const records=arr.slice(0,100000).map(obj=>{
+          const rec={};headers.forEach(h=>{rec[h]=obj[h]!=null?String(obj[h]):'';});
+          return rec;
+        });
+        return{headers,records};
+      }
+    }catch{}
+  }
+  // Fallback to CSV
+  return parseCSV(text);
+}
+
 
 // ═══════════════════════════════════════════════════════
 //  LAYER 2 — SCHEMA DETECTION
@@ -708,11 +747,60 @@ export default{
           }
         }
 
-        if(!csvText||csvText.trim().length<5)return err("No data provided. Upload a CSV file.",400,nOrigin);
+        if(!csvText||csvText.trim().length<5)return err("No data provided. Upload a CSV file or enter your data.",400,nOrigin);
 
-        // Analytics pipeline
-        const{headers,records}=parseCSV(csvText.slice(0,5_000_000));
-        if(records.length===0)return err("Could not parse file. Ensure it has a header row and comma-separated values.",400,nOrigin);
+        // Try CSV parsing first
+        const{headers,records}=parseInput(csvText.slice(0,5_000_000));
+
+        // ── TEXT-ONLY PATH ──────────────────────────────────────────────
+        // If CSV parsing yields no records, treat the payload as a direct
+        // text/descriptive analysis prompt (handles sample items, pasted
+        // summaries, and plain text datasets).
+        if(records.length===0){
+          const textSysPrompt=`You are NEXUS, an elite AI data analyst for Indian businesses. 
+The user has shared business data or a scenario in text form (not a CSV file).
+Analyze it thoroughly. Provide:
+1. Key KPIs and metrics extracted from the text
+2. Trend analysis and patterns
+3. Anomalies or risks
+4. Executive recommendations
+5. A NEXUS VERDICT summary
+
+Format your response with:
+- ▶ SECTION HEADERS for each analysis block
+- **Bold** for key metrics
+- Use ◆ NEXUS VERDICT at the end
+- Keep it professional and data-driven`;
+
+          const textUserMsg=`User question: ${userQuestion}\n\nData / Context provided:\n${csvText.slice(0,4000)}`;
+
+          let textInsight=null,textAttempts=0;
+          while(textAttempts<2&&!textInsight){
+            textAttempts++;
+            try{
+              const groqRes=await callGroq(textSysPrompt,textUserMsg,env);
+              if(groqRes.ok){const d=await groqRes.json();textInsight=d.choices?.[0]?.message?.content||null;}
+              else if(groqRes.status===429){
+                textInsight=await callGemini(textSysPrompt,textUserMsg,env);
+              }
+            }catch{}
+          }
+          if(!textInsight)textInsight="Analysis could not be completed. Please try again.";
+
+          return json(scrub({
+            insight:textInsight,
+            metrics:{},
+            data_quality:{clean_rate:100,issues:[],rows_before:0},
+            anomalies:{anomalies:[],count:0},
+            cohorts:null,
+            confidence:"MEDIUM",
+            dataset_type:"text_analysis",
+            detected_cols:{},
+            intent:{primary:"general"},
+            schema:{headers:[],row_count:0,clean_count:0}
+          }),200,nOrigin);
+        }
+        // ── END TEXT-ONLY PATH ──────────────────────────────────────────
 
         let detected=detectSchema(headers);
         if(!detected.revenue){

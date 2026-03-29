@@ -2844,7 +2844,7 @@ void main(){
   });
   observer.observe(document.body,{childList:true,subtree:true});
 }
-function removeTyp(id){const el=document.getElementById(id);if(el)el.remove();}
+
 function copyBub(btn){navigator.clipboard.writeText(btn.closest('.bub').innerText.replace(/⎘ Copy.*$/s,'').trim()).then(()=>toast('✅ Copied!')).catch(()=>{});}
 function renderContent(text){
   const pc=[];
