@@ -839,10 +839,15 @@ export default{
           }
         }
 
-        // Smart Data Fallback: If 'file' is missing but 'question' looks like a dataset (multiple lines + delimiters)
-        if((!csvText || csvText.trim().length < 5) && userQuestion.length > 20) {
-          if((userQuestion.includes(',') || userQuestion.includes('|')) && userQuestion.includes('\n')) {
-            csvText = userQuestion;
+        // Omni-Field Data Detection: Scan all fields if primary 'file' is missing
+        if(!csvText || csvText.trim().length < 5) {
+          for(const [k, v] of fd.entries()) {
+            if(typeof v === 'string' && v.length > 15 && v.includes(',')) {
+              if (v.includes('\n') || (v.split(',').length > 5)) {
+                csvText = v;
+                break;
+              }
+            }
           }
         }
 
