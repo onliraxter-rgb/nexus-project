@@ -187,23 +187,27 @@ function parseInput(text){
 // ═══════════════════════════════════════════════════════
 //  LAYER 2 — SCHEMA DETECTION
 // ═══════════════════════════════════════════════════════
-const COL_ALIASES={
+const COL_ALIASES = {
   revenue:  ['amount','revenue','sales','price','total','final_amount','sale_price','total_amount',
-             'grand_total','net_amount','value','income','earning','payment','cost','fee','charge',
-             'invoice_amount','order_value','gmv','transaction_amount','subtotal','unit_price'],
+             'grand_total','net_amount','value','income','earning','payment','cost_price','fee','charge',
+             'invoice_amount','order_value','gmv','transaction_amount','subtotal','unit_price','mrr','arr','billing'],
   date:     ['date','timestamp','created_at','order_date','transaction_date','signup_date',
              'purchase_date','time','datetime','created','updated_at','order_time','sale_date',
-             'invoice_date','event_date','date_time','order_created'],
+             'invoice_date','event_date','date_time','order_created','period','month','year','day'],
   user_id:  ['user_id','customer_id','cust_id','client_id','uid','userid','customerid',
-             'buyer_id','account_id','member_id','contact_id','user','customer'],
+             'buyer_id','account_id','member_id','contact_id','user','customer','sub_id'],
   email:    ['email','email_address','user_email','customer_email'],
   category: ['category','type','group','department','segment','product_type','item_type',
              'channel','source','product_category','region','country','city','brand','vertical',
-             'division','subcategory'],
+             'division','subcategory','industry','market'],
   product:  ['product','product_name','item','item_name','sku','product_id','description',
-             'name','title','product_title','item_description'],
-  quantity: ['quantity','qty','units','count','volume','items','num_items','pieces'],
-  status:   ['status','state','stage','order_status','payment_status','txn_status'],
+             'name','title','product_title','item_description','sku_id'],
+  quantity: ['quantity','qty','units','count','volume','items','num_items','pieces','amount_ordered'],
+  status:   ['status','state','stage','order_status','payment_status','txn_status','fulfillment'],
+  cost:     ['cost','expenses','cogs','expenditure','spending','purchase_price','buy_price'],
+  profit:   ['profit','margin','earnings','net_income','ebitda','net_profit','gross_profit'],
+  channel:  ['channel','source','medium','campaign','platform','ad_group','utm_source','traffic_source'],
+  region:   ['region','country','state','city','postcode','zip','location','territory','zone']
 };
 function detectSchema(headers){
   const detected={};
@@ -320,44 +324,75 @@ function calcStats(arr){
   if(!n)return null;
   const sum=s.reduce((a,v)=>a+v,0),mean=sum/n;
   const variance=s.reduce((a,v)=>a+(v-mean)**2,0)/n;
+  const std=Math.sqrt(variance);
+  
+  // Percentile function
   const pct=p=>{const idx=(p/100)*(n-1),lo=Math.floor(idx),hi=Math.ceil(idx);return s[lo]+(s[hi]-s[lo])*(idx-lo);};
-  return{n,sum:rv(sum),mean:rv(mean),median:rv(pct(50)),std:rv(Math.sqrt(variance)),
-    min:rv(s[0]),max:rv(s[n-1]),p25:rv(pct(25)),p75:rv(pct(75)),p90:rv(pct(90)),p99:rv(pct(99))};
+  
+  // Skewness
+  let skew=0;
+  if(std>0){
+    const m3=s.reduce((a,v)=>a+(v-mean)**3,0)/n;
+    skew=m3/(std**3);
+  }
+
+  return{n,sum:rv(sum),mean:rv(mean),median:rv(pct(50)),std:rv(std),variance:rv(variance),
+    min:rv(s[0]),max:rv(s[n-1]),skew:rv(skew),
+    p5:rv(pct(5)),p10:rv(pct(10)),p25:rv(pct(25)),p75:rv(pct(75)),p90:rv(pct(90)),p95:rv(pct(95)),p99:rv(pct(99))};
+}
+
+function calcLinearRegression(pts){
+  const n=pts.length;if(n<2)return {slope:0,intercept:0,r2:0};
+  let sx=0,sy=0,sxy=0,sx2=0,sy2=0;
+  pts.forEach((p,i)=>{sx+=i;sy+=p;sxy+=i*p;sx2+=i*i;sy2+=p*p;});
+  const slope=(n*sxy-sx*sy)/(n*sx2-sx*sx);
+  const intercept=(sy-slope*sx)/n;
+  const r=(n*sxy-sx*sy)/Math.sqrt((n*sx2-sx*sx)*(n*sy2-sy*sy));
+  return {slope,intercept,r2:rv(r*r,4)};
+}
+
+function calcCorrelation(arr1,arr2){
+  const n=arr1.length;if(n<2||n!==arr2.length)return 0;
+  const m1=arr1.reduce((a,b)=>a+b,0)/n, m2=arr2.reduce((a,b)=>a+b,0)/n;
+  let num=0,d1=0,d2=0;
+  for(let i=0;i<n;i++){const diff1=arr1[i]-m1,diff2=arr2[i]-m2;num+=diff1*diff2;d1+=diff1**2;d2+=diff2**2;}
+  return d1*d2===0?0:rv(num/Math.sqrt(d1*d2),4);
 }
 
 // ═══════════════════════════════════════════════════════
 //  LAYER 6 — METRICS ENGINE
 // ═══════════════════════════════════════════════════════
-function computeMetrics(cleaned,detected){
+function computeMetrics(cleaned,detected,headers){
   const m={revenue:null,orders:cleaned.length,aov:null,median_order:null,
-    unique_users:null,repeat_rate:null,avg_daily_revenue:null,growth:0,
+    unique_users:null,repeat_rate:null,avg_daily_revenue:null,growth:0,cagr:null,yoy:null,
     revenue_trend:[],monthly_trend:[],day_of_week:[],
-    category_breakdown:[],top_products:[],revenue_stats:null,pareto_concentration:null};
+    category_breakdown:[],top_products:[],revenue_stats:null,pareto_concentration:null,
+    correlations:{},forecast:[],frequency:'unknown'};
+  
+  const numCols=headers.filter(h=>{
+    const vals=cleaned.slice(0,100).map(r=>toNum(r[h])).filter(v=>v!==null);
+    return vals.length>20;
+  });
+
   if(detected.revenue){
     const vals=cleaned.map(row=>row._rev).filter(v=>v!==null&&isFinite(v));
     const s=calcStats(vals);
     if(s){m.revenue=s.sum;m.revenue_stats=s;m.aov=cleaned.length>0?rv(s.sum/cleaned.length):0;m.median_order=s.median;}
+    
+    // Correlations
+    numCols.forEach(c1=>{
+      if(c1===detected.revenue)return;
+      const v1=cleaned.map(r=>row._rev).filter(v=>v!==null); // Simplified for now
+      const v2=cleaned.map(r=>toNum(r[c1])).filter(v=>v!==null);
+      if(v1.length===v2.length&&v1.length>5)m.correlations[c1]=calcCorrelation(v1,v2);
+    });
   }
-  const uCol=detected.user_id||detected.email;
-  if(uCol){
-    const uMap={};
-    cleaned.forEach(row=>{const u=row[uCol];if(u)uMap[u]=(uMap[u]||0)+1;});
-    const uArr=Object.values(uMap);
-    m.unique_users=uArr.length;
-    m.repeat_rate=m.unique_users>0?rv((uArr.filter(c=>c>1).length/m.unique_users)*100):0;
-    if(detected.revenue){
-      const uRevMap={};
-      cleaned.forEach(row=>{const u=row[uCol];if(u)uRevMap[u]=(uRevMap[u]||0)+(row._rev||0);});
-      const revVals=Object.values(uRevMap).sort((a,b)=>b-a);
-      const top20=Math.max(1,Math.floor(revVals.length*.2));
-      const tot=revVals.reduce((s,v)=>s+v,0);
-      m.pareto_concentration=tot>0?rv((revVals.slice(0,top20).reduce((s,v)=>s+v,0)/tot)*100):null;
-    }
-  }
+
   if(detected.date){
     const dailyMap={},monthlyMap={};
-    const dowMap={0:0,1:0,2:0,3:0,4:0,5:0,6:0},dowCount={0:0,1:0,2:0,3:0,4:0,5:0,6:0};
     const DOW=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const dowMap={0:0,1:0,2:0,3:0,4:0,5:0,6:0},dowCount={0:0,1:0,2:0,3:0,4:0,5:0,6:0};
+    
     cleaned.forEach(row=>{
       if(!row._date)return;
       const dk=row._date.toISOString().slice(0,10),mk=row._date.toISOString().slice(0,7),dow=row._date.getDay();
@@ -365,15 +400,44 @@ function computeMetrics(cleaned,detected){
       dailyMap[dk]=(dailyMap[dk]||0)+rev;monthlyMap[mk]=(monthlyMap[mk]||0)+rev;
       dowMap[dow]+=rev;dowCount[dow]++;
     });
+
     m.revenue_trend=Object.entries(dailyMap).sort((a,b)=>a[0].localeCompare(b[0])).map(([name,val])=>({name,val:rv(val)}));
     m.monthly_trend=Object.entries(monthlyMap).sort((a,b)=>a[0].localeCompare(b[0])).map(([name,val])=>({name,val:rv(val)}));
     m.day_of_week=DOW.map((name,i)=>({name,val:rv(dowMap[i]),count:dowCount[i]}));
+    
+    // Frequency and Growth
     const trend=m.revenue_trend;
-    if(trend.length>=14){
-      const l7=trend.slice(-7).reduce((s,d)=>s+d.val,0),p7=trend.slice(-14,-7).reduce((s,d)=>s+d.val,0);
-      m.growth=p7>0?rv(((l7-p7)/p7)*100):0;
+    if(trend.length>=2){
+      const diffs=[];for(let i=1;i<trend.length;i++)diffs.push(new Date(trend[i].name)-new Date(trend[i-1].name));
+      const avgDiff=diffs.reduce((a,b)=>a+b,0)/diffs.length;
+      m.frequency=avgDiff<1.5*864e5?'daily':avgDiff<8*864e5?'weekly':'monthly';
+      
+      const last=trend[trend.length-1].val, first=trend[0].val;
+      if(first>0&&trend.length>30)m.cagr=rv((Math.pow(last/first, 365/trend.length)-1)*100);
+      
+      if(trend.length>=14){
+        const l7=trend.slice(-7).reduce((s,d)=>s+d.val,0),p7=trend.slice(-14,-7).reduce((s,d)=>s+d.val,0);
+        m.growth=p7>0?rv(((l7-p7)/p7)*100):0;
+      }
+      
+      // Forecasting (Linear Regression)
+      const reg=calcLinearRegression(trend.map(d=>d.val));
+      for(let i=1;i<=3;i++)m.forecast.push({name:`Future ${i}`,val:rv(Math.max(0,reg.slope*(trend.length+i)+reg.intercept))});
     }
-    if(trend.length>0)m.avg_daily_revenue=rv(trend.reduce((s,d)=>s+d.val,0)/trend.length);
+  }
+  // User/Category/Product logic preserved...
+  const uCol=detected.user_id||detected.email;
+  if(uCol){
+    const uMap={};cleaned.forEach(row=>{const u=row[uCol];if(u)uMap[u]=(uMap[u]||0)+1;});
+    const uArr=Object.values(uMap);m.unique_users=uArr.length;
+    m.repeat_rate=m.unique_users>0?rv((uArr.filter(c=>c>1).length/m.unique_users)*100):0;
+    if(detected.revenue){
+      const uRevMap={};cleaned.forEach(row=>{const u=row[uCol];if(u)uRevMap[u]=(uRevMap[u]||0)+(row._rev||0);});
+      const revVals=Object.values(uRevMap).sort((a,b)=>b-a);
+      const top20=Math.max(1,Math.floor(revVals.length*.2));
+      const tot=revVals.reduce((s,v)=>s+v,0);
+      m.pareto_concentration=tot>0?rv((revVals.slice(0,top20).reduce((s,v)=>s+v,0)/tot)*100):null;
+    }
   }
   if(detected.category){
     const catMap={},catRevMap={};
@@ -387,6 +451,7 @@ function computeMetrics(cleaned,detected){
   }
   return m;
 }
+
 
 // ═══════════════════════════════════════════════════════
 //  LAYER 7 — COHORT ENGINE
@@ -423,59 +488,84 @@ function computeCohorts(cleaned,detected){
 // ═══════════════════════════════════════════════════════
 function detectAnomalies(cleaned,detected){
   const anomalies=[];
-  if(detected.revenue){
-    const vals=cleaned.map(row=>row._rev).filter(v=>v!==null&&isFinite(v));
-    const negs=cleaned.filter(row=>row._rev!==null&&row._rev<0);
-    if(negs.length)anomalies.push({type:'NEGATIVE_REVENUE',severity:'HIGH',value:negs.length,
-      impact:rv(Math.abs(negs.reduce((s,row)=>s+(row._rev||0),0))),
-      reason:`${negs.length} transaction${negs.length>1?'s':''} with negative revenue — possible refunds, reversals, or data entry errors`});
-    if(vals.length>=10){
-      const mean=vals.reduce((s,v)=>s+v,0)/vals.length;
-      const std=Math.sqrt(vals.reduce((s,v)=>s+(v-mean)**2,0)/vals.length);
-      if(std>0){
-        const outliers=cleaned.filter(row=>row._rev!==null&&Math.abs((row._rev-mean)/std)>3);
-        if(outliers.length){
-          const maxZ=rv(Math.max(...outliers.map(row=>Math.abs((row._rev-mean)/std))),1);
-          anomalies.push({type:'STATISTICAL_OUTLIER',severity:'MEDIUM',value:outliers.length,
-            impact:rv(outliers.reduce((s,row)=>s+(row._rev||0),0)),
-            reason:`${outliers.length} orders with Z-score >3σ from mean ${rv(mean)}. Highest deviation: ${maxZ}σ`});
-        }
-      }
+  const vals=detected.revenue?cleaned.map(row=>row._rev).filter(v=>v!==null&&isFinite(v)):[];
+  
+  // 1. NEGATIVE VALUES
+  const negs=cleaned.filter(row=>(row._rev!==null&&row._rev<0)||(row._qty!==null&&row._qty<0));
+  if(negs.length)anomalies.push({type:'NEGATIVE_VALUES',severity:'HIGH',value:negs.length,
+    impact:rv(Math.abs(negs.reduce((s,row)=>s+(row._rev||0),0))),
+    reason:`${negs.length} transaction${negs.length>1?'s':''} with negative values — possible refunds, reversals, or data entry errors`});
+
+  // 2. STATISTICAL OUTLIERS (Z-SCORE)
+  if(vals.length>=10){
+    const mean=vals.reduce((s,v)=>s+v,0)/vals.length;
+    const std=Math.sqrt(vals.reduce((s,v)=>s+(v-mean)**2,0)/vals.length);
+    if(std>0){
+      const outliers=cleaned.filter(row=>row._rev!==null&&Math.abs((row._rev-mean)/std)>3.5);
+      if(outliers.length)anomalies.push({type:'STATISTICAL_OUTLIER',severity:'MEDIUM',value:outliers.length,
+        impact:rv(outliers.reduce((s,row)=>s+(row._rev||0),0)),
+        reason:`${outliers.length} orders with Z-score >3.5σ which are extreme deviations from business norms.`});
     }
-    if(detected.date&&vals.length>=7){
-      const dailyMap={};
-      cleaned.forEach(row=>{if(!row._date||row._rev===null)return;const k=row._date.toISOString().slice(0,10);dailyMap[k]=(dailyMap[k]||0)+row._rev;});
-      const dVals=Object.values(dailyMap);
-      if(dVals.length>=5){
-        const dmean=dVals.reduce((s,v)=>s+v,0)/dVals.length;
-        const dstd=Math.sqrt(dVals.reduce((s,v)=>s+(v-dmean)**2,0)/dVals.length);
-        if(dstd>0){
-          const spikes=Object.entries(dailyMap).filter(([,v])=>Math.abs((v-dmean)/dstd)>2.5);
-          if(spikes.length){
-            const top=spikes.sort((a,b)=>Math.abs(b[1]-dmean)-Math.abs(a[1]-dmean))[0];
-            anomalies.push({type:top[1]>dmean?'REVENUE_SPIKE':'REVENUE_DROP',severity:'MEDIUM',
-              value:rv(top[1]),impact:rv(Math.abs(top[1]-dmean)),
-              reason:`${top[0]}: revenue ${rv(top[1])} vs daily avg ${rv(dmean)} (${rv(Math.abs((top[1]-dmean)/dstd),1)}σ). ${spikes.length} anomalous day${spikes.length>1?'s':''} total`});
-          }
-        }
-      }
-    }
-    const zeros=cleaned.filter(row=>row._rev===0).length;
-    if(zeros>cleaned.length*.05&&zeros>3)
-      anomalies.push({type:'ZERO_VALUE_TRANSACTIONS',severity:'LOW',value:zeros,impact:0,
-        reason:`${zeros} zero-value transactions (${rv(zeros/cleaned.length*100)}% of total) — free orders, failed payments, or test data`});
   }
+
+  // 3. IQR OUTLIERS
+  const iqrOuts=cleaned.filter(row=>row._iqr_out);
+  if(iqrOuts.length>0&&iqrOuts.length<cleaned.length*0.05)
+    anomalies.push({type:'IQR_OUTLIER',severity:'LOW',value:iqrOuts.length,impact:rv(iqrOuts.reduce((s,r)=>s+(r._rev||0),0)),
+      reason:`${iqrOuts.length} transactions outside 1.5x IQR range — significant but non-extreme outliers.`});
+
+  // 4. REVENUE SPIKES/DROPS
+  if(detected.date&&vals.length>=7){
+    const dailyMap={};cleaned.forEach(row=>{if(!row._date||row._rev===null)return;const k=row._date.toISOString().slice(0,10);dailyMap[k]=(dailyMap[k]||0)+row._rev;});
+    const dVals=Object.values(dailyMap);
+    if(dVals.length>=5){
+      const dmean=dVals.reduce((s,v)=>s+v,0)/dVals.length, dstd=Math.sqrt(dVals.reduce((s,v)=>s+(v-dmean)**2,0)/dVals.length);
+      if(dstd>0){
+        const spikes=Object.entries(dailyMap).filter(([,v])=>Math.abs((v-dmean)/dstd)>2.5);
+        if(spikes.length){
+          const top=spikes.sort((a,b)=>Math.abs(b[1]-dmean)-Math.abs(a[1]-dmean))[0];
+          anomalies.push({type:top[1]>dmean?'REVENUE_SPIKE':'REVENUE_DROP',severity:'MEDIUM',value:rv(top[1]),impact:rv(Math.abs(top[1]-dmean)),
+            reason:`${top[0]}: ${top[1]>dmean?'spike':'drop'} detected (${rv(top[1])} vs daily avg ${rv(dmean)}).`});
+        }
+      }
+    }
+  }
+
+  // 5. SUSPICIOUS FREQUENCY
   const uCol=detected.user_id||detected.email;
   if(uCol&&detected.date){
-    const byUser={};
-    cleaned.forEach(row=>{if(!row[uCol]||!row._date)return;const u=row[uCol];if(!byUser[u])byUser[u]=[];byUser[u].push(row._date.getTime());});
-    let rapidPairs=0;
-    for(const times of Object.values(byUser)){times.sort((a,b)=>a-b);for(let i=1;i<times.length;i++)if(times[i]-times[i-1]<60000)rapidPairs++;}
+    const byUser={};cleaned.forEach(row=>{if(!row[uCol]||!row._date)return;const u=row[uCol];if(!byUser[u])byUser[u]=[];byUser[u].push(row._date.getTime());});
+    let rapidPairs=0;for(const times of Object.values(byUser)){times.sort((a,b)=>a-b);for(let i=1;i<times.length;i++)if(times[i]-times[i-1]<60000)rapidPairs++;}
     if(rapidPairs>0)anomalies.push({type:'SUSPICIOUS_FREQUENCY',severity:'HIGH',value:rapidPairs,impact:0,
-      reason:`${rapidPairs} transaction pair${rapidPairs>1?'s':''} from same user within 60 seconds — possible duplicate charges or bot activity`});
+      reason:`${rapidPairs} transaction pair${rapidPairs>1?'s':''} within 60 seconds from same user — possible bot activity or double-charges.`});
   }
+
+  // 6. ZERO VALUE IMPACT
+  const zeros=cleaned.filter(row=>row._rev===0).length;
+  if(zeros>cleaned.length*.05)anomalies.push({type:'ZERO_VALUE_TRANSACTIONS',severity:'LOW',value:zeros,impact:0,
+    reason:`${zeros} zero-value transactions (${rv(zeros/cleaned.length*100)}% of total) — check if these are deliberate promotions or data errors.`});
+
+  // 7. DUPLICATE TRANSACTIONS
+  let dups=0;const dSet=new Set();
+  cleaned.forEach(row=>{
+    const k=uCol?`${row[uCol]}|${row._rev}|${row._date?.toISOString().slice(0,10)}` : `${row._rev}|${row._date?.toISOString().slice(0,16)}`;
+    if(dSet.has(k))dups++; else dSet.add(k);
+  });
+  if(dups>0)anomalies.push({type:'DUPLICATE_TRANSACTIONS',severity:'MEDIUM',value:dups,impact:0,
+    reason:`Detected ${dups} possible duplicate transaction signatures (same user, amount, and time).`});
+
+  // 8. DATE GAPS
+  if(detected.date&&cleaned.length>10){
+    const sortedDates=cleaned.map(r=>r._date).filter(Boolean).sort((a,b)=>a-b);
+    let maxGap=0;for(let i=1;i<sortedDates.length;i++){const gap=sortedDates[i]-sortedDates[i-1];if(gap>maxGap)maxGap=gap;}
+    if(maxGap > 3*864e5 && maxGap > (sortedDates[sortedDates.length-1]-sortedDates[0])/cleaned.length * 10)
+      anomalies.push({type:'DATE_GAP',severity:'LOW',value:rv(maxGap/864e5,1),impact:0,
+        reason:`Missing data for ${rv(maxGap/864e5,1)} consecutive days — check for sensor failure or tracking outages.`});
+  }
+
   return{anomalies:anomalies.slice(0,15),count:anomalies.length};
 }
+
 
 // ═══════════════════════════════════════════════════════
 //  LAYER 9 — CONFIDENCE SCORER
@@ -502,15 +592,17 @@ function buildPrompt(metrics,detected,dataQuality,anomalyResult,cohortResult,dsT
   const coreBlock=[
     `DATASET: "${fileName||'data'}" | TYPE: ${dsType.toUpperCase()} | ROWS: ${metrics.orders} (${dataQuality.rows_before} raw, ${dataQuality.clean_rate}% clean)`,
     `COLUMNS DETECTED: ${Object.entries(detected).map(([k,v])=>`${k}="${v}"`).join(', ')||'none'}`,
+    `FREQUENCY: ${metrics.frequency.toUpperCase()} | CONFIDENCE: ${confidence}`,
     dataQuality.issues.length?`QUALITY ISSUES: ${dataQuality.issues.join(' | ')}`:`QUALITY: Clean`,
-    `CONFIDENCE: ${confidence}`,
     ``,
     `── VERIFIED METRICS ──`,
     detected.revenue?[
       `Revenue: ${fmt(metrics.revenue)} | Orders: ${metrics.orders} | AOV: ${fmt(metrics.aov)} | Median: ${fmt(metrics.median_order)}`,
-      metrics.revenue_stats?`Stats: min=${fmt(metrics.revenue_stats.min)} p25=${fmt(metrics.revenue_stats.p25)} p75=${fmt(metrics.revenue_stats.p75)} p90=${fmt(metrics.revenue_stats.p90)} max=${fmt(metrics.revenue_stats.max)} std=${fmt(metrics.revenue_stats.std)}`:'',
-      metrics.growth!=null?`WoW Growth: ${pct(metrics.growth)} | Avg Daily: ${fmt(metrics.avg_daily_revenue)}`:'',
+      `CAGR: ${pct(metrics.cagr)} | WoW Growth: ${pct(metrics.growth)}`,
+      metrics.revenue_stats?`Stats: min=${fmt(metrics.revenue_stats.min)} p10=${fmt(metrics.revenue_stats.p10)} p75=${fmt(metrics.revenue_stats.p75)} p95=${fmt(metrics.revenue_stats.p95)} max=${fmt(metrics.revenue_stats.max)} std=${fmt(metrics.revenue_stats.std)} skew=${metrics.revenue_stats.skew}`:'',
+      metrics.forecast.length?`FORECAST (next 3): ${metrics.forecast.map(f=>fmt(f.val)).join(', ')}`:'',
     ].filter(Boolean).join('\n'):'NO REVENUE COLUMN',
+    Object.keys(metrics.correlations).length?`CORRELATIONS (vs Revenue): ${Object.entries(metrics.correlations).map(([c,v])=>`${c}: ${v}`).join(' | ')}`:'',
     metrics.unique_users!=null?`Users: ${metrics.unique_users} | Repeat Rate: ${pct(metrics.repeat_rate)} | Pareto (top 20% users): ${pct(metrics.pareto_concentration)} of revenue`:'',
   ].filter(Boolean).join('\n');
 
@@ -813,7 +905,7 @@ Format your response with:
         const dsType=inferDatasetType(detected,headers,records);
         const intent=parseIntent(userQuestion,dsType);
         const{cleaned,dataQuality}=cleanData(records,detected);
-        const metrics=computeMetrics(cleaned,detected);
+                const metrics=computeMetrics(cleaned,detected,headers);
         const anomalyResult=detectAnomalies(cleaned,detected);
         const cohortResult=computeCohorts(cleaned,detected);
         const confidence=scoreConfidence(cleaned,dataQuality,detected,anomalyResult);
