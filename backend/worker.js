@@ -684,10 +684,8 @@ export default{
 
       // ── ANALYZE ──────────────────────────────────────
       if(path==="/api/analyze"&&method==="POST"){
-        const tokenHdr=request.headers.get("x-nexus-token")||"";
-        let user=null;
-        if(tokenHdr&&tokenHdr!=="guest"&&tokenHdr!=="guest_token")user=await getUser(request,env);
-        if(!user)user={email:"guest@nexus.ai",name:"Trial",plan:"unlimited",credits:-1};
+        // Free unlimited access - no auth required
+        const user={email:"guest@nexus.ai",name:"Analyst",plan:"unlimited",credits:-1};
 
         let csvText="",fileName="data.csv",userQuestion="Analyze this dataset",analysisMode="universal";
         const ct=request.headers.get("content-type")||"";
