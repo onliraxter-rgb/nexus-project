@@ -2776,7 +2776,7 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
               createdAt: new Date().toISOString(),
               ip
             })
-          )); } catch (e) { console.error("Payment KV error:", e.message); }
+          ); } catch (e) { console.error("Payment KV error:", e.message); }
         }
         return jsonResponse({ ok: true, message: "Payment request received" }, 200, origin);
       }
