@@ -116,7 +116,8 @@ function safeNumber(val, fallback = null) {
 }
 
 function safeDate(val) {
-  if (!val) return null;
+  if (val === null || val === undefined) return null;
+  try {
   const s = String(val).trim();
   if (!s || s.toLowerCase() === "null" || s.toLowerCase() === "na") return null;
   let d = new Date(s);
@@ -138,6 +139,7 @@ function safeDate(val) {
     }
   }
   return null;
+  } catch { return null; }
 }
 
 function roundTo(v, decimals = 2) {
@@ -341,7 +343,7 @@ function parseCSV(text) {
   const delim = detectDelimiter(lines[0]);
   const rawHeaders = parseCSVLine(lines[0], delim);
   const headers = rawHeaders
-    .map(h => h.replace(/^"|"$/g, "").trim())
+    .map(h => (h || "").replace(/^"|"$/g, "").trim())
     .filter(h => h);
 
   if (!headers.length) return { headers: [], records: [] };
@@ -414,6 +416,7 @@ const COLUMN_ALIASES = {
 };
 
 function detectSchema(headers) {
+  if (!headers || !headers.length) return {};
   const detected = {};
   const normalized = headers.map(h => h.toLowerCase().replace(/[^a-z0-9_]/g, "_"));
   for (const [role, aliases] of Object.entries(COLUMN_ALIASES)) {
@@ -435,6 +438,7 @@ function detectSchema(headers) {
 }
 
 function inferDatasetType(detected, headers) {
+  if (!headers || !headers.length) return "generic";
   const h = headers.join(" ").toLowerCase();
   if (h.includes("mrr") || h.includes("churn") || h.includes("arr") || h.includes("subscription")) return "saas";
   if (h.includes("salary") || h.includes("employee") || h.includes("attrition")) return "hr";
@@ -543,7 +547,10 @@ function cleanData(records, detected) {
 // ═══════════════════════════════════════════════════════
 
 function computeStats(arr) {
-  const s = [...arr].sort((a, b) => a - b);
+  if (!arr || !arr.length) return null;
+  const filtered = arr.filter(v => v !== null && v !== undefined && isFinite(v));
+  if (!filtered.length) return null;
+  const s = [...filtered].sort((a, b) => a - b);
   const n = s.length;
   if (!n) return null;
   const sum = s.reduce((a, v) => a + v, 0);
@@ -583,16 +590,22 @@ function computeLinearRegression(pts) {
   const r2denom = (n * sy2 - sy * sy);
   const r2 = r2denom === 0 ? 0 : Math.pow((n * sxy - sx * sy), 2) / ((n * sx2 - sx * sx) * r2denom);
   return {
-    slope: roundTo(slope),
-    intercept: roundTo(intercept),
-    r2: roundTo(r2, 4),
-    usable: r2 >= THRESHOLDS.MIN_R2_FOR_LINEAR_FORECAST
+    slope: isFinite(slope) ? roundTo(slope) : 0,
+    intercept: isFinite(intercept) ? roundTo(intercept) : 0,
+    r2: isFinite(r2) ? roundTo(r2, 4) : 0,
+    usable: isFinite(r2) && r2 >= THRESHOLDS.MIN_R2_FOR_LINEAR_FORECAST
   };
 }
 
 function computeCorrelation(arr1, arr2) {
+  if (!arr1 || !arr2) return 0;
   const n = arr1.length;
   if (n < 2 || n !== arr2.length) return 0;
+  // Filter out non-finite values
+  const pairs = arr1.map((v, i) => [v, arr2[i]]).filter(([a, b]) => isFinite(a) && isFinite(b));
+  if (pairs.length < 2) return 0;
+  const a1 = pairs.map(p => p[0]), a2 = pairs.map(p => p[1]);
+  arr1 = a1; arr2 = a2;
   const m1 = arr1.reduce((a, b) => a + b, 0) / n;
   const m2 = arr2.reduce((a, b) => a + b, 0) / n;
   let num = 0, d1 = 0, d2 = 0;
@@ -702,8 +715,8 @@ function runJudgmentEngine(cleaned, detected, dataQuality, n) {
   }
 
   // ── ANOMALY DENSITY CHECK ────────────────────────────
-  if (cleaned.length > 0) {
-    const anomalyDensity = (cleaned.filter(r => r._iqr_out).length / cleaned.length) * 100;
+  if (cleaned && cleaned.length > 0) {
+    const anomalyDensity = (cleaned.filter(r => r && r._iqr_out).length / cleaned.length) * 100;
     if (anomalyDensity > THRESHOLDS.MAX_ANOMALY_DENSITY_PCT) {
       judgment.anomalyDensityFlag = {
         density: roundTo(anomalyDensity),
@@ -1241,7 +1254,20 @@ function detectAnomalies(cleaned, detected) {
     }
   }
 
-  return { anomalies: anomalies.slice(0, 15), count: anomalies.length };
+  // Deduplicate overlapping anomaly types
+  const seenTypes = new Set();
+  const deduped = anomalies.filter(a => {
+    const key = a.type;
+    if (seenTypes.has(key) && a.severity !== 'HIGH') return false;
+    seenTypes.add(key);
+    return true;
+  });
+  // Sort HIGH first, then by impact
+  const sevOrd = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+  deduped.sort((a, b) => (sevOrd[a.severity] || 2) - (sevOrd[b.severity] || 2) || (b.impact || 0) - (a.impact || 0));
+  const totalImpact = roundTo(deduped.reduce((s, a) => s + (a.impact || 0), 0));
+  const highCount = deduped.filter(a => a.severity === 'HIGH').length;
+  return { anomalies: deduped.slice(0, 15), count: deduped.length, highCount, totalImpact };
 }
 
 // ═══════════════════════════════════════════════════════
@@ -1351,7 +1377,7 @@ function rankFindings(metrics, anomalyResult, judgment, detected, dataQuality) {
     findings.push({
       type: "CONCENTRATION_RISK",
       subtype: judgment.dominance.type,
-      magnitude: judgment.dominance.value * 0.3, // Risk = loss if this fails
+      magnitude: (judgment.dominance.value || 0) * 0.3, // Risk = loss if this fails
       reliability: "HIGH",
       detail: judgment.dominance.detail,
       falsifiability: "Monitor revenue when this category experiences a 10% volume drop.",
@@ -1395,14 +1421,16 @@ function rankFindings(metrics, anomalyResult, judgment, detected, dataQuality) {
     }
   }
 
-  // Sort by (magnitude × reliability weight) descending
+  // Assign urgency and composite score
+  const urgencyMap = { ANOMALY_HIGH: 'HIGH', CONTRADICTION: 'HIGH', CONCENTRATION_RISK: 'MEDIUM', RETENTION: 'MEDIUM', TREND_DECLINE: 'HIGH', TREND_GROWTH: 'LOW', DISTORTION: 'LOW' };
   const reliabilityWeight = { HIGH: 1.0, MEDIUM: 0.6, LOW: 0.25 };
-  findings.sort((a, b) =>
-    (b.magnitude * reliabilityWeight[b.reliability]) -
-    (a.magnitude * reliabilityWeight[a.reliability])
-  );
-
-  // Cap at 5 findings — materiality filter
+  const urgencyWeight = { HIGH: 1.0, MEDIUM: 0.7, LOW: 0.4 };
+  findings.forEach(f => {
+    const urgencyKey = f.type === 'ANOMALY' && f.reliability === 'HIGH' ? 'ANOMALY_HIGH' : f.type === 'TREND' ? 'TREND_' + f.subtype : f.type;
+    f.urgency = urgencyMap[urgencyKey] || 'LOW';
+    f._score = (f.magnitude || 0) * (reliabilityWeight[f.reliability] || 0.25) * (urgencyWeight[f.urgency] || 0.4);
+  });
+  findings.sort((a, b) => (b._score || 0) - (a._score || 0));
   return findings.slice(0, 5);
 }
 
@@ -1426,7 +1454,7 @@ function scoreConfidence(cleaned, dataQuality, detected, anomalyResult, judgment
   if (!detected.revenue) score -= 20;
   if (!detected.date) score -= 15;
 
-  const density = anomalyResult.count / Math.max(n, 1);
+  const density = (anomalyResult && anomalyResult.count) ? anomalyResult.count / Math.max(n, 1) : 0;
   if (density > 0.2) score -= 20;
   else if (density > 0.1) score -= 10;
 
@@ -2150,17 +2178,19 @@ function buildPrompt(metrics, detected, dataQuality, anomalyResult, cohortResult
 
   // Build ranked findings block
   const findingsBlock = rankedFindings.length > 0
-    ? `RANKED FINDINGS (${rankedFindings.length}, ordered by materiality):\n${rankedFindings.map((f, i) =>
-      `${i + 1}. [${f.type}/${f.subtype}] [${f.reliability}] [actionable:${f.actionable}]\n` +
-      `   Detail: ${f.detail}\n` +
-      `   Falsifiability: ${f.falsifiability}\n` +
-      (f.implication ? `   Implication: ${f.implication}\n` : "")
-    ).join("\n")}`
-    : "RANKED FINDINGS: none meet the materiality and reliability threshold for this dataset";
+    ? `RANKED FINDINGS (${rankedFindings.length} findings, ordered by magnitude × confidence × urgency):\n${rankedFindings.map((f, i) => {
+      const econ = f.magnitude > 0 ? `\n   Economic magnitude: ${formatIndian(f.magnitude)}` : "";
+      const score = f._score ? `\n   Composite score: ${f._score.toFixed(0)}` : "";
+      return `${i + 1}. [${f.type}/${f.subtype}] [Confidence:${f.reliability}] [Urgency:${f.urgency || 'LOW'}] [Actionable:${f.actionable}]` +
+        `\n   Finding: ${f.detail}` + econ + score +
+        `\n   Falsifiability: ${f.falsifiability}` +
+        (f.implication ? `\n   Implication: ${f.implication}` : "");
+    }).join("\n\n")}`
+    : "RANKED FINDINGS: none meet materiality threshold. Apply Silence Rule — state this explicitly and explain what data would change this.";
 
   // Build verified metrics block
   const metricsBlock = [
-    `DATASET: "${fileName || "data"}" | TYPE: ${dsType.toUpperCase()} | TIER: ${judgment.analysisTier}`,
+    `DATASET: "${fileName || "data"}" | TYPE: ${(dsType || "generic").toUpperCase()} | TIER: ${judgment.analysisTier}`,
     `ROWS: ${n} clean (${dataQuality.rows_before} raw, ${dataQuality.clean_rate}% retained)`,
     `DETECTED COLUMNS: ${Object.entries(detected).map(([k, v]) => `${k}="${v}"`).join(", ") || "none"}`,
     `CONFIDENCE: ${confidence} | FREQUENCY: ${metrics.frequency}`,
@@ -2206,8 +2236,8 @@ function buildPrompt(metrics, detected, dataQuality, anomalyResult, cohortResult
 
   // Build anomaly block
   const anomalyBlock = anomalyResult.count > 0
-    ? `ANOMALIES (${anomalyResult.count} detected):\n${anomalyResult.anomalies.map(a =>
-      `[${a.severity}] ${a.type}: ${a.reason}\nFalsifiability: ${a.falsifiability}`
+    ? `ANOMALIES (${anomalyResult.count} detected | ${anomalyResult.highCount || 0} HIGH | total ₹impact: ${formatIndian(anomalyResult.totalImpact || 0)}):\n${anomalyResult.anomalies.map(a =>
+      `[${a.severity}] ${a.type}: ${a.reason}\n  Impact: ${a.impact > 0 ? formatIndian(a.impact) : "quantify required"}\n  Falsifiability: ${a.falsifiability}`
     ).join("\n")}`
     : "ANOMALIES: none detected";
 
@@ -2240,8 +2270,19 @@ function buildPrompt(metrics, detected, dataQuality, anomalyResult, cohortResult
     anomalyBlock,
     cohortBlock ? `\n${cohortBlock}` : "",
     ``,
-    `USER QUESTION: "${sanitizeString(question || "Provide complete analysis")}"`
-  ].filter(line => line !== undefined).join("\n");
+    `USER QUESTION: "${sanitizeString(question || "Provide complete analysis")}"`,
+    ``,
+    `── PRE-ANALYSIS REASONING OBLIGATIONS ──`,
+    `Before writing any output, you must internally resolve:`,
+    `1. The single most decision-relevant fact in this dataset`,
+    `2. The specific decision this analysis affects`,
+    `3. What would change this conclusion if it were wrong`,
+    `4. The cost in ₹ of acting on an incorrect finding`,
+    `5. Whether any second-order effects would invert the apparent first-order conclusion`,
+    judgment.contradictions.length > 0 ? `\nCRITICAL: ${judgment.contradictions.length} CONTRADICTION(S) detected. Address these BEFORE presenting any metrics.` : "",
+    judgment.distortions.filter(d => d.severity === 'HIGH').length > 0 ? `CRITICAL: ${judgment.distortions.filter(d => d.severity === 'HIGH').length} HIGH-severity distortion(s) detected. Present corrected metrics alongside raw ones.` : "",
+    judgment.dominance ? `CONCENTRATION ALERT: ${judgment.dominance.category} = ${judgment.dominance.pct}% of revenue. Pattern: REVENUE CONCENTRATION FRAGILITY.` : ""
+  ].filter(l => l !== undefined && l !== "").join("\n");
 
   return { sysPrompt: NEXUS_SYSTEM_PROMPT, userMsg };
 }
@@ -2305,7 +2346,7 @@ function buildFallbackNarrative(metrics, detected, dataQuality, anomalyResult,
 // ═══════════════════════════════════════════════════════
 
 function validateAndSanitizeOutput(text, metrics, rankedFindings, judgment) {
-  if (!text || typeof text !== "string") return text;
+  if (!text || typeof text !== "string") return text || "";
 
   let validated = text;
   const warnings = [];
@@ -2604,6 +2645,20 @@ export default {
 
         // ── Text-only path (no tabular data) ────────────
         if (records.length === 0) {
+          // Guard: if no real data content, return structured error immediately
+          const looksLikeData = csvText && csvText.includes('
+') && (
+            csvText.includes(',') || csvText.includes('	') || csvText.includes('|')
+          );
+          const isVeryShort = !csvText || csvText.trim().length < 30;
+          if (isVeryShort || (!looksLikeData && csvText.trim().split('
+').length < 3)) {
+            return errorResponse(
+              "No data detected. Please upload a CSV/Excel file or paste tabular data (rows and columns). " +
+              "If you pasted data, ensure it has headers and at least 2 rows separated by commas or tabs.",
+              400, origin
+            );
+          }
           const textSys = `You are NEXUS, an expert business analyst.
 The user has shared text-form business data or a scenario.
 Analyze it. Extract key metrics, identify patterns, and provide specific recommendations.
@@ -2642,7 +2697,7 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
         if (!detected.revenue) {
           for (const h of headers) {
             const sample = records.slice(0, 20)
-              .map(row => safeNumber(row[h]))
+              .map(row => { try { return safeNumber(row[h]); } catch { return null; } })
               .filter(v => v !== null && v > 0);
             if (sample.length >= 5) { detected.revenue = h; break; }
           }
@@ -2776,7 +2831,7 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
               createdAt: new Date().toISOString(),
               ip
             })
-          ); } catch (e) { console.error("Payment KV error:", e.message); }
+          )); } catch (e) { console.error("Payment KV error:", e.message); }
         }
         return jsonResponse({ ok: true, message: "Payment request received" }, 200, origin);
       }
