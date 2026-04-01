@@ -2646,13 +2646,11 @@ export default {
         // ── Text-only path (no tabular data) ────────────
         if (records.length === 0) {
           // Guard: if no real data content, return structured error immediately
-          const looksLikeData = csvText && csvText.includes('
-') && (
+          const looksLikeData = csvText && csvText.includes('\n') && (
             csvText.includes(',') || csvText.includes('	') || csvText.includes('|')
           );
           const isVeryShort = !csvText || csvText.trim().length < 30;
-          if (isVeryShort || (!looksLikeData && csvText.trim().split('
-').length < 3)) {
+          if (isVeryShort || (!looksLikeData && csvText.trim().split('\n').length < 3)) {
             return errorResponse(
               "No data detected. Please upload a CSV/Excel file or paste tabular data (rows and columns). " +
               "If you pasted data, ensure it has headers and at least 2 rows separated by commas or tabs.",
@@ -2831,7 +2829,7 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
               createdAt: new Date().toISOString(),
               ip
             })
-          )); } catch (e) { console.error("Payment KV error:", e.message); }
+          ); } catch (e) { console.error("Payment KV error:", e.message); }
         }
         return jsonResponse({ ok: true, message: "Payment request received" }, 200, origin);
       }
