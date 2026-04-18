@@ -2403,10 +2403,20 @@ async function sendMsg(){
     } else if(S.csv && S.csv.data.length > 0) {
       const blob = new Blob([S.csv.data.map(r=>r.join(',')).join('\n')], { type: 'text/csv' });
       formData.append('file', blob, S.fileName || 'data.csv');
+    } else if(raw && raw.includes('\n') && (raw.includes(',') || raw.includes('\t')) && raw.split('\n').length >= 3) {
+      // User pasted CSV/TSV data directly — convert to File object
+      const blob = new Blob([raw], { type: 'text/csv' });
+      const pasteFile = new File([blob], 'pasted-data.csv', { type: 'text/csv' });
+      formData.append('file', pasteFile);
+      S.rawFile = pasteFile;
+      S.fileName = 'pasted-data.csv';
     } else {
-      // Fallback: Use the text prompt as data if no real file is present.
-      // This allows samples and direct data pastes to work seamlessly.
-      formData.append('file', raw || "Analysis Request");
+      // No file data at all — block the request and guide the user
+      removeTyp(tid);
+      addBub('assistant', '📁 **Upload a file first** to start analysis.\n\nYou can:\n• Click **📁 Upload File** or drag & drop a CSV/Excel file\n• Click **▶ Run Sample Analysis** on the welcome screen\n• Paste raw CSV data directly (with headers + rows)\n\nNEXUS needs actual data to analyze — it doesn\'t generate data from questions alone.', true, true);
+      isSending = false;
+      document.getElementById('sendbtn').disabled = false;
+      return;
     }
     formData.append('question', raw || 'Analyze this dataset completely');
     formData.append('mode', S.mode || 'universal');
@@ -2430,63 +2440,103 @@ async function sendMsg(){
     ta.value='';ta.style.height='auto';ta.style.height='44px';
 
     // ── STREAMING RESPONSE CONSUMER (v15 Elite) ──
-    const res = await fetch(BACKEND + '/api/analyze-stream', {
-      method: 'POST',
-      headers: { 'x-nexus-token': S.token === 'guest_token' ? 'guest_token' : (S.token || 'guest') },
-      body: formData
-    });
-
-    if(!res.ok) {
-      let em = 'Backend Error: ' + res.status;
-      try { const ed = await res.json(); em = ed.error || em; } catch {}
-      throw new Error(em);
+    // Try streaming first, fall back to regular endpoint if not available
+    let res;
+    let useStreaming = true;
+    try {
+      res = await fetch(BACKEND + '/api/analyze-stream', {
+        method: 'POST',
+        headers: { 'x-nexus-token': S.token === 'guest_token' ? 'guest_token' : (S.token || 'guest') },
+        body: formData
+      });
+      // If streaming endpoint doesn't exist (404/405), fall back
+      if(!res.ok && res.status !== 200) useStreaming = false;
+    } catch(e) {
+      useStreaming = false;
     }
 
-    const reader = res.body.getReader();
-    const decoder = new TextDecoder();
-    let fullInsight = '', metricsData = null;
-    
-    // Create the message bubble immediately
-    const bubEl = addBub('assistant', '', true, true);
-    const textEl = document.createElement('div');
-    textEl.className = 'streaming-content streaming-cursor';
-    bubEl.appendChild(textEl);
+    // ── Fallback: Regular (non-streaming) endpoint ──
+    if(!useStreaming) {
+      const formData2 = new FormData();
+      if(S.rawFile) formData2.append('file', S.rawFile);
+      else if(S.csv && S.csv.data.length > 0) {
+        const b = new Blob([S.csv.data.map(r=>r.join(',')).join('\n')], {type:'text/csv'});
+        formData2.append('file', b, S.fileName || 'data.csv');
+      }
+      formData2.append('question', raw || 'Analyze this dataset completely');
+      formData2.append('mode', S.mode || 'universal');
 
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
+      res = await fetch(BACKEND + '/api/analyze', {
+        method: 'POST',
+        headers: { 'x-nexus-token': S.token === 'guest_token' ? 'guest_token' : (S.token || 'guest') },
+        body: formData2
+      });
+      if(!res.ok) {
+        let em = 'Backend Error: ' + res.status;
+        try { const ed = await res.json(); em = ed.error || em; } catch {}
+        throw new Error(em);
+      }
+      const data = await res.json();
+      S.analysisResult = data;
+      removeTyp(tid);
+      const bubEl = addBub('assistant', data.insight || '(No narrative returned)', true, true);
+      renderAnalyticsPanel(bubEl, data);
+      showSmartFollowUps(data);
+      if(S.fileName) saveSess(S.fileName + ' — Analysis');
+    } else {
+      // ── Streaming Mode ──
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullInsight = '', metricsData = null, gotMetrics = false;
       
-      const chunks = decoder.decode(value).split('\n\n');
-      for (const chunk of chunks) {
-        if (!chunk.startsWith('data: ')) continue;
-        try {
-          const evt = JSON.parse(chunk.slice(6));
-          if (evt.type === 'status') {
-            // Update loading orb text
-            const phaseEl = document.getElementById('phase-' + tid);
-            if (phaseEl) phaseEl.textContent = evt.msg;
+      // Create the message bubble immediately
+      const bubEl = addBub('assistant', '', true, true);
+      const textEl = document.createElement('div');
+      textEl.className = 'streaming-content streaming-cursor';
+      bubEl.appendChild(textEl);
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        const chunks = decoder.decode(value).split('\n\n');
+        for (const chunk of chunks) {
+          if (!chunk.startsWith('data: ')) continue;
+          try {
+            const evt = JSON.parse(chunk.slice(6));
+            if (evt.type === 'status') {
+              const phaseEl = document.getElementById('phase-' + tid);
+              if (phaseEl) phaseEl.textContent = evt.msg;
+            }
+            if (evt.type === 'metrics') {
+              metricsData = evt.data;
+              S.analysisResult = evt.data;
+              gotMetrics = true;
+              removeTyp(tid);
+              renderAnalyticsPanel(bubEl, evt.data);
+            }
+            if (evt.type === 'token') {
+              if(!gotMetrics) { removeTyp(tid); gotMetrics = true; }
+              fullInsight += evt.text;
+              textEl.innerHTML = renderContent(fullInsight);
+              const chat = document.getElementById('chat');
+              chat.scrollTop = chat.scrollHeight;
+            }
+            if (evt.type === 'done') {
+              textEl.classList.remove('streaming-cursor');
+              if(evt.insight) { S.analysisResult = { ...S.analysisResult, insight: evt.insight }; }
+              showSmartFollowUps(S.analysisResult);
+              if(S.fileName) saveSess(S.fileName + ' — Analysis');
+            }
+            if (evt.type === 'error') throw new Error(evt.msg);
+          } catch(parseErr) {
+            if(parseErr.message && !parseErr.message.includes('JSON')) throw parseErr;
           }
-          if (evt.type === 'metrics') {
-            metricsData = evt.data;
-            S.analysisResult = evt.data;
-            // Remove loading orb - metrics are here
-            removeTyp(tid);
-            renderAnalyticsPanel(bubEl, evt.data);
-          }
-          if (evt.type === 'token') {
-            fullInsight += evt.text;
-            textEl.innerHTML = renderContent(fullInsight);
-            // Scroll to bottom as it streams
-            const chat = document.getElementById('chat');
-            chat.scrollTop = chat.scrollHeight;
-          }
-          if (evt.type === 'done') {
-            textEl.classList.remove('streaming-cursor');
-            showSmartFollowUps(evt.data || S.analysisResult);
-            if(S.fileName) saveSess(S.fileName + ' — Analysis');
-          }
-          if (evt.type === 'error') throw new Error(evt.msg);
-        } catch(e) { console.warn('Stream chunk error', e); }
+        }
+      }
+      // If stream ended without 'done' event, finalize
+      if(fullInsight && !textEl.classList.contains('streaming-cursor') === false) {
+        textEl.classList.remove('streaming-cursor');
       }
     }
 
