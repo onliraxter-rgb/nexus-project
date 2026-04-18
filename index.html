@@ -1792,6 +1792,15 @@ function openRazorpay(plan){
 }
 
 async function submitPay(){const name=document.getElementById('payName').value.trim();const email=document.getElementById('payEmail').value.trim();const utr=document.getElementById('payUTR').value.trim();const phone=document.getElementById('payPhone').value.trim();const err=document.getElementById('payErr');if(!name){err.textContent='Enter your name';return;}if(!email.includes('@')){err.textContent='Enter valid email';return;}if(utr.length<6){err.textContent='Enter UTR / Transaction ID from your UPI app';return;}err.textContent='';const btn=document.getElementById('paySubmitBtn');btn.disabled=true;btn.textContent='Submitting…';try{if(BACKEND_LIVE)await api('/api/payment-request',{body:{plan:curPlan,utr,phone,name,email}});closeOv('payOv');toast('Payment submitted! We will activate within 1 hour.');}catch(e){err.textContent=e.message;}finally{btn.disabled=false;btn.textContent='Submit Payment →';}}
+
+// ── ANALYSIS MODULES ──
+const MODS=[
+  {id:'gen',n:'Universal',d:'Full multidimensional analysis',i:'\ud83c\udf10'},
+  {id:'pnl',n:'P&L / Finance',d:'Profit, margin, cost breakdown',i:'\ud83d\udcb0'},
+  {id:'mkt',n:'Marketing/Ads',d:'ROI, ROAS, CAC, funnel',i:'\ud83d\udcc8'},
+  {id:'ops',n:'Ops / Stock',d:'Inventory, OEE, supply chain',i:'\u26d3\ufe0f'},
+  {id:'sales',n:'Sales CRM',d:'Pipeline, velocity, churn',i:'\ud83d\udcbc'}
+];
 function emailNotify(){const email=document.getElementById('authEmail').value.trim();if(!email.includes('@')){setAuthErr('Enter valid email');return;}if(BACKEND_LIVE)fetch(BACKEND+'/api/notify',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})}).catch(()=>{});closeOv('authOv');toast('Got it! We will email '+email+' when ready.');}
 
 // ── MODAL HELPERS ──
@@ -2420,7 +2429,8 @@ async function sendMsg(){
     }
     ta.value='';ta.style.height='auto';ta.style.height='44px';
 
-    const res = await fetch(BACKEND + '/api/analyze', {
+    // ── STREAMING RESPONSE CONSUMER (v15 Elite) ──
+    const res = await fetch(BACKEND + '/api/analyze-stream', {
       method: 'POST',
       headers: { 'x-nexus-token': S.token === 'guest_token' ? 'guest_token' : (S.token || 'guest') },
       body: formData
@@ -2432,15 +2442,53 @@ async function sendMsg(){
       throw new Error(em);
     }
 
-    const data = await res.json();
-    S.analysisResult = data;
-    removeTyp(tid);
-    const bubEl = addBub('assistant', data.insight || '(No narrative returned)', true, true);
-    renderAnalyticsPanel(bubEl, data);
-    // Smart follow-up chips based on judgment engine output
-    showSmartFollowUps(data);
-    // Auto-save session
-    if(S.fileName) saveSess(S.fileName + ' — Analysis');
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let fullInsight = '', metricsData = null;
+    
+    // Create the message bubble immediately
+    const bubEl = addBub('assistant', '', true, true);
+    const textEl = document.createElement('div');
+    textEl.className = 'streaming-content streaming-cursor';
+    bubEl.appendChild(textEl);
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      
+      const chunks = decoder.decode(value).split('\n\n');
+      for (const chunk of chunks) {
+        if (!chunk.startsWith('data: ')) continue;
+        try {
+          const evt = JSON.parse(chunk.slice(6));
+          if (evt.type === 'status') {
+            // Update loading orb text
+            const phaseEl = document.getElementById('phase-' + tid);
+            if (phaseEl) phaseEl.textContent = evt.msg;
+          }
+          if (evt.type === 'metrics') {
+            metricsData = evt.data;
+            S.analysisResult = evt.data;
+            // Remove loading orb - metrics are here
+            removeTyp(tid);
+            renderAnalyticsPanel(bubEl, evt.data);
+          }
+          if (evt.type === 'token') {
+            fullInsight += evt.text;
+            textEl.innerHTML = renderContent(fullInsight);
+            // Scroll to bottom as it streams
+            const chat = document.getElementById('chat');
+            chat.scrollTop = chat.scrollHeight;
+          }
+          if (evt.type === 'done') {
+            textEl.classList.remove('streaming-cursor');
+            showSmartFollowUps(evt.data || S.analysisResult);
+            if(S.fileName) saveSess(S.fileName + ' — Analysis');
+          }
+          if (evt.type === 'error') throw new Error(evt.msg);
+        } catch(e) { console.warn('Stream chunk error', e); }
+      }
+    }
 
   } catch(e) {
     removeTyp(tid);
