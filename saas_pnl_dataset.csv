@@ -1,0 +1,49 @@
+Date,Department,Subscription_Type,Expense_Category,Revenue_USD,Customer_Segment,CAC,LTV,Churn_Rate
+2023-01-31,Sales,Enterprise Subscription,Marketing,45000,Enterprise,500,12000,0.02
+2023-01-31,Engineering,None,Infrastructure,12000,N/A,0,0,0
+2023-01-31,Support,None,Salaries,8000,N/A,0,0,0
+2023-01-31,Sales,SMB Subscription,Marketing,15000,SMB,150,1800,0.05
+2023-02-28,Sales,Enterprise Subscription,Marketing,48000,Enterprise,510,12200,0.02
+2023-02-28,Engineering,None,Infrastructure,12500,N/A,0,0,0
+2023-02-28,Support,None,Salaries,8200,N/A,0,0,0
+2023-02-28,Sales,SMB Subscription,Marketing,16500,SMB,140,1850,0.04
+2023-03-31,Sales,Enterprise Subscription,Marketing,52000,Enterprise,490,12500,0.015
+2023-03-31,Engineering,None,Infrastructure,13000,N/A,0,0,0
+2023-03-31,Support,None,Salaries,8500,N/A,0,0,0
+2023-03-31,Sales,SMB Subscription,Marketing,18000,SMB,135,1900,0.045
+2023-04-30,Sales,Enterprise Subscription,Marketing,55000,Enterprise,480,12800,0.018
+2023-04-30,Engineering,None,Infrastructure,13200,N/A,0,0,0
+2023-04-30,Support,None,Salaries,8500,N/A,0,0,0
+2023-04-30,Sales,SMB Subscription,Marketing,19500,SMB,130,1950,0.04
+2023-05-31,Sales,Enterprise Subscription,Marketing,60000,Enterprise,450,13500,0.012
+2023-05-31,Engineering,None,Infrastructure,13500,N/A,0,0,0
+2023-05-31,Support,None,Salaries,8800,N/A,0,0,0
+2023-05-31,Sales,SMB Subscription,Marketing,21000,SMB,125,2000,0.038
+2023-06-30,Sales,Enterprise Subscription,Marketing,64000,Enterprise,440,13800,0.014
+2023-06-30,Engineering,None,Infrastructure,14000,N/A,0,0,0
+2023-06-30,Support,None,Salaries,9000,N/A,0,0,0
+2023-06-30,Sales,SMB Subscription,Marketing,22500,SMB,120,2050,0.035
+2023-07-31,Sales,Enterprise Subscription,Marketing,68000,Enterprise,430,14000,0.015
+2023-07-31,Engineering,None,Infrastructure,14500,N/A,0,0,0
+2023-07-31,Support,None,Salaries,9200,N/A,0,0,0
+2023-07-31,Sales,SMB Subscription,Marketing,24000,SMB,115,2100,0.032
+2023-08-31,Sales,Enterprise Subscription,Marketing,72000,Enterprise,420,14200,0.013
+2023-08-31,Engineering,None,Infrastructure,15000,N/A,0,0,0
+2023-08-31,Support,None,Salaries,9500,N/A,0,0,0
+2023-08-31,Sales,SMB Subscription,Marketing,26000,SMB,110,2150,0.03
+2023-09-30,Sales,Enterprise Subscription,Marketing,75000,Enterprise,410,14500,0.012
+2023-09-30,Engineering,None,Infrastructure,15500,N/A,0,0,0
+2023-09-30,Support,None,Salaries,9800,N/A,0,0,0
+2023-09-30,Sales,SMB Subscription,Marketing,28000,SMB,105,2200,0.028
+2023-10-31,Sales,Enterprise Subscription,Marketing,80000,Enterprise,400,15000,0.011
+2023-10-31,Engineering,None,Infrastructure,16000,N/A,0,0,0
+2023-10-31,Support,None,Salaries,10000,N/A,0,0,0
+2023-10-31,Sales,SMB Subscription,Marketing,30000,SMB,100,2250,0.025
+2023-11-30,Sales,Enterprise Subscription,Marketing,85000,Enterprise,390,15500,0.01
+2023-11-30,Engineering,None,Infrastructure,16500,N/A,0,0,0
+2023-11-30,Support,None,Salaries,10500,N/A,0,0,0
+2023-11-30,Sales,SMB Subscription,Marketing,32000,SMB,95,2300,0.022
+2023-12-31,Sales,Enterprise Subscription,Marketing,95000,Enterprise,380,16000,0.009
+2023-12-31,Engineering,None,Infrastructure,17000,N/A,0,0,0
+2023-12-31,Support,None,Salaries,11000,N/A,0,0,0
+2023-12-31,Sales,SMB Subscription,Marketing,35000,SMB,90,2400,0.02
