@@ -2,7 +2,7 @@
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8"/>
-<meta name="version" content="NEXUS-V12-ELITE-001"/>
+<meta name="version" content="NEXUS-V15-ELITE"/>
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
@@ -13,7 +13,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover"/>
 <meta http-equiv="X-Content-Type-Options" content="nosniff"/>
 <meta name="referrer" content="strict-origin-when-cross-origin"/>
-<title>NEXUS v12 Elite — AI Business Data Analyst | Free for Indian SMEs</title>
+<title>NEXUS v15 — AI Data Analyst | Free for Indian SMEs</title>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1807,7 +1807,7 @@ function initApp(){
   // Set brand
   const isAdmin=S.credits===Infinity;
   document.getElementById('dashBrandSub').textContent=isAdmin?'AI ANALYST · ADMIN':'AI ANALYST';
-  document.getElementById('dashVer').textContent=isAdmin?'v12 · ADMIN':'v12 · '+((S.plan||'FREE').toUpperCase());
+  document.getElementById('dashVer').textContent=isAdmin?'v15 · ADMIN':'v15 · '+((S.plan||'FREE').toUpperCase());
   updateDashCredits();
   const ta=document.getElementById('userinput');
   ta.addEventListener('input',()=>{ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';document.getElementById('sendbtn').disabled=!ta.value.trim();});
@@ -1817,7 +1817,7 @@ function initApp(){
 }
 
 // ── SYSTEM PROMPT ──
-const SYS=`You are NEXUS v11 — Elite AI Business Analyst. You operate at the level of a McKinsey Senior Analyst + Big 4 CFO Advisor combined.
+const SYS=`You are NEXUS v15 — Elite AI Business Analyst. You operate at the level of a McKinsey Senior Analyst + Big 4 CFO Advisor combined.
 
 ════ ABSOLUTE RULES — VIOLATION = WRONG ANSWER ════
 1. MATH TRUTH: NEVER compute totals, sums, averages yourself. ONLY use numbers labeled "NEXUS v12 JAVASCRIPT-VERIFIED DATA FACTS". These are computed on ALL rows by JavaScript. They are GROUND TRUTH.
@@ -2401,6 +2401,23 @@ async function sendMsg(){
     }
     formData.append('question', raw || 'Analyze this dataset completely');
     formData.append('mode', S.mode || 'universal');
+    // Multi-turn context: inject previous analysis verdict for follow-up questions
+    if(S.analysisResult && S.analysisResult.insight){
+      const prevVerdict = S.analysisResult.insight.match(/◆ NEXUS VERDICT[\s\S]*?(?:\n\n|$)/)?.[0] || '';
+      const prevConf = S.analysisResult.confidence || '';
+      if(prevVerdict || prevConf){
+        formData.append('context', JSON.stringify({
+          verdict: prevVerdict.slice(0, 1500),
+          confidence: prevConf,
+          dataset_type: S.analysisResult.dataset_type || '',
+          key_metrics: S.analysisResult.metrics ? {
+            revenue: S.analysisResult.metrics.revenue,
+            orders: S.analysisResult.metrics.orders,
+            aov: S.analysisResult.metrics.aov
+          } : {}
+        }));
+      }
+    }
     ta.value='';ta.style.height='auto';ta.style.height='44px';
 
     const res = await fetch(BACKEND + '/api/analyze', {
@@ -2420,10 +2437,19 @@ async function sendMsg(){
     removeTyp(tid);
     const bubEl = addBub('assistant', data.insight || '(No narrative returned)', true, true);
     renderAnalyticsPanel(bubEl, data);
+    // Smart follow-up chips based on judgment engine output
+    showSmartFollowUps(data);
+    // Auto-save session
+    if(S.fileName) saveSess(S.fileName + ' — Analysis');
 
   } catch(e) {
     removeTyp(tid);
-    addBub('assistant', '\u26a0\ufe0f Analysis Failed: ' + e.message + '\n\nCheck your connection or re-upload the file.');
+    const hint = e.message.includes('No data')
+      ? '\n\n\ud83d\udca1 Upload a CSV/Excel file first, or click \"\u25b6 Run Sample Analysis\" to try with demo data.'
+      : e.message.includes('429') || e.message.includes('Rate limit')
+      ? '\n\n\u23f3 Too many requests. Please wait 30 seconds and try again.'
+      : '\n\n\ud83d\udca1 Quick fixes:\n\u2022 Re-upload your file\n\u2022 Check internet connection\n\u2022 Try a smaller file (\u003c20MB)';
+    addBub('assistant', '\u26a0\ufe0f Analysis Failed: ' + e.message + hint);
   } finally {
     isSending = false;
     document.getElementById('sendbtn').disabled = false;
@@ -2591,38 +2617,7 @@ function nx_charts(container, m, anom, coh, sig, det, dq, data) {
     }
   }
 
-  function barDS(vals, clr) {
-    return [{ data:vals, backgroundColor:PAL.map(function(c){return c+'55';}), borderColor:clr||'#a78bfa', borderWidth:0, borderRadius:5, barPercentage:0.75 }];
-  }
-  function lineDS(vals, clr) {
-    return [{ data:vals, borderColor:clr||'#a78bfa', backgroundColor:(clr||'#a78bfa')+'18',
-      fill:true, tension:0.42, pointRadius:2.5, pointBackgroundColor:clr||'#a78bfa', borderWidth:2 }];
-  }
-
-  // 1. Revenue trend
-  if (sig.hasTrend) {
-    var useMo = sig.hasMonthly && m.revenue_trend.length > 45;
-    var src = useMo ? m.monthly_trend : m.revenue_trend;
-    var step = Math.max(1, Math.floor(src.length / 32));
-    var pts = src.filter(function(_,i){ return i % step === 0 || i === src.length-1; });
-    draw(card('\ud83d\udcc8 ' + (useMo?'Monthly':'Daily') + ' Revenue Trend'),
-      'line', pts.map(function(d){return d.name;}), lineDS(pts.map(function(d){return d.val;})));
-  }
-
-  // 2. Category breakdown
-  if (sig.hasCat) {
-    var cats = m.category_breakdown.slice(0,10);
-    var topShare = cats[0].val / ((m.revenue||1));
-    var ctype = cats.length <= 5 && topShare > 0.25 ? 'doughnut' : 'bar';
-    var cid = card('\ud83d\udce6 Revenue by ' + (det.category||'Category'));
-    if (ctype === 'doughnut') {
-      draw(cid, 'doughnut', cats.map(function(c){return c.name;}),
-        [{ data:cats.map(function(c){return c.val;}), backgroundColor:PAL, borderWidth:0, hoverOffset:6 }],
-        { plugins:{ legend:{ display:true, position:'right', labels:{color:'#4a5568',font:{size:9},boxWidth:10} }, tooltip:TIP } });
-    } else {
-      draw(cid, 'bar', cats.map(function(c){return c.name;}), barDS(cats.map(function(c){return c.val;})));
-    }
-  }
+  // (Duplicate chart renderers removed — charts 1-3 above already handle trend + category + correlation)
 
   // 3. Day of week (only if >15% variance)
   if (sig.hasDow) {
@@ -2980,7 +2975,7 @@ function showWelcome(){
   };
 
   const firstBlock = isFirst ? `<div style="background:#0a0a0a;border:1px solid rgba(52,211,153,.28);border-radius:10px;padding:14px 16px;margin-bottom:12px"><div style="font-family:var(--fm);font-size:9px;font-weight:700;color:#34d399;letter-spacing:.08em;margin-bottom:6px">👋 FIRST TIME? START WITH A SAMPLE</div><div style="font-size:12px;color:#5a6a7a;margin-bottom:10px;line-height:1.6">See what NEXUS does — load sample 6-month business data and get full analysis with charts.</div><button onclick="loadSampleData()" style="padding:8px 18px;background:linear-gradient(135deg,#059669,#2563eb);border:none;border-radius:7px;color:#fff;font-family:var(--fm);font-size:10px;font-weight:700;cursor:pointer;margin-right:8px;touch-action:manipulation">▶ Run Sample Analysis →</button><span style="font-family:var(--fm);font-size:9px;color:#2a3545">Free · ~20 seconds · 12 months of data</span></div>` : '';
-  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v14 · FREE · NO SIGNUP NEEDED</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="setSugAndSend('Analyze my business P&L — profit trends, top revenue drivers, and recommendations')"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Profit, margin, cost breakdown</div></div><div class="qk" onclick="setSugAndSend('Find all anomalies and unusual patterns with exact values and business impact')"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Outliers, unusual spikes</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
+  document.getElementById('chat').innerHTML=`<div class="welcome"><div class="w-badge">◈ NEXUS v15 · FREE · NO SIGNUP NEEDED</div><h1 class="w-h1">${isFirst?'Welcome to <em>NEXUS.</em>':'Ready to <em>analyze.</em>'}</h1><p class="w-sub">${isFirst?'Upload your data or try the sample — get professional analysis with charts in seconds.':'Upload CSV/Excel, connect Google Sheets, or paste data directly.'}</p>${firstBlock}<div class="qk-grid"><div class="qk" onclick="document.getElementById('fileinput').click()" style="border-color:rgba(52,211,153,.2)"><div class="qk-t">📁 Upload File</div><div class="qk-d">CSV, Excel, JSON, TXT</div></div><div class="qk" onclick="swTab('conn')" style="border-color:rgba(96,165,250,.2)"><div class="qk-t">🔗 Google Sheets</div><div class="qk-d">Paste your sheet URL — free</div></div><div class="qk" onclick="S._pendingQuery='Analyze my business P&L — profit trends, top revenue drivers, and recommendations';document.getElementById('fileinput').click()"><div class="qk-t">📊 Analyze P&L</div><div class="qk-d">Upload file → instant analysis</div></div><div class="qk" onclick="S._pendingQuery='Find all anomalies and unusual patterns with exact values and business impact';document.getElementById('fileinput').click()"><div class="qk-t">⚠️ Find Anomalies</div><div class="qk-d">Upload file → detect outliers</div></div></div><div style="font-family:var(--fm);font-size:9px;color:#2a3545;text-align:center;padding-top:8px">13 modules · Charts auto-generated · PDF, Excel, WhatsApp export · Ctrl+K to focus</div></div>`;
 }
 
 // ── FILE UPLOAD ──
@@ -2989,7 +2984,12 @@ function loadFile(e){
   if(f.size > 20 * 1024 * 1024){ toast('❌ File too large (max 20MB).'); e.target.value=''; return; }
   S.fileName=f.name;
   S.rawFile=f; // Store raw file for backend
-  toast('File prepared: ' + f.name);
+  // Check for pending query from quick action buttons
+  if(S._pendingQuery){
+    document.getElementById('userinput').value = S._pendingQuery;
+    S._pendingQuery = null;
+  }
+  toast('📁 ' + f.name + ' ready — analyzing...');
   // Auto-trigger analysis
   setTimeout(()=>sendMsg(), 500);
   e.target.value='';
@@ -3273,7 +3273,7 @@ function sendAuto(p){const ta=document.getElementById('userinput');ta.value=p;ta
 
 // ── EXPORTS ──
 function dlBlob(c,f,t){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([c],{type:t}));a.download=f;a.click();URL.revokeObjectURL(a.href);}
-function saveAsTXT(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');dlBlob('NEXUS v12 Report\n'+new Date().toLocaleString()+'\n'+'═'.repeat(60)+'\n\n'+msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(60)+'\n\n'),'NEXUS-Report-'+Date.now()+'.txt','text/plain');toast('✅ TXT saved!');}
+function saveAsTXT(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');dlBlob('NEXUS v15 Report\n'+new Date().toLocaleString()+'\n'+'═'.repeat(60)+'\n\n'+msgs.map((m,i)=>'ANALYSIS '+(i+1)+':\n'+m.content).join('\n\n'+'─'.repeat(60)+'\n\n'),'NEXUS-Report-'+Date.now()+'.txt','text/plain');toast('✅ TXT saved!');}
 function saveAsCSV(){if(!S.csv)return toast('No data loaded');dlBlob([S.csv.hdrs.join(','),...S.csv.data.map(r=>r.map(c=>'"'+String(c||'').replace(/"/g,'""')+'"').join(','))].join('\n'),'NEXUS-Data-'+Date.now()+'.csv','text/csv');toast('✅ CSV saved!');}
 function saveMarkdown(){const msgs=S.messages.filter(m=>m.role==='assistant');if(!msgs.length)return toast('No analysis');let md='# NEXUS v6 Analysis Report\n\n**Generated:** '+new Date().toLocaleString()+'\n\n---\n\n';msgs.forEach((m,i)=>{md+='## Analysis '+(i+1)+'\n\n'+m.content.replace(/═+/g,'---').replace(/▶ /g,'### ')+'\n\n---\n\n';});dlBlob(md,'NEXUS-Report-'+Date.now()+'.md','text/markdown');toast('✅ Markdown saved!');}
 async function saveChartImages(){const canvases=document.querySelectorAll('.chart-card canvas');if(!canvases.length)return toast('No charts');canvases.forEach((c,i)=>{const a=document.createElement('a');a.href=c.toDataURL('image/png');a.download='NEXUS-Chart-'+(i+1)+'.png';a.click();});toast('✅ '+canvases.length+' chart(s) saved!');}
@@ -3424,6 +3424,40 @@ function showFollowUpChips(reply){
   chat.scrollTop=chat.scrollHeight;
 }
 
+// ── SMART FOLLOW-UPS (powered by judgment engine) ──
+function showSmartFollowUps(data){
+  if(!data) return;
+  const chat=document.getElementById('chat');
+  const chips=[];
+  const j = data.judgment || {};
+  const a = data.anomalies || {};
+  const m = data.metrics || {};
+  if(j.distortions && j.distortions.length > 0)
+    chips.push({t:'🔍 Explain ' + j.distortions.length + ' data distortions', q:'Explain each data distortion found, its cause, and how it affects the analysis accuracy'});
+  if(j.contradictions && j.contradictions.length > 0)
+    chips.push({t:'⚖️ Resolve ' + j.contradictions.length + ' conflicting signals', q:'Analyze the contradicting signals in the data and explain which interpretation is more likely correct'});
+  if(a.count > 0)
+    chips.push({t:'⚠️ Deep dive: ' + a.count + ' anomalies', q:'For each anomaly detected, show the exact value, expected range, possible cause, and recommended business action'});
+  if(j.dominance && j.dominance.length > 0)
+    chips.push({t:'🎯 Concentration risk analysis', q:'Analyze the concentration risk — which categories or entities dominate and what happens if they underperform'});
+  if(m.revenue && m.orders)
+    chips.push({t:'📈 Revenue forecast + scenarios', q:'Based on the trends, forecast revenue for next 3 months with best-case, worst-case, and most-likely scenarios'});
+  if(data.confidence === 'HIGH' || data.confidence === 'MEDIUM')
+    chips.push({t:'📄 Board-ready executive summary', q:'Generate a CFO-grade executive summary with 5 KPIs, trend analysis, and 3 strategic recommendations for board presentation.'});
+  chips.push({t:'💡 Top 5 immediate actions', q:'Based on this analysis, what are the top 5 immediate actions the business should take, ranked by impact and urgency?'});
+  chips.push({t:'📊 Industry benchmarking', q:'How do these metrics compare to industry benchmarks? Where is this business above or below average?'});
+  if(chips.length === 0) return;
+  const div=document.createElement('div');
+  div.className='followup-chips';
+  div.innerHTML='<div class="fu-label">🧠 AI suggests asking next</div>' +
+    chips.slice(0,5).map(c => {
+      const eq = c.q.replace(/'/g,"&#39;").replace(/"/g,"&quot;");
+      return '<span class="fu-chip" data-q="'+eq+'" onclick="setSugAndSend(this.dataset.q);this.parentElement.remove()">'+esc(c.t)+'</span>';
+    }).join('');
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
 // ── DOWNLOAD CLEANED CSV ──
 function downloadCleanedCSV(){
   if(!S.csv)return toast('Upload a file first');
@@ -3567,6 +3601,15 @@ function exportAuditTrail(){
 
 
 function setSugAndSend(txt){
+  // Guard: require data to be loaded before sending analysis query
+  if(!S.rawFile && (!S.csv || !S.csv.data || S.csv.data.length===0) && !S.fileData){
+    toast('\ud83d\udcc1 Upload a file or load sample data first');
+    const ta=document.getElementById('userinput');
+    ta.value=txt; ta.focus();
+    document.getElementById('sendbtn').disabled=false;
+    ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';
+    return;
+  }
   const ta=document.getElementById('userinput');
   ta.value=txt;ta.focus();
   document.getElementById('sendbtn').disabled=false;
@@ -3575,11 +3618,15 @@ function setSugAndSend(txt){
 }
 function setSug(txt){const ta=document.getElementById('userinput');ta.value=txt;ta.focus();document.getElementById('sendbtn').disabled=false;ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,150)+'px';}
 function rSamp(el){
-  S.rawFile = null; S.csv = null; S.fileName = "Sample-Analysis.csv";
-  // Unescape backslash-n to real newlines
   const txt = el.getAttribute('data-txt').replace(/\\n/g, '\n');
-  document.getElementById('userinput').value = txt;
+  // Create a proper File object from sample text so worker can parse it
+  const blob = new Blob([txt], { type: 'text/csv' });
+  S.rawFile = new File([blob], 'Sample-Analysis.csv', { type: 'text/csv' });
+  S.fileName = 'Sample-Analysis.csv';
+  S.csv = null;
+  document.getElementById('userinput').value = 'Analyze this dataset completely with charts, KPIs, and top actions';
   document.getElementById('sendbtn').disabled = false;
+  toast('\ud83d\udcca Loading sample data...');
   sendMsg();
 }
 function newChat(){
@@ -3774,26 +3821,33 @@ document.addEventListener('click',function(e){
   if(t&&!t.disabled){const fn=t.getAttribute('onclick');if(fn&&typeof window[fn.split('(')[0]]==='function')return;}
 },{passive:true});
 
-// ══ NEXUS v12: Drag & Drop file support ══
+// ══ NEXUS v15: Premium Drag & Drop ══
 (function(){
   const dropZone = document.getElementById('view-dash');
   if (!dropZone) return;
+
+  // Create premium overlay element
+  const overlay = document.createElement('div');
+  overlay.className = 'drag-overlay';
+  overlay.id = 'dragOverlay';
+  overlay.innerHTML = '<div class="drag-icon">📊</div><div class="drag-text">Drop your data here</div><div class="drag-hint">CSV · Excel · JSON · TXT — up to 20MB</div>';
+  document.body.appendChild(overlay);
 
   let dragCounter = 0;
   dropZone.addEventListener('dragenter', e => {
     e.preventDefault();
     dragCounter++;
-    dropZone.classList.add('drag-active');
+    overlay.classList.add('show');
   });
   dropZone.addEventListener('dragleave', e => {
     dragCounter--;
-    if (dragCounter <= 0) { dragCounter = 0; dropZone.classList.remove('drag-active'); }
+    if (dragCounter <= 0) { dragCounter = 0; overlay.classList.remove('show'); }
   });
   dropZone.addEventListener('dragover', e => { e.preventDefault(); });
   dropZone.addEventListener('drop', e => {
     e.preventDefault();
     dragCounter = 0;
-    dropZone.classList.remove('drag-active');
+    overlay.classList.remove('show');
     const files = e.dataTransfer?.files;
     if (files && files[0]) {
       const file = files[0];
@@ -3861,6 +3915,41 @@ loadSession();
 </div>
 
 <style>
+/* ════ NEXUS v15 — ENHANCED UI ════ */
+
+/* Premium drag-drop overlay */
+.drag-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.88);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;flex-direction:column;gap:20px;transition:all .2s ease}
+.drag-overlay.show{display:flex}
+.drag-icon{font-size:72px;animation:drag-bounce 1.2s ease-in-out infinite}
+@keyframes drag-bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.drag-text{font-family:var(--fm);font-size:16px;color:#a78bfa;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.drag-hint{font-family:var(--fm);font-size:11px;color:#4a5568}
+.drag-ring{width:180px;height:180px;border:2px dashed rgba(167,139,250,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;animation:drag-spin 8s linear infinite}
+@keyframes drag-spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Skeleton loading for KPI cards */
+.kpi-skeleton{height:72px;border-radius:10px;background:linear-gradient(90deg,#0d0d0d 25%,#161616 50%,#0d0d0d 75%);background-size:400% 100%;animation:skeleton-shimmer 1.5s ease infinite;border:1px solid rgba(255,255,255,.04)}
+@keyframes skeleton-shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Enhanced follow-up chips */
+.followup-chips{display:flex;flex-wrap:wrap;gap:8px;padding:10px 16px;align-items:center}
+.fu-label{font-family:var(--fm);font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.08em;text-transform:uppercase;margin-right:4px}
+.fu-chip{font-family:var(--fm);font-size:11px;padding:7px 14px;background:rgba(167,139,250,.06);border:1px solid rgba(167,139,250,.15);border-radius:20px;color:#c4b5fd;cursor:pointer;transition:all .2s ease;touch-action:manipulation;white-space:nowrap}
+.fu-chip:hover{background:rgba(167,139,250,.12);border-color:rgba(167,139,250,.3);color:#e9d5ff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(124,58,237,.15)}
+
+/* Analysis confidence badge */
+.conf-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-family:var(--fm);font-size:9px;font-weight:700;letter-spacing:.06em}
+.conf-badge.high{background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);color:#34d399}
+.conf-badge.medium{background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.2);color:#f59e0b}
+.conf-badge.low{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:#f87171}
+
+/* Analysis tier badge */
+.tier-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:12px;font-family:var(--fm);font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);color:#a78bfa}
+
+/* Improved verdict box */
+.verdict-section{margin-top:12px;padding:16px 18px;background:linear-gradient(135deg,rgba(124,58,237,.06),rgba(52,211,153,.04));border:1px solid rgba(167,139,250,.15);border-radius:12px;border-left:3px solid #a78bfa}
+.verdict-title{font-family:var(--fm);font-size:9px;font-weight:700;color:#a78bfa;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+
 /* ════ NEXUS 3D ORB LOADER ════ */
 .nx-analyzing-bub{padding:12px 16px!important;background:#070710!important;border:1px solid rgba(124,58,237,.3)!important;border-left:3px solid #7c3aed!important;min-width:260px}
 .nx-orb-wrap{display:flex;align-items:center;gap:14px}
@@ -4405,7 +4494,7 @@ if(_origRC){
 }
 
 // FIX 50: Console confirmation
-console.log('%cNEXUS v12 ELITE — 100x Agent Mode Active ✓','color:#34d399;font-family:monospace;font-weight:bold;font-size:14px');
+console.log('%cNEXUS v15 ELITE — Judgment Engine Active ✓','color:#34d399;font-family:monospace;font-weight:bold;font-size:14px');
 
 
 // ═══════════════════════════════════════════════

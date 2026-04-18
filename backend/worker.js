@@ -11,6 +11,7 @@
 const ORIGIN_WHITELIST = [
   "https://nexus-data-analyst-web.pages.dev",
   "https://nexus-project.pages.dev",
+  "https://nexus.onliraxter.workers.dev",
   "https://nexus-backend-clean.onliraxter.workers.dev",
   "http://localhost",
   "http://127.0.0.1",
@@ -2597,6 +2598,15 @@ export default {
           const file = fd.get("file");
           const q = fd.get("question") || fd.get("prompt") || fd.get("message");
           if (q) userQuestion = sanitizeString(String(q).slice(0, 2000));
+          // Multi-turn context from frontend
+          var prevContext = "";
+          try {
+            const ctxRaw = fd.get("context");
+            if (ctxRaw) {
+              const ctx = JSON.parse(ctxRaw);
+              if (ctx.verdict) prevContext = ctx.verdict;
+            }
+          } catch { /* ignore invalid context */ }
           if (file && typeof file.text === "function") {
             fileName = sanitizeString(file.name || "data.csv");
             // File size limit: 20MB
@@ -2732,10 +2742,16 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
         const rankedFindings = rankFindings(metrics, anomalyResult, judgment, detected, dataQuality);
 
         // ── Build Prompt ──────────────────────────────────
-        const { sysPrompt, userMsg } = buildPrompt(
+        const { sysPrompt, userMsg: _userMsg } = buildPrompt(
           metrics, detected, dataQuality, anomalyResult, cohortResult,
           dsType, intent, fileName, userQuestion, confidence, judgment, rankedFindings
         );
+
+        // Inject multi-turn context if available
+        let userMsg = _userMsg;
+        if (prevContext && prevContext.length > 10) {
+          userMsg += `\n\n── PREVIOUS ANALYSIS CONTEXT ──\n${prevContext.slice(0, 1500)}\n── END CONTEXT ──\n\nBuild on the above findings. Don't repeat them. Go deeper on the new question.`;
+        }
 
         // ── Call LLM with retry ───────────────────────────
         let insight = null;
@@ -2801,6 +2817,139 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
           },
           ranked_findings: rankedFindings
         }), 200, origin);
+      }
+
+      // ══════════════════════════════════════════════════
+      //  STREAMING ANALYZE ROUTE (SSE)
+      // ══════════════════════════════════════════════════
+
+      if (path === "/api/analyze-stream" && method === "POST") {
+        const { readable, writable } = new TransformStream();
+        const writer = writable.getWriter();
+        const enc = new TextEncoder();
+        const sse = async (type, data) => {
+          try { await writer.write(enc.encode(`data: ${JSON.stringify({type, ...data})}\n\n`)); } catch {}
+        };
+
+        // Run analysis pipeline asynchronously
+        (async () => {
+          try {
+            let csvText = "", fileName = "data.csv", userQuestion = "Analyze this dataset";
+            let prevContext = "";
+            const ct2 = request.headers.get("Content-Type") || "";
+            if (ct2.includes("multipart/form-data")) {
+              const fd = await request.formData();
+              const file = fd.get("file");
+              const q = fd.get("question") || fd.get("prompt");
+              if (q) userQuestion = sanitizeString(String(q).slice(0, 2000));
+              try { const ctxRaw = fd.get("context"); if (ctxRaw) { const ctx = JSON.parse(ctxRaw); if (ctx.verdict) prevContext = ctx.verdict; } } catch {}
+              if (file && typeof file.text === "function") {
+                if (file.size > 20 * 1024 * 1024) { await sse("error", {msg:"File too large"}); await writer.close(); return; }
+                fileName = sanitizeString(file.name || "data.csv");
+                csvText = await file.text();
+              } else if (typeof file === "string") { csvText = file; }
+            }
+            if (!csvText || csvText.trim().length < 5) { await sse("error", {msg:"No data provided"}); await writer.close(); return; }
+
+            await sse("status", {msg: "Parsing " + csvText.split("\n").length + " lines..."});
+            const { headers: hdrs, records } = parseInput(csvText.slice(0, 10_000_000));
+            if (records.length === 0) { await sse("error", {msg:"No tabular data detected"}); await writer.close(); return; }
+
+            await sse("status", {msg: "Analyzing " + records.length + " rows..."});
+            let detected = detectSchema(hdrs);
+            if (!detected.revenue) {
+              for (const h of hdrs) {
+                const sample = records.slice(0, 20).map(row => { try { return safeNumber(row[h]); } catch { return null; } }).filter(v => v !== null && v > 0);
+                if (sample.length >= 5) { detected.revenue = h; break; }
+              }
+            }
+            const dsType = inferDatasetType(detected, hdrs);
+            const intent = parseIntent(userQuestion, dsType);
+            const { cleaned, dataQuality } = cleanData(records, detected);
+            const judgment = runJudgmentEngine(cleaned, detected, dataQuality, cleaned.length);
+            const metrics = computeMetrics(cleaned, detected, hdrs, judgment);
+            const anomalyResult = detectAnomalies(cleaned, detected);
+            const cohortResult = computeCohorts(cleaned, detected);
+            const confidence = scoreConfidence(cleaned, dataQuality, detected, anomalyResult, judgment);
+            judgment.permissions.canShowRecommendations = judgment.analysisTier !== "FACTS_ONLY" && !judgment.qualityBlocksAnalysis;
+            const rankedFindings = rankFindings(metrics, anomalyResult, judgment, detected, dataQuality);
+
+            // Send deterministic metrics immediately
+            await sse("metrics", { data: scrubForJSON({
+              metrics, data_quality: dataQuality, anomalies: anomalyResult,
+              cohorts: cohortResult, confidence, dataset_type: dsType,
+              detected_cols: detected, intent: { primary: intent.primary },
+              schema: { headers: hdrs, row_count: records.length, clean_count: cleaned.length },
+              judgment: { analysisTier: judgment.analysisTier, mandatoryPreamble: judgment.mandatoryPreamble,
+                distortions: judgment.distortions, contradictions: judgment.contradictions,
+                dominance: judgment.dominance, permissions: judgment.permissions },
+              ranked_findings: rankedFindings
+            })});
+
+            await sse("status", {msg: "Generating insights..."});
+            const { sysPrompt, userMsg: _um } = buildPrompt(metrics, detected, dataQuality, anomalyResult, cohortResult, dsType, intent, fileName, userQuestion, confidence, judgment, rankedFindings);
+            let userMsg = _um;
+            if (prevContext && prevContext.length > 10) {
+              userMsg += `\n\n── PREVIOUS ANALYSIS CONTEXT ──\n${prevContext.slice(0, 1500)}\n── END CONTEXT ──\n\nBuild on the above. Go deeper.`;
+            }
+
+            // Stream from Groq
+            if (!env.GROQ_API_KEY) { await sse("error", {msg:"GROQ_API_KEY not configured"}); await writer.close(); return; }
+            const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+              method: "POST",
+              headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
+              body: JSON.stringify({
+                model: "llama-3.3-70b-versatile",
+                messages: [{ role: "system", content: sysPrompt }, { role: "user", content: userMsg }],
+                max_tokens: 8192, temperature: 0.1, stream: true
+              })
+            });
+
+            if (!groqRes.ok) {
+              // Fallback to non-streaming
+              const fallback = buildFallbackNarrative(metrics, detected, dataQuality, anomalyResult, confidence, judgment, rankedFindings);
+              await sse("token", {text: fallback});
+              await sse("done", {insight: fallback});
+              await writer.close();
+              return;
+            }
+
+            const reader = groqRes.body.getReader();
+            const decoder = new TextDecoder();
+            let fullText = "";
+            while (true) {
+              const { done: rdone, value } = await reader.read();
+              if (rdone) break;
+              const chunk = decoder.decode(value, { stream: true });
+              for (const line of chunk.split("\n")) {
+                if (!line.startsWith("data: ") || line === "data: [DONE]") continue;
+                try {
+                  const j = JSON.parse(line.slice(6));
+                  const token = j.choices?.[0]?.delta?.content;
+                  if (token) { fullText += token; await sse("token", {text: token}); }
+                } catch {}
+              }
+            }
+
+            if (!fullText) fullText = buildFallbackNarrative(metrics, detected, dataQuality, anomalyResult, confidence, judgment, rankedFindings);
+            fullText = validateAndSanitizeOutput(fullText, metrics, rankedFindings, judgment);
+            await sse("done", {insight: fullText});
+            await logActivity(env, ip, "STREAM_ANALYSIS", { fileName, rows: cleaned.length, confidence, tier: judgment.analysisTier });
+          } catch (e) {
+            try { await sse("error", {msg: e.message || "Stream error"}); } catch {}
+          } finally {
+            try { await writer.close(); } catch {}
+          }
+        })();
+
+        return new Response(readable, {
+          headers: {
+            ...buildCORSHeaders(origin),
+            "Content-Type": "text/event-stream",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive"
+          }
+        });
       }
 
       // ══════════════════════════════════════════════════

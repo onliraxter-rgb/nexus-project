@@ -7,7 +7,7 @@ on:
 jobs:
   # ── JOB 1: Deploy Cloudflare Worker (backend) ──────────────────────────
   deploy-worker:
-    name: Deploy Backend Worker (v14)
+    name: Deploy Backend Worker (v15)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,7 +22,7 @@ jobs:
 
   # ── JOB 2: Deploy Cloudflare Pages (frontend) ──────────────────────────
   deploy-pages:
-    name: Deploy Frontend Pages (v12)
+    name: Deploy Frontend Pages (v15)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
