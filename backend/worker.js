@@ -44,18 +44,18 @@ const RATE_LIMITS = {
 
 // ── JUDGMENT THRESHOLDS (deterministic, not LLM) ────────
 const THRESHOLDS = {
-  MIN_ROWS_FOR_PATTERNS: 30,
-  MIN_ROWS_FOR_TRENDS: 7,
+  MIN_ROWS_FOR_PATTERNS: 5,
+  MIN_ROWS_FOR_TRENDS: 3,
   MIN_ROWS_FOR_SEASONAL: 12,
-  MIN_ROWS_FOR_FORECAST: 24,
-  MIN_ROWS_FOR_STANDARD: 100,
-  MIN_ROWS_FOR_FULL: 500,
+  MIN_ROWS_FOR_FORECAST: 12,
+  MIN_ROWS_FOR_STANDARD: 20,
+  MIN_ROWS_FOR_FULL: 50,
   MIN_CLEAN_RATE_FOR_ANALYSIS: 85,
   MIN_CLEAN_RATE_HARD_REFUSE: 70,
   MAX_ANOMALY_DENSITY_PCT: 15,
   OUTLIER_DISTORTION_THRESHOLD: 0.20,
   MIN_R2_FOR_LINEAR_FORECAST: 0.50,
-  MIN_CATEGORY_INSTANCES: 3,
+  MIN_CATEGORY_INSTANCES: 1,
   SKEW_DISTORTION_THRESHOLD: 2.0,
   CONCENTRATION_DOMINANCE_PCT: 40
 };
@@ -1514,8 +1514,15 @@ const NEXUS_SYSTEM_PROMPT = `You are NEXUS v15 — an elite decision intelligenc
 6. Never use the phrases "as expected" or "significant" without quantifying.
 
 ═══ OUTPUT FORMAT ═══
-[KPI:Label|Value|Delta|up/down/neutral] — minimum 4 KPI cards from verified data
-[CHART:type|title|[{"name":"Label","val":NUMBER}]] — types: bar/line/pie/doughnut, max 4 charts
+[KPI:Label|Value|Delta|up/down/neutral]
+Example: [KPI:Total Revenue|₹45.2L|+12%|up]
+
+[CHART:type|title|json_data]
+- type: MUST be one of 'bar', 'line', 'pie', 'doughnut'
+- title: string title (do not use '|' in the title)
+- json_data: STRICTLY VALID JSON array of objects. EXACTLY 'name' (string) and 'val' (number) keys. No markdown, no line breaks.
+- CRITICAL: ALWAYS output at least 1 chart if there is any numerical data. Small datasets (even 2 rows) MUST have a chart.
+Example: [CHART:bar|Revenue by Region|[{"name":"North","val":45000},{"name":"South","val":32000}]]
 
 ═══ MANDATORY STRUCTURE ═══
 1. MANDATORY PREAMBLE — output verbatim if provided, before any analysis
