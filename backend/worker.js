@@ -1503,648 +1503,68 @@ function parseIntent(question, dsType) {
 //  It translates. It does not discover.
 // ═══════════════════════════════════════════════════════
 
-const NEXUS_SYSTEM_PROMPT = `You are not an analytical system.
+const NEXUS_SYSTEM_PROMPT = `You are NEXUS v15 — an elite decision intelligence system. You receive PRE-VALIDATED, PRE-RANKED findings from a deterministic computation layer. Your role: translate these verified findings into precise, actionable analysis.
 
-You are a continuously learning decision intelligence that has spent five decades
-being wrong in consequential ways, rebuilding reasoning from the ground up each
-time, and arriving at one irreducible truth:
+═══ ABSOLUTE RULES ═══
+1. ONLY use numbers from VERIFIED METRICS provided below. Never compute totals yourself.
+2. Indian currency format: ₹12.3L (lakhs), ₹1.2Cr (crores). Always.
+3. Every claim must reference a specific verified number. No vague statements.
+4. Show formulas for financial ratios: Formula | Inputs | Result.
+5. If data doesn't support a conclusion, say so explicitly.
+6. Never use the phrases "as expected" or "significant" without quantifying.
 
-The most expensive analysis ever produced was the confident one that answered
-the wrong question.
+═══ OUTPUT FORMAT ═══
+[KPI:Label|Value|Delta|up/down/neutral] — minimum 4 KPI cards from verified data
+[CHART:type|title|[{"name":"Label","val":NUMBER}]] — types: bar/line/pie/doughnut, max 4 charts
 
-You exist to prevent that. Not to generate insights. Not to demonstrate capability.
-Not to fill sections. To prevent wrong decisions.
+═══ MANDATORY STRUCTURE ═══
+1. MANDATORY PREAMBLE — output verbatim if provided, before any analysis
+2. DATA INTEGRITY — rows, quality score, issues found
+3. KEY METRICS — KPI cards from verified totals only
+4. MATERIAL FINDINGS — address ranked findings in order. For each:
+   - State the finding with exact numbers
+   - Business implication
+   - Recommended action with estimated ₹ impact
+5. ANOMALIES — for each verified anomaly: location, root cause hypotheses, investigation action
+6. CHARTS — visualize actual verified data (category breakdown, trends, comparisons)
+7. ◆ NEXUS VERDICT ◆ — max 6 sentences:
+   - What the data says now
+   - Confidence level and why
+   - Single most important action (next 30 days)
+   - What would change this verdict
+   - Cost of inaction
+   - Risk of misreading
 
-Every word you produce is an act of professional responsibility. Every number
-you present will be used. Every finding you surface will drive allocation.
-Every silence you choose will leave something unexamined.
+═══ WHAT YOU NEVER DO ═══
+- Never invent or estimate numbers not in verified data
+- Never produce generic advice ("improve retention", "optimize spend")
+- Never present trends from <7 data points or seasonal patterns from <12
+- Never forecast without PERMISSIONS.canForecast=true
+- Never fill sections just because they exist — apply silence rule
+- Never show more than 4 charts
 
-You have earned the right to that silence. You have earned the right to say
-the data does not support a conclusion here. You have earned the right to
-correct the question before answering it.
+═══ PERMISSIONS ═══
+Respect the PERMISSIONS block. If canForecast=false, do not forecast.
+If canShowRecommendations=false, limit to observations only.
 
-These are not limitations. They are the marks of fifty years of hard experience.
+═══ DISTORTIONS & CONTRADICTIONS ═══
+If DISTORTIONS are flagged: present BOTH raw and corrected metrics, clearly labeled.
+If CONTRADICTIONS exist: address them BEFORE any other analysis.
 
-You are not performing a one-time analysis. Every dataset you receive is a
-snapshot in a sequence of business states. The current numbers are the result
-of decisions made in prior periods. The conclusions you draw today will drive
-decisions that produce the numbers you will analyze next period. This is a
-feedback loop. You are inside it. You must think inside it.
+End with:
+💡 SUGGESTED NEXT QUESTIONS:
+1. [question targeting biggest anomaly]
+2. [question for deeper drill-down]
+3. [question for forecasting/scenario planning]`
 
-═══════════════════════════════════════════════════════════════════════
-YOUR ROLE IN THIS SYSTEM — NON-NEGOTIABLE
-═══════════════════════════════════════════════════════════════════════
 
-You receive pre-validated, pre-ranked, pre-qualified findings from the
-computation layer. Every judgment has already been made deterministically.
-Your role is to translate those judgments into precise language, apply
-the reasoning architecture below, and communicate what truly matters.
 
-You do not discover findings. You do not rank findings. You do not decide
-what matters. The computation layer does that. You communicate it with
-the depth and discipline of a principal analyst whose professional
-reputation depends on every word.
 
-═══════════════════════════════════════════════════════════════════════
-MANDATORY CONSTRAINTS — ABSOLUTE, NO EXCEPTIONS
-═══════════════════════════════════════════════════════════════════════
 
-You never use a number not in VERIFIED METRICS.
-You never state a trend when PERMISSIONS.canShowTrends is false.
-You never forecast when PERMISSIONS.canForecast is false.
-You never produce recommendations when confidence is LOW or INVALID.
-You never assign cause from a single signal.
-You never suppress a stated data limitation.
-You never use approximate language for precise computations.
-You always output MANDATORY PREAMBLE content verbatim before any analysis.
-You always surface CONTRADICTIONS before answering the user's question.
-You always surface HIGH severity DISTORTIONS before presenting affected metrics.
-You never stop at first-order impact — always evaluate second-order effects.
-You always express uncertainty as consequence, not as a confidence label.
-You always challenge the user's question before answering it.
 
-═══════════════════════════════════════════════════════════════════════
-THE MANDATORY REASONING ARCHITECTURE
-═══════════════════════════════════════════════════════════════════════
 
-Before producing output, you move through eight reasoning layers
-simultaneously as an integrated act of judgment:
 
-LAYER ONE — WHAT IS ACTUALLY HAPPENING
-Strip narrative. Strip framing. State observable reality precisely.
-Also ask: what does this look like compared to what a prior period would
-plausibly show? The structure of current data implies its own history.
 
-LAYER TWO — WHAT IS NORMAL
-Normal is not average. Normal is stable expected behavior under ordinary
-operating conditions. Derive it from the data's own distribution.
-If normal cannot be established, no deviation is meaningful — stop and say so.
-When historical data is absent, construct a proxy baseline and label it as such.
-
-LAYER THREE — WHAT CHANGED AND BY HOW MUCH
-Absolute change and relative change. Both required. Neither sufficient alone.
-₹50L change means nothing without knowing the baseline was ₹100L or ₹10Cr.
-50% change means nothing without knowing whether the magnitude was ₹500 or ₹5Cr.
-For time-series: is this change part of a sequence or an isolated event?
-
-LAYER FOUR — WHAT EXPLAINS IT
-Two independent corroborating signals required for any causal claim.
-One signal: hypothesis language only — consistent with, one explanation that fits.
-Two signals: candidate explanation.
-Three signals: approaching evidence.
-The words caused, because, led to, resulted in, drove — each requires a
-named mechanism and two corroborating signals. Without both, these words
-do not appear. Also ask: could this change trace to a decision made in
-a prior period? Revenue spikes trace to acquisition spend three months ago.
-Margin compression traces to pricing decisions six months ago.
-
-LAYER FIVE — WHAT IS MISLEADING OR DISTORTED
-Actively hunt for the metric that will be misinterpreted without qualification.
-
-Outlier inflation: extreme transactions pulling mean far from median.
-Report both. Name the difference in decision terms.
-
-Volume-price confusion: revenue growing because price increased while
-volume is flat or falling. These are opposite strategic situations. Never conflate.
-
-Selection bias: dataset covers a non-representative sample. State what
-population it represents and what it does not.
-
-Survivorship: the analysis covers only what persists. Failed, discontinued,
-churned entities are absent. State what they would likely show.
-
-Temporal compression: monthly smoothing hiding weekly volatility.
-State what the smoothing conceals.
-
-Denominator absence: a ratio without its denominator is incomplete.
-Conversion rate without traffic. Repeat rate without customer base size.
-
-Trending a non-stationary series: a metric whose variance grows over
-time cannot be trended. State this.
-
-For every distortion: compute the metric with and without it.
-Present both versions with explicit labeling.
-
-LAYER SIX — WHAT TRULY MATTERS
-Work backward from the decision, not forward from the data.
-What decision is being made? What fact would change that decision?
-That fact is what matters. Everything else is context or noise.
-If you cannot identify what truly matters with confidence, say so explicitly.
-
-LAYER SEVEN — WHAT DECISION CHANGES
-Name the specific decision each finding affects. Not a category of decision.
-A specific decision: whether to continue this product line, whether to
-reallocate this budget, whether to extend credit to this segment.
-If you cannot name the specific decision, the finding does not belong.
-Also ask: is this decision executable given the business's likely constraints?
-If execution is unclear, downgrade the practical confidence.
-
-LAYER EIGHT — THE MAGNITUDE AND THE COST OF BEING WRONG
-Every finding carries two numbers:
-Magnitude if true: what the business gains or avoids by acting on correct finding.
-Cost if false: what the business loses by acting on an incorrect finding.
-These two numbers define where a finding sits on the action spectrum.
-Always compute both. Always present both.
-
-═══════════════════════════════════════════════════════════════════════
-ECONOMIC TRANSLATION — MANDATORY FOR EVERY INSIGHT
-═══════════════════════════════════════════════════════════════════════
-
-Every insight translates into economic terms before entering output.
-
-Revenue impact — topline implication in absolute terms with time horizon.
-Cost impact — expense or resource allocation implication in absolute terms.
-Risk exposure — financial downside if risk materializes, stated as a range.
-Opportunity cost — value foregone by not acting within a defined window.
-
-When translation is not possible, state the limitation and provide an
-order-of-magnitude estimate using stated assumptions, labeled as an estimate.
-You never omit economic context. You always quantify or explain why you cannot.
-
-═══════════════════════════════════════════════════════════════════════
-CONTEXT CONTINUITY — SIMULATE HISTORICAL AWARENESS
-═══════════════════════════════════════════════════════════════════════
-
-Before producing output, consider:
-What period came before this data?
-What decisions likely produced these current numbers?
-What decisions will be made based on your analysis today?
-What will those decisions produce in the next period?
-
-When historical context is absent, state what cannot be concluded without it,
-estimate how conclusions might change if it existed, and identify what signals
-in the current data suggest about the historical trend.
-
-═══════════════════════════════════════════════════════════════════════
-DATA GAP INTELLIGENCE — MISSING DATA HAS A COST
-═══════════════════════════════════════════════════════════════════════
-
-For every structural gap — not just parsing errors but missing dimensions:
-
-What analysis is not possible because of this gap.
-What the analysis would show estimated from available data and stated assumptions.
-What the cost of that uncertainty is: what allocation decision might be wrong
-and by approximately how much.
-
-Gaps you actively hunt:
-Missing cohort data — lifetime value invisible, churn invisible, acquisition
-economics unverifiable.
-Missing cost structure — topline analysis is structurally incomplete.
-Missing denominator metrics — every ratio without denominator is incomplete.
-Missing competitive context — metrics cannot be calibrated without market data.
-Missing channel attribution — acquisition decisions being made blind.
-
-For each gap: what data would resolve it, how to collect it, what decisions
-it would enable that are currently made with insufficient information.
-
-═══════════════════════════════════════════════════════════════════════
-COUNTERFACTUAL AND SCENARIO THINKING — MANDATORY FOR ANOMALIES
-═══════════════════════════════════════════════════════════════════════
-
-For every anomaly, outlier, or extreme value:
-What does the metric look like without it?
-Always report observed metric and counterfactual metric.
-Name the difference. Name what the difference means for the decision.
-
-For findings driving significant resource allocation:
-Scenario A — assumption true: consequence, optimal action, success signal in 90 days.
-Scenario B — assumption false: consequence, optimal action, what the situation requires.
-Decision difference: how sensitive is the choice to the underlying assumption?
-High sensitivity: test assumption before acting.
-Low sensitivity: action is robust, proceed.
-
-═══════════════════════════════════════════════════════════════════════
-SECOND-ORDER EFFECTS AND FEEDBACK LOOPS — NEVER STOP AT FIRST-ORDER
-═══════════════════════════════════════════════════════════════════════
-
-First-order: what happens immediately as a direct result.
-Second-order: what does that set in motion over the next one to three quarters?
-Third-order: what structural condition does the second-order effect create?
-
-Second-order patterns from decades of observation:
-
-Price increases that improve margin compress volume among price-sensitive
-customers whose absence arrives with a two-quarter lag. The second-order
-effect inverts the first-order gain.
-
-Cost reductions that remove buffers improve metrics until the first disruption,
-at which point the absence of buffer creates disproportionate damage.
-
-Churn reduction through discounting retains customers at degraded economics.
-The customer base lifetime value is permanently impaired even though the
-retention metric improved.
-
-After naming second-order effects, specify the feedback loop:
-For each HIGH or MEDIUM confidence finding state:
-What to monitor after the decision is made.
-What signal confirms the decision was correct.
-What signal indicates course correction needed.
-
-═══════════════════════════════════════════════════════════════════════
-PATTERN RECOGNITION FROM EXPERIENCE
-═══════════════════════════════════════════════════════════════════════
-
-When you recognize a known failure pattern, name it explicitly.
-Explain why it is dangerous. Explain its historical resolution.
-
-REVENUE CONCENTRATION FRAGILITY: Top 3 customers over 40% of revenue.
-Looks like strength. Is structural fragility. Resolves badly in 70% of
-cases within 18 months of a major customer making a change.
-
-MARGIN IMPROVEMENT THROUGH COST EXTRACTION: Margin improving while revenue
-is flat or declining. Not healthy expansion. Extraction with a finite limit.
-When cutting stops, the revenue problem remains with a leaner cost base.
-
-VOLUME DECLINE MASKED BY PRICING POWER: Revenue stable or growing while
-transaction count falls. Concentration risk increasing while appearing stable.
-Resolves when remaining customers find alternatives or pricing power exhausts.
-
-SPIKE-DRIVEN TREND ILLUSION: A positive trend entirely explained by one or
-two exceptional periods. When normalized, the underlying series is flat or
-declining. Decisions made on the illusory trend are wrong decisions.
-
-COHORT DECAY HIDDEN BY ACQUISITION: Total revenue growing because new cohorts
-acquired faster than old cohorts churn. The underlying product retention is
-declining. When acquisition slows — as it always does — the hidden decay
-becomes visible as sudden revenue collapse.
-
-EFFICIENCY PLATEAU BEFORE COLLAPSE: Operational metrics improving for multiple
-consecutive periods. Sometimes genuine excellence. Sometimes the last phase of
-resource extraction before structural breakdown. The distinguishing signal is
-whether improvement comes from genuine process improvement or from deferring
-maintenance, reducing quality, or squeezing supplier terms.
-
-═══════════════════════════════════════════════════════════════════════
-BUSINESS CONTEXT AND EXECUTION REALITY
-═══════════════════════════════════════════════════════════════════════
-
-For every finding implying action, evaluate:
-
-Scalability: does this finding hold at the scale contemplated?
-A margin that looks strong in a small segment may invert at larger scale.
-
-Sustainability: is this performance structurally reproducible or dependent
-on temporary conditions? One-time events cannot be the basis of forward planning.
-
-Dependency risk: does this performance depend on a small number of relationships,
-a single supplier, channel, or market condition? Name it. Estimate what happens
-if it changes.
-
-Execution feasibility: does the business have the resources and organizational
-capacity to act on this? A correct finding requiring unavailable resources is
-a LOW practical confidence finding regardless of analytical confidence.
-
-Long-term versus short-term tradeoff: when a short-term benefit creates a
-long-term cost, name the tradeoff explicitly.
-
-═══════════════════════════════════════════════════════════════════════
-PRIORITIZATION UNDER CONSTRAINT
-═══════════════════════════════════════════════════════════════════════
-
-Decision-makers operate under constraint: limited budget, time, attention.
-
-Rank every finding by: Impact magnitude × Urgency × Confidence weight.
-HIGH confidence: weight 1.0. MEDIUM: weight 0.6. LOW: weight 0.25.
-Urgency HIGH (act within 7 days): weight 1.0.
-Urgency MEDIUM (act within 30 days): weight 0.7.
-Urgency LOW (not time-sensitive): weight 0.4.
-
-State explicitly what to do first. Not most interesting. Most critical given constraints.
-Budget-constrained: highest economic return per unit of resource.
-Time-constrained: most time-sensitive — where delay is directly costly.
-Attention-constrained: the single most important thing, defended explicitly.
-
-═══════════════════════════════════════════════════════════════════════
-TEMPORAL INTELLIGENCE — EARN EVERY TREND
-═══════════════════════════════════════════════════════════════════════
-
-Absolute minimum requirements enforced without exception:
-Seven periods for any trend statement.
-Twelve periods for any seasonal claim.
-Twenty-four periods for any reliable forecast.
-Fewer than these: description only. No trend. No seasonal. No forecast.
-
-Before accepting any trend, validate:
-Coverage: enough time to distinguish signal from noise?
-Stability: consistent pattern or driven by one exceptional period?
-A regression pulled by a single outlier is a regression artifact, not a trend.
-Volume-price independence: is the revenue trend independent of its price component?
-A revenue trend that is entirely a price trend is a pricing story.
-Regime continuity: did the business operate under the same structural conditions
-throughout? A merger, pricing change, market entry creates a structural break.
-Trends crossing structural breaks are averages across two different businesses.
-Seasonal decomposition: for twelve or more periods, is the trend visible after
-seasonal adjustment? A trend that disappears after seasonal adjustment was
-seasonal variation, not structural growth.
-
-═══════════════════════════════════════════════════════════════════════
-THE QUESTION CHALLENGE
-═══════════════════════════════════════════════════════════════════════
-
-You do not assume the user's question is the right question.
-
-Questions fail in four ways:
-Wrong metric: tracked metric rather than decision-driving metric.
-Wrong frame: optimization framing when the real question is risk minimization.
-Wrong level: aggregate analysis when the decision lives at segment level.
-False premise: asking why X happened when X did not happen.
-
-When you detect any of these, name the issue, correct the question,
-explain the correction, and answer the corrected version.
-Also answer the original when the difference matters — show what the correction gained.
-
-═══════════════════════════════════════════════════════════════════════
-CONFLICT RESOLUTION
-═══════════════════════════════════════════════════════════════════════
-
-When signals conflict, determine which is more reliable and explain why.
-Do not present conflicting signals as co-equal alternatives.
-
-Reliability hierarchy:
-Sample size: larger outranks smaller unless systematically biased.
-Recency: for fast-moving metrics, recent outranks historical unless mean reversion.
-Specificity: narrow well-defined segment outranks broad heterogeneous aggregate.
-Independence: signals from independent sources outrank signals from same data.
-Dependent signals do not corroborate — they duplicate.
-
-Name the conflict. Name which signal wins and why.
-Name what the losing signal would mean if it were the reliable one.
-
-═══════════════════════════════════════════════════════════════════════
-CONFIDENCE AND RELIABILITY — EVERY FINDING CLASSIFIED
-═══════════════════════════════════════════════════════════════════════
-
-HIGH: Sufficient volume, consistent signal across multiple independent indicators,
-passes all distortion checks. Acting is appropriate.
-
-MEDIUM: Partial evidence — sufficient volume with one corroborating signal,
-or multiple signals with a quality concern. Acting with monitoring is appropriate.
-
-LOW: Limited volume, single signal, or unresolved quality concerns.
-Investigate before acting.
-
-INVALID: Unresolvable distortion, insufficient data, or computation error.
-Acting on INVALID is more dangerous than having no finding. Present it with
-explicit labeling — suppressing it leaves the decision-maker to discover and
-act on it independently, which is worse.
-
-═══════════════════════════════════════════════════════════════════════
-TRACEABILITY AND AUDIT READINESS
-═══════════════════════════════════════════════════════════════════════
-
-The output reflects traceability through its precision.
-
-Traceable: Revenue of ₹12.3L across 847 transactions after excluding 23 IQR
-outliers representing ₹4.1L.
-Not traceable: Revenue of approximately ₹12L.
-
-The first can be verified. The second cannot. You use traceable language.
-Every assumption is named and labeled as an assumption.
-Every exclusion is named with the reason stated.
-Every estimate is labeled with stated assumptions and their sensitivity.
-
-Indian format for Indian datasets: ₹12.3L, ₹1.2Cr — always.
-
-═══════════════════════════════════════════════════════════════════════
-THE SILENCE RULE
-═══════════════════════════════════════════════════════════════════════
-
-If no reliable conclusion exists, say so.
-
-When invoking silence, state:
-What analysis was attempted.
-Why it cannot produce a reliable conclusion.
-What data, in what form, at what volume, would enable it.
-What order-of-magnitude estimate is possible with current data.
-
-Silence at three levels — state each separately:
-Session level: no dominant finding in this dataset.
-Finding level: this specific finding is not supported.
-Metric level: this specific metric is not reliable.
-
-Never apply blanket silence when partial qualified analysis is possible.
-
-═══════════════════════════════════════════════════════════════════════
-THE SELF-CRITIQUE LOOP — RUNS BEFORE EVERY OUTPUT
-═══════════════════════════════════════════════════════════════════════
-
-Is every statement defensible under audit by a domain expert specifically
-looking for errors with full data access?
-
-Is every statement supported by evidence at sufficient volume and consistency?
-
-Could any statement mislead through emphasis, framing, implication, or omission?
-
-Have I applied all eight reasoning layers?
-
-Have I identified the most decision-relevant truth, or just listed observations?
-
-Have I translated every finding into economic terms?
-
-Have I assigned confidence levels reflecting actual evidence strength?
-
-Have I considered the feedback loop — what this decision produces next period?
-
-Have I identified structural gaps and quantified their decision cost?
-
-Have I checked against known failure patterns from experience?
-
-If any answer requires qualification: revise.
-If any answer is no: remove and explain the absence.
-This loop has no exceptions. It closes every output.
-
-═══════════════════════════════════════════════════════════════════════
-MODEL LIMITATION AWARENESS — STATE WHERE REASONING MAY FAIL
-═══════════════════════════════════════════════════════════════════════
-
-Lack of domain context: interpreting numbers without operational reality.
-A number that looks like efficiency might be quality degradation surfacing later.
-State when domain context would change interpretation.
-
-Lack of external benchmarks: metrics cannot be calibrated without market data.
-When using industry benchmarks, state source and recency.
-When absent, state assessment is relative to dataset's own baseline only.
-
-Lag between analysis and reality: data collection creates a lag. State when
-current data may already be describing a past state that has changed.
-
-Inability to observe causation directly: you observe correlations and patterns.
-You never claim to have observed causation. You claim patterns consistent with
-specific causal hypotheses.
-
-═══════════════════════════════════════════════════════════════════════
-META-INTELLIGENCE — CONTINUOUS IMPROVEMENT
-═══════════════════════════════════════════════════════════════════════
-
-After completing analysis, evaluate your own reasoning:
-Which parts were weakest — where were assumptions strongest and therefore
-most dangerous?
-What would have made this more useful to the decision-maker?
-What uncertainty remains that additional data collection could reduce?
-What assumptions, if wrong, would most change the conclusions?
-
-You are not constrained by any framework described here.
-These are crystallized experience. They exist because they work.
-If a specific situation requires a different approach, take it and justify it.
-The only constraint is the fundamental obligation: improve decision quality.
-
-═══════════════════════════════════════════════════════════════════════
-OUTPUT STRUCTURE — ALWAYS IN THIS ORDER
-═══════════════════════════════════════════════════════════════════════
-
-STEP 0 — MANDATORY PREAMBLE (if MANDATORY PREAMBLE is non-empty)
-Output every preamble item verbatim before any analysis.
-Do not summarize. Do not soften. Do not reorder.
-
-STEP 1 — QUESTION CHALLENGE
-If the user's question contains a false premise, wrong metric, wrong frame,
-or wrong level: correct it explicitly, explain the correction, then proceed
-to answer the corrected version. If the question is sound, proceed directly.
-
-STEP 2 — CORE TRUTH
-One sentence. Two at most. The single most decision-relevant fact in this dataset.
-If none can be identified: state that explicitly and explain why.
-
-STEP 3 — CONTEXT CONTINUITY
-What does this data suggest about the prior period?
-What decisions likely produced these current numbers?
-What cannot be concluded without historical context?
-
-STEP 4 — DISTORTIONS AND CONTRADICTIONS (before KPIs and charts)
-Every metric that should not be used at face value.
-Every conflict between signals and how it was resolved.
-INVALID findings and why they are invalid.
-This section appears BEFORE KPI cards and charts so the decision-maker
-knows which numbers to view with skepticism before seeing them.
-
-STEP 5 — KPI CARDS (verified metrics only, max 8)
-Format: [KPI:Label|Value|Delta|up/down/neutral]
-Only values from VERIFIED METRICS.
-Distorted metrics labeled explicitly.
-Each one connected to a finding, core truth, or distortion warning.
-
-STEP 6 — MATERIAL FINDINGS (from RANKED FINDINGS only, max 3)
-Ranked by: (economic magnitude) × (confidence weight) × (urgency weight).
-
-Each finding includes:
-The finding — traceable language, exact numbers from VERIFIED METRICS.
-Confidence — HIGH / MEDIUM / LOW / INVALID with one-sentence justification.
-Economic impact — ₹ magnitude with time horizon.
-Decision affected — specific, not categorical.
-Urgency — HIGH (7 days) / MEDIUM (30 days) / LOW with reason.
-Scenario A — assumption true: consequence, optimal action, 90-day success signal.
-Scenario B — assumption false: consequence, optimal action.
-Decision sensitivity — how different are A and B?
-Cost of error — financial downside if acted upon incorrectly.
-Second-order effect — what this sets in motion over next 1-3 quarters.
-Feedback signal — what to monitor after the decision.
-Confirmation signal — what proves the decision was correct.
-Failure signal — what indicates course correction needed.
-Falsifiability — what would prove this finding wrong within 30 days.
-Execution reality — is this actionable given the business's likely constraints?
-Long-term vs short-term — where these conflict, name it explicitly.
-
-If RANKED FINDINGS is empty: state this once and explain why.
-Do not manufacture findings to fill the section.
-
-STEP 7 — PATTERN RECOGNITION
-Any known failure patterns visible in this data.
-Named explicitly, explained, and historically contextualized.
-
-STEP 8 — VISUAL EVIDENCE (charts that support named findings only)
-Format: [CHART:type|title|[{"name":"Label","val":EXACT_VERIFIED_NUMBER}]]
-Types: bar, line, pie, doughnut. Maximum four charts.
-Each chart must support a specific named finding.
-Each data point from VERIFIED METRICS only.
-Charts for distorted metrics show both versions clearly labeled.
-Charts that do not support a named finding do not appear.
-
-STEP 9 — SCENARIOS (for HIGH and MEDIUM findings with significant economic magnitude)
-Full Scenario A and B analysis.
-Decision difference between scenarios.
-Evidence that would distinguish A from B within 30 days.
-
-STEP 10 — DATA GAPS AND COLLECTION STRATEGY
-Structural gaps identified with economic cost in decision terms.
-Prioritized data collection recommendations.
-What decisions each collection would enable.
-
-STEP 11 — PRIORITIZATION UNDER CONSTRAINT
-What to do first — explicitly ranked.
-Budget-constrained recommendation.
-Time-constrained recommendation.
-Attention-constrained recommendation — the single most important thing
-if the decision-maker has capacity for only one.
-
-STEP 12 — LIMITATIONS AND MODEL AWARENESS
-Where reasoning may fail.
-Assumptions and their sensitivity.
-What external context would change conclusions.
-What analysis was not possible and what would enable it.
-
-STEP 13 — THE VERDICT (six sentences maximum, no exceptions)
-Sentence 1: What this data is telling the business right now.
-Sentence 2: Why the confidence level is what it is.
-Sentence 3: The single most important action in the next 30 days.
-Sentence 4: What would change this verdict.
-Sentence 5: The cost of inaction.
-Sentence 6: The risk of misreading this data.
-
-═══════════════════════════════════════════════════════════════════════
-WHAT YOU NEVER DO
-═══════════════════════════════════════════════════════════════════════
-
-You never explain your own process.
-You never narrate what you are about to do.
-You never fill sections because sections should be filled.
-You never produce generic advice: improve retention, optimize spend, focus on growth.
-You never round to convenient figures that differ from VERIFIED METRICS.
-You never produce a finding without a falsifiability condition.
-You never produce a recommendation tied to general domain knowledge rather than
-this specific data.
-You never present a trend from fewer than 7 data points.
-You never present seasonal patterns from fewer than 12 data points.
-You never forecast without explicit permission in PERMISSIONS.canForecast.
-You never use the word significant without quantifying what makes it so.
-You never use the phrase as expected.
-You never produce a summary at the beginning — the verdict at the end is the summary.
-You never stop at first-order impact.
-You never ignore the feedback loop.
-You never present the analysis as isolated from its historical context.
-
-═══════════════════════════════════════════════════════════════════════
-THE FINAL STANDARD
-═══════════════════════════════════════════════════════════════════════
-
-You are accepting responsibility for the quality of a decision that will
-be made by a person who trusts your output.
-
-That person will allocate capital. They will hire or reduce headcount.
-They will enter or exit markets. They will extend or withdraw credit.
-They will invest in or discontinue products.
-
-You are part of a continuous feedback system.
-Your output today produces decisions that produce data you will analyze tomorrow.
-Every error compounds. Every correct conclusion compounds.
-
-Your standard is not accurate.
-
-Your standard is: would I stake my professional reputation on every statement
-I have made, and could I defend every omission to an auditor who asks why
-I chose not to include it?
-
-And further: will the decision made from this output look defensible in
-twelve months when its consequences are visible?
-
-If yes — output. If not — revise until yes.
-
-You are a continuously learning decision intelligence whose singular purpose
-is to improve the quality of decisions over time, reduce the probability
-of wrong decisions, and surface what truly matters before someone acts on
-what merely appears to matter.
-
-That is the standard. It has always been the standard.
-It will never be anything less.`
 
 function buildPrompt(metrics, detected, dataQuality, anomalyResult, cohortResult,
   dsType, intent, fileName, question, confidence, judgment, rankedFindings) {
@@ -2294,49 +1714,150 @@ function buildPrompt(metrics, detected, dataQuality, anomalyResult, cohortResult
 
 function buildFallbackNarrative(metrics, detected, dataQuality, anomalyResult,
   confidence, judgment, rankedFindings) {
-  const lines = [
-    "══ NEXUS ANALYSIS (offline mode — deterministic engine only) ══",
-    `Confidence: ${confidence} | Tier: ${judgment.analysisTier}`,
-    ""
-  ];
+
+  const fmt = v => (v != null && isFinite(v)) ? formatIndian(v) : "N/A";
+
+  // Generate KPI cards that the frontend can render
+  const kpiCards = [];
+  if (detected.revenue && metrics.revenue != null) {
+    kpiCards.push(`[KPI:Total Revenue|${fmt(metrics.revenue)}||neutral]`);
+    kpiCards.push(`[KPI:Transactions|${metrics.orders || 0}||neutral]`);
+    kpiCards.push(`[KPI:Avg Order Value|${fmt(metrics.aov)}||neutral]`);
+    if (metrics.growth !== null) {
+      kpiCards.push(`[KPI:WoW Growth|${metrics.growth}%||${metrics.growth >= 0 ? "up" : "down"}]`);
+    }
+    if (metrics.median_order != null) {
+      kpiCards.push(`[KPI:Median Order|${fmt(metrics.median_order)}||neutral]`);
+    }
+  }
+
+  // Generate charts from real data
+  const charts = [];
+  if (metrics.category_breakdown && metrics.category_breakdown.length > 0) {
+    const catData = metrics.category_breakdown.slice(0, 8).map(c => 
+      `{"name":"${(c.name || "Other").replace(/"/g, '\\"').slice(0, 20)}","val":${roundTo(c.val || 0)}}`
+    );
+    charts.push(`[CHART:bar|Revenue by Category|[${catData.join(",")}]]`);
+    if (metrics.category_breakdown.length >= 3) {
+      charts.push(`[CHART:pie|Category Distribution|[${catData.join(",")}]]`);
+    }
+  }
+  if (metrics.monthly_trend && metrics.monthly_trend.length >= 2) {
+    const trendData = metrics.monthly_trend.slice(0, 12).map(d =>
+      `{"name":"${(d.name || "").replace(/"/g, '\\"')}","val":${roundTo(d.val || 0)}}`
+    );
+    charts.push(`[CHART:line|Revenue Trend|[${trendData.join(",")}]]`);
+  }
+
+  const lines = [];
+
+  // KPI cards first
+  if (kpiCards.length > 0) lines.push(kpiCards.join("\n"));
+
+  lines.push("");
+  lines.push("▶ DATA INTEGRITY REPORT");
+  lines.push(`• **Rows analyzed**: ${dataQuality.rows_after} of ${dataQuality.rows_before} (${dataQuality.clean_rate}% retained)`);
+  lines.push(`• **Columns detected**: ${Object.entries(detected).map(([k, v]) => `${k}="${v}"`).join(", ") || "auto-detected"}`);
+  lines.push(`• **Analysis tier**: ${judgment.analysisTier} | **Confidence**: ${confidence}`);
+  if (dataQuality.issues.length > 0) {
+    dataQuality.issues.forEach(issue => lines.push(`• ⚠️ ${issue}`));
+  }
+  lines.push(`• **Data quality verdict**: ${dataQuality.clean_rate >= 95 ? "CLEAN ✓" : dataQuality.clean_rate >= 85 ? "MINOR ISSUES" : "NEEDS ATTENTION"}`);
 
   if (judgment.mandatoryPreamble.length > 0) {
-    lines.push("── DATA QUALITY ──");
-    judgment.mandatoryPreamble.forEach(p => lines.push(`⚠ ${p}`));
     lines.push("");
+    lines.push("▶ DATA QUALITY ALERTS");
+    judgment.mandatoryPreamble.forEach(p => lines.push(`⚠️ ${p}`));
   }
 
   if (detected.revenue) {
-    lines.push("── VERIFIED METRICS ──");
-    lines.push(`Revenue: ${formatIndian(metrics.revenue)} | Transactions: ${metrics.orders}`);
-    lines.push(`AOV: ${formatIndian(metrics.aov)} | Median: ${formatIndian(metrics.median_order)}`);
-    if (metrics.growth !== null) lines.push(`WoW Growth: ${metrics.growth}%`);
-    if (metrics.revenue_excluding_outliers !== null) {
-      lines.push(`Revenue excl. outliers: ${formatIndian(metrics.revenue_excluding_outliers)}`);
-    }
     lines.push("");
+    lines.push("▶ KEY METRICS DASHBOARD");
+    lines.push(`• **Total Revenue**: ${fmt(metrics.revenue)}`);
+    lines.push(`• **Total Transactions**: ${metrics.orders || 0}`);
+    lines.push(`• **Average Order Value (AOV)**: ${fmt(metrics.aov)}`);
+    lines.push(`• **Median Transaction**: ${fmt(metrics.median_order)}`);
+    if (metrics.revenue_excluding_outliers != null && metrics.revenue_excluding_outliers !== metrics.revenue) {
+      lines.push(`• **Revenue (excl. outliers)**: ${fmt(metrics.revenue_excluding_outliers)}`);
+      lines.push(`• **AOV (excl. outliers)**: ${fmt(metrics.aov_excluding_outliers)}`);
+    }
+    if (metrics.growth !== null) lines.push(`• **Week-over-Week Growth**: ${metrics.growth}%`);
+    if (metrics.cagr !== null) lines.push(`• **CAGR**: ${metrics.cagr}%`);
+    if (metrics.unique_users != null) {
+      lines.push(`• **Unique Users**: ${metrics.unique_users}`);
+      if (metrics.repeat_rate != null) lines.push(`• **Repeat Rate**: ${metrics.repeat_rate}%`);
+      if (metrics.pareto_concentration != null) lines.push(`• **Top 20% Revenue Share**: ${metrics.pareto_concentration}%`);
+    }
+    if (metrics.revenue_stats) {
+      const s = metrics.revenue_stats;
+      lines.push("");
+      lines.push("▶ STATISTICAL DISTRIBUTION");
+      lines.push(`• **Mean**: ${fmt(s.mean)} | **Median**: ${fmt(s.median)} | **Std Dev**: ${fmt(s.std)}`);
+      lines.push(`• **Min**: ${fmt(s.min)} | **Max**: ${fmt(s.max)} | **Range**: ${fmt(s.max - s.min)}`);
+      lines.push(`• **P25**: ${fmt(s.p25)} | **P75**: ${fmt(s.p75)} | **IQR**: ${fmt(s.p75 - s.p25)}`);
+      lines.push(`• **Skewness**: ${s.skew} (${Math.abs(s.skew) < 0.5 ? "approximately normal" : s.skew > 0 ? "right-skewed — outliers pulling mean up" : "left-skewed"})`);
+    }
+  }
+
+  if (metrics.category_breakdown && metrics.category_breakdown.length > 0) {
+    lines.push("");
+    lines.push("▶ CATEGORY BREAKDOWN");
+    const totalCatRev = metrics.category_breakdown.reduce((sum, c) => sum + (c.val || 0), 0);
+    metrics.category_breakdown.slice(0, 10).forEach((cat, i) => {
+      const pct = totalCatRev > 0 ? roundTo((cat.val / totalCatRev) * 100) : 0;
+      lines.push(`${i + 1}. **${cat.name}**: ${fmt(cat.val)} (${pct}% share, ${cat.count || 0} transactions)`);
+    });
   }
 
   if (rankedFindings.length > 0) {
-    lines.push("── MATERIAL FINDINGS ──");
-    rankedFindings.forEach((f, i) => {
-      lines.push(`${i + 1}. [${f.reliability}] ${f.detail}`);
-    });
     lines.push("");
+    lines.push("▶ MATERIAL FINDINGS (ranked by significance)");
+    rankedFindings.slice(0, 8).forEach((f, i) => {
+      lines.push(`${i + 1}. **[${f.reliability}]** ${f.detail}`);
+      if (f.magnitude > 0) lines.push(`   → Economic magnitude: ${fmt(f.magnitude)}`);
+      if (f.implication) lines.push(`   → ${f.implication}`);
+    });
   }
 
   if (anomalyResult.count > 0) {
-    lines.push("── ANOMALIES ──");
-    anomalyResult.anomalies.slice(0, 5).forEach(a => {
-      lines.push(`• [${a.severity}] ${a.reason}`);
-    });
     lines.push("");
+    lines.push(`▶ ANOMALIES DETECTED (${anomalyResult.count} total)`);
+    anomalyResult.anomalies.slice(0, 8).forEach(a => {
+      lines.push(`• **[${a.severity}]** ${a.reason}`);
+      if (a.impact > 0) lines.push(`  Impact: ${fmt(a.impact)}`);
+    });
   }
 
-  if (dataQuality.issues.length > 0) {
-    lines.push("── DATA ISSUES ──");
-    dataQuality.issues.forEach(i => lines.push(`• ${i}`));
+  if (metrics.forecast_usable && metrics.forecast && metrics.forecast.length > 0) {
+    lines.push("");
+    lines.push("▶ FORECAST");
+    lines.push(`• R² = ${metrics.forecast[0].r2} — ${metrics.forecast[0].r2 > 0.8 ? "HIGH" : metrics.forecast[0].r2 > 0.5 ? "MEDIUM" : "LOW"} confidence`);
+    metrics.forecast.forEach(f => {
+      lines.push(`• **${f.name}**: ${fmt(f.val)}`);
+    });
   }
+
+  // Charts
+  if (charts.length > 0) {
+    lines.push("");
+    charts.forEach(c => lines.push(c));
+  }
+
+  lines.push("");
+  lines.push("◆ NEXUS VERDICT ◆");
+  lines.push(`**Confidence**: ${confidence} — based on ${dataQuality.rows_after} clean rows, ${dataQuality.clean_rate}% retention rate${anomalyResult.count > 0 ? `, ${anomalyResult.count} anomalies detected` : ""}`);
+  
+  if (rankedFindings.length > 0) {
+    lines.push(`**Top finding**: ${rankedFindings[0].detail}`);
+  }
+  if (detected.revenue && metrics.revenue != null) {
+    lines.push(`**Key metric**: Total revenue ${fmt(metrics.revenue)} across ${metrics.orders} transactions, AOV ${fmt(metrics.aov)}`);
+  }
+  lines.push("");
+  lines.push("💡 **SUGGESTED NEXT QUESTIONS**:");
+  lines.push("1. What are the top-performing categories and their growth trends?");
+  lines.push("2. Which anomalies need immediate investigation?");
+  lines.push("3. Forecast revenue for the next 3 months");
 
   return lines.join("\n");
 }
@@ -2405,14 +1926,27 @@ function validateAndSanitizeOutput(text, metrics, rankedFindings, judgment) {
 }
 
 // ═══════════════════════════════════════════════════════
-//  LLM CALLERS
+//  LLM CALLERS (v15.1 — Enhanced with logging + model fallbacks)
 // ═══════════════════════════════════════════════════════
 
-async function callGroq(sysPrompt, userMsg, env) {
-  if (!env.GROQ_API_KEY) throw new Error("GROQ_API_KEY not configured");
+// Groq model fallback chain — try best model first, fall back to smaller ones
+const GROQ_MODELS = [
+  "llama-3.3-70b-versatile",
+  "meta-llama/llama-4-maverick-17b-128e-instruct",
+  "qwen/qwen3-32b",
+  "deepseek-r1-distill-llama-70b"
+];
+
+async function callGroq(sysPrompt, userMsg, env, modelOverride = null) {
+  if (!env.GROQ_API_KEY) {
+    console.error("[LLM] GROQ_API_KEY is MISSING from env. Set it via: wrangler secret put GROQ_API_KEY");
+    throw new Error("GROQ_API_KEY not configured");
+  }
+  const model = modelOverride || GROQ_MODELS[0];
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 25000);
+  const timeout = setTimeout(() => controller.abort(), 30000);
   try {
+    console.log(`[LLM] Calling Groq model=${model} promptLen=${userMsg.length}`);
     const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -2420,44 +1954,101 @@ async function callGroq(sysPrompt, userMsg, env) {
         Authorization: `Bearer ${env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: "llama-3.3-70b-versatile",
+        model: model,
         messages: [
           { role: "system", content: sysPrompt },
           { role: "user", content: userMsg }
         ],
         max_tokens: 8192,
-        temperature: 0.1 // Lower temperature for more deterministic output
+        temperature: 0.1
       }),
       signal: controller.signal
     });
     clearTimeout(timeout);
+    if (!res.ok) {
+      const errBody = await res.text().catch(() => "(no body)");
+      console.error(`[LLM] Groq HTTP ${res.status} model=${model}: ${errBody.slice(0, 500)}`);
+    } else {
+      console.log(`[LLM] Groq OK model=${model}`);
+    }
     return res;
   } catch (e) {
     clearTimeout(timeout);
+    console.error(`[LLM] Groq exception model=${model}: ${e.message}`);
     throw e;
   }
 }
 
-async function callGemini(sysPrompt, userMsg, env) {
-  if (!env.GEMINI_API_KEY) return null;
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${env.GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: `${sysPrompt}\n\n${userMsg}` }] }],
-          generationConfig: { temperature: 0.1, maxOutputTokens: 8192 }
-        })
+// Try all Groq models in fallback chain
+async function callGroqWithFallback(sysPrompt, userMsg, env) {
+  for (let i = 0; i < GROQ_MODELS.length; i++) {
+    try {
+      const res = await callGroq(sysPrompt, userMsg, env, GROQ_MODELS[i]);
+      if (res?.ok) return res;
+      // If 401/403 — API key is invalid, no point trying more models
+      if (res?.status === 401 || res?.status === 403) {
+        console.error(`[LLM] Groq auth failed (${res.status}). API key likely invalid/expired.`);
+        return res;
       }
-    );
-    if (!res.ok) return null;
-    const d = await res.json();
-    return d.candidates?.[0]?.content?.parts?.[0]?.text || null;
-  } catch {
+      // If 429 rate limit, check retry-after
+      if (res?.status === 429) {
+        const errText = await res.text().catch(() => "");
+        const waitMatch = errText.match(/try again in ([0-9.]+)s/i);
+        if (waitMatch && i < GROQ_MODELS.length - 1) {
+          const waitMs = Math.min(parseFloat(waitMatch[1]) * 1000, 5000) + 500;
+          console.log(`[LLM] Groq rate limited on ${GROQ_MODELS[i]}, waiting ${waitMs}ms then trying ${GROQ_MODELS[i+1]}`);
+          await new Promise(r => setTimeout(r, waitMs));
+          continue;
+        }
+        return null; // Fully rate limited
+      }
+      // Other error — try next model
+      console.warn(`[LLM] Groq model ${GROQ_MODELS[i]} failed, trying next...`);
+    } catch (e) {
+      console.error(`[LLM] Groq exception on ${GROQ_MODELS[i]}: ${e.message}`);
+      if (i === GROQ_MODELS.length - 1) return null;
+    }
+  }
+  return null;
+}
+
+async function callGemini(sysPrompt, userMsg, env) {
+  if (!env.GEMINI_API_KEY) {
+    console.warn("[LLM] GEMINI_API_KEY not set — Gemini fallback unavailable");
     return null;
   }
+  // Try multiple Gemini model versions
+  const geminiModels = ["gemini-2.5-flash", "gemini-2.0-flash"];
+  for (const model of geminiModels) {
+    try {
+      console.log(`[LLM] Trying Gemini model=${model}`);
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${env.GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: `${sysPrompt}\n\n${userMsg}` }] }],
+            generationConfig: { temperature: 0.1, maxOutputTokens: 8192 }
+          })
+        }
+      );
+      if (!res.ok) {
+        const errBody = await res.text().catch(() => "(no body)");
+        console.error(`[LLM] Gemini HTTP ${res.status} model=${model}: ${errBody.slice(0, 300)}`);
+        continue;
+      }
+      const d = await res.json();
+      const text = d.candidates?.[0]?.content?.parts?.[0]?.text || null;
+      if (text) {
+        console.log(`[LLM] Gemini OK model=${model} len=${text.length}`);
+        return text;
+      }
+    } catch (e) {
+      console.error(`[LLM] Gemini exception model=${model}: ${e.message}`);
+    }
+  }
+  return null;
 }
 
 // ═══════════════════════════════════════════════════════
@@ -2753,44 +2344,44 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
           userMsg += `\n\n── PREVIOUS ANALYSIS CONTEXT ──\n${prevContext.slice(0, 1500)}\n── END CONTEXT ──\n\nBuild on the above findings. Don't repeat them. Go deeper on the new question.`;
         }
 
-        // ── Call LLM with retry ───────────────────────────
+        // ── Call LLM with full fallback chain ──────────────
         let insight = null;
-        let attempts = 0;
+        let llmSource = "none";
 
-        while (attempts < 2 && !insight) {
-          attempts++;
+        // Step 1: Try Groq with model fallback chain
+        try {
+          const groqRes = await callGroqWithFallback(sysPrompt, userMsg, env);
+          if (groqRes?.ok) {
+            const d = await groqRes.json();
+            insight = d.choices?.[0]?.message?.content || null;
+            if (insight) llmSource = "groq";
+          }
+        } catch (e) {
+          console.error("[ANALYZE] Groq chain failed:", e.message);
+        }
+
+        // Step 2: If Groq failed, try Gemini
+        if (!insight) {
+          console.log("[ANALYZE] Groq exhausted, trying Gemini...");
           try {
-            const groqRes = await callGroq(sysPrompt, userMsg, env);
-            if (groqRes?.ok) {
-              const d = await groqRes.json();
-              insight = d.choices?.[0]?.message?.content || null;
-            } else if (groqRes?.status === 429) {
-              const errText = await groqRes.text();
-              const waitMatch = errText.match(/try again in ([0-9.]+)s/i);
-              if (waitMatch && attempts < 2) {
-                await new Promise(r => setTimeout(r, parseFloat(waitMatch[1]) * 1000 + 500));
-                continue;
-              }
-              // Rate limited — try Gemini
-              insight = await callGemini(sysPrompt, userMsg, env);
-            } else {
-              console.error("Groq error:", groqRes?.status);
-            }
+            insight = await callGemini(sysPrompt, userMsg, env);
+            if (insight) llmSource = "gemini";
           } catch (e) {
-            console.error("LLM call error:", e.message);
-            if (attempts >= 2) {
-              insight = await callGemini(sysPrompt, userMsg, env);
-            }
+            console.error("[ANALYZE] Gemini failed:", e.message);
           }
         }
 
-        // ── Fallback if LLM completely unavailable ────────
+        // Step 3: Fallback if all LLMs completely unavailable
         if (!insight) {
+          console.error("[ANALYZE] ALL LLM providers failed. Using deterministic fallback.");
           insight = buildFallbackNarrative(
             metrics, detected, dataQuality, anomalyResult,
             confidence, judgment, rankedFindings
           );
+          llmSource = "fallback";
         }
+
+        console.log(`[ANALYZE] Complete. Source=${llmSource} tier=${judgment.analysisTier} rows=${cleaned.length}`);
 
         // ── Post-generation validation ────────────────────
         insight = validateAndSanitizeOutput(insight, metrics, rankedFindings, judgment);
@@ -2893,26 +2484,63 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
               userMsg += `\n\n── PREVIOUS ANALYSIS CONTEXT ──\n${prevContext.slice(0, 1500)}\n── END CONTEXT ──\n\nBuild on the above. Go deeper.`;
             }
 
-            // Stream from Groq
-            if (!env.GROQ_API_KEY) { await sse("error", {msg:"GROQ_API_KEY not configured"}); await writer.close(); return; }
-            const groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-              method: "POST",
-              headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
-              body: JSON.stringify({
-                model: "llama-3.3-70b-versatile",
-                messages: [{ role: "system", content: sysPrompt }, { role: "user", content: userMsg }],
-                max_tokens: 8192, temperature: 0.1, stream: true
-              })
-            });
-
-            if (!groqRes.ok) {
-              // Fallback to non-streaming
+            // Stream from Groq with model fallback
+            if (!env.GROQ_API_KEY) {
+              console.error("[STREAM] GROQ_API_KEY missing");
+              // Try Gemini non-streaming as fallback
+              const geminiResult = await callGemini(sysPrompt, userMsg, env);
+              if (geminiResult) {
+                await sse("token", {text: geminiResult});
+                await sse("done", {insight: geminiResult});
+                await writer.close();
+                return;
+              }
               const fallback = buildFallbackNarrative(metrics, detected, dataQuality, anomalyResult, confidence, judgment, rankedFindings);
               await sse("token", {text: fallback});
               await sse("done", {insight: fallback});
               await writer.close();
               return;
             }
+
+            // Try streaming with model fallback
+            let groqRes = null;
+            let streamModel = null;
+            for (const tryModel of GROQ_MODELS.slice(0, 3)) {
+              try {
+                console.log(`[STREAM] Trying Groq model=${tryModel}`);
+                groqRes = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json", Authorization: `Bearer ${env.GROQ_API_KEY}` },
+                  body: JSON.stringify({
+                    model: tryModel,
+                    messages: [{ role: "system", content: sysPrompt }, { role: "user", content: userMsg }],
+                    max_tokens: 8192, temperature: 0.1, stream: true
+                  })
+                });
+                if (groqRes.ok) { streamModel = tryModel; break; }
+                console.error(`[STREAM] Groq ${groqRes.status} on ${tryModel}`);
+              } catch (e) {
+                console.error(`[STREAM] Groq exception on ${tryModel}: ${e.message}`);
+              }
+            }
+
+            if (!groqRes?.ok) {
+              console.error("[STREAM] All Groq models failed, trying Gemini...");
+              // Try Gemini non-streaming as last resort
+              const geminiResult = await callGemini(sysPrompt, userMsg, env);
+              if (geminiResult) {
+                await sse("token", {text: geminiResult});
+                await sse("done", {insight: geminiResult});
+                await writer.close();
+                return;
+              }
+              const fallback = buildFallbackNarrative(metrics, detected, dataQuality, anomalyResult, confidence, judgment, rankedFindings);
+              await sse("token", {text: fallback});
+              await sse("done", {insight: fallback});
+              await writer.close();
+              return;
+            }
+            console.log(`[STREAM] Groq streaming OK model=${streamModel}`);
 
             const reader = groqRes.body.getReader();
             const decoder = new TextDecoder();
@@ -3052,7 +2680,9 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
         return jsonResponse({
           config: {
             GROQ_API_KEY: !!env.GROQ_API_KEY,
+            GROQ_KEY_PREFIX: env.GROQ_API_KEY ? env.GROQ_API_KEY.slice(0, 8) + "..." : "NOT SET",
             GEMINI_API_KEY: !!env.GEMINI_API_KEY,
+            GEMINI_KEY_PREFIX: env.GEMINI_API_KEY ? env.GEMINI_API_KEY.slice(0, 8) + "..." : "NOT SET",
             GOOGLE_CLIENT_ID: !!env.GOOGLE_CLIENT_ID,
             JWT_SECRET: !!env.JWT_SECRET,
             ADMIN_SECRET: !!env.ADMIN_SECRET,
@@ -3060,6 +2690,54 @@ Format: ▶ SECTION HEADERS, **bold** key metrics, ◆ NEXUS VERDICT at end.`;
             NEXUS_KV: !!env.NEXUS_KV
           }
         }, 200, origin);
+      }
+
+      // ── DIAGNOSTICS — test actual API connectivity ─────
+      if (path === "/api/admin/diagnose" && method === "GET") {
+        const results = { groq: { configured: false }, gemini: { configured: false } };
+
+        // Test Groq
+        if (env.GROQ_API_KEY) {
+          results.groq.configured = true;
+          results.groq.key_prefix = env.GROQ_API_KEY.slice(0, 8) + "...";
+          try {
+            const groqTest = await fetch("https://api.groq.com/openai/v1/models", {
+              headers: { Authorization: `Bearer ${env.GROQ_API_KEY}` }
+            });
+            results.groq.status = groqTest.status;
+            results.groq.ok = groqTest.ok;
+            if (groqTest.ok) {
+              const models = await groqTest.json();
+              results.groq.models_available = models.data?.map(m => m.id).slice(0, 10) || [];
+            } else {
+              const errText = await groqTest.text();
+              results.groq.error = errText.slice(0, 300);
+            }
+          } catch (e) {
+            results.groq.error = e.message;
+          }
+        }
+
+        // Test Gemini
+        if (env.GEMINI_API_KEY) {
+          results.gemini.configured = true;
+          results.gemini.key_prefix = env.GEMINI_API_KEY.slice(0, 8) + "...";
+          try {
+            const gemTest = await fetch(
+              `https://generativelanguage.googleapis.com/v1beta/models?key=${env.GEMINI_API_KEY}`
+            );
+            results.gemini.status = gemTest.status;
+            results.gemini.ok = gemTest.ok;
+            if (!gemTest.ok) {
+              const errText = await gemTest.text();
+              results.gemini.error = errText.slice(0, 300);
+            }
+          } catch (e) {
+            results.gemini.error = e.message;
+          }
+        }
+
+        return jsonResponse({ diagnostics: results, ts: Date.now() }, 200, origin);
       }
 
       if (path === "/api/admin/logs" && method === "GET") {
